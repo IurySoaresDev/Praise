@@ -1,9 +1,10 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { invoke, convertFileSrc } from "@tauri-apps/api/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { useStore, ALLOWED_COLLECTIONS } from "./store";
-import { Search, Monitor, Play, MonitorDot, ChevronRight, ChevronLeft, Plus, Trash2, GripVertical, Square, Music, ListMusic, BookOpen, ArrowLeft, Loader2, FilePenLine, Upload, Send, X, AlertTriangle, CheckCircle2, Settings, Image as ImageIcon } from "lucide-react";
+import { Search, Monitor, Play, MonitorDot, ChevronRight, ChevronLeft, Plus, Trash2, GripVertical, Square, Music, ListMusic, BookOpen, ArrowLeft, Loader2, FilePenLine, Upload, Send, X, Minus, AlertTriangle, CheckCircle2, Settings, Image as ImageIcon } from "lucide-react";
 import "./App.css";
 
 function App() {
@@ -275,11 +276,37 @@ function App() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [activeSlideIndex, slides, selectedSong, isProjecting, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle]);
 
+  const appWindow = useMemo(() => getCurrentWindow(), []);
+
   return (
-    <div className="flex h-screen overflow-hidden font-['Inter',system-ui,sans-serif]" style={{ backgroundColor: '#0f172a', color: 'rgba(255,255,255,0.9)' }}>
+    <div className="flex flex-col h-screen overflow-hidden font-['Inter',system-ui,sans-serif]" style={{ backgroundColor: '#0f172a', color: 'rgba(255,255,255,0.9)' }}>
       
-      {/* ═══ SYSTEM NAV (Thick Left Rail) ═══ */}
-      <div className="w-[72px] flex flex-col items-center py-4 border-r border-white/5 z-20 shrink-0" style={{ backgroundColor: '#0f172a' }}>
+      {/* ═══ CUSTOM TITLE BAR ═══ */}
+      <div data-tauri-drag-region className="h-8 flex items-center justify-between px-4 select-none shrink-0" style={{ backgroundColor: '#0f172a', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+        <div className="flex items-center gap-2 pointer-events-none">
+          <MonitorDot className="w-3.5 h-3.5 text-slate-400" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Praise</span>
+        </div>
+        
+        <div className="flex items-center h-full">
+          <button 
+            onClick={() => appWindow.minimize()}
+            className="h-8 w-10 flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/5 transition-colors"
+          >
+            <Minus className="w-4 h-4" />
+          </button>
+          <button 
+            onClick={() => appWindow.close()}
+            className="h-8 w-10 flex items-center justify-center text-slate-500 hover:text-white hover:bg-red-500/80 transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* ═══ SYSTEM NAV (Thick Left Rail) ═══ */}
+        <div className="w-[72px] flex flex-col items-center py-4 border-r border-white/5 z-20 shrink-0" style={{ backgroundColor: '#0f172a' }}>
         <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-6 shadow-md" style={{ background: 'linear-gradient(135deg, #64748b, #475569)' }}>
           <MonitorDot className="w-5 h-5 text-white" />
         </div>
@@ -1393,6 +1420,7 @@ function App() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

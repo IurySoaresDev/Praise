@@ -12,11 +12,13 @@
   "app": {
     "windows": [
       {
-        "title": "praise-app",
+        "label": "main",
+        "title": "Praise",
         "width": 1200,
         "height": 800,
         "center": true,
-        "fullscreen": false
+        "fullscreen": false,
+        "decorations": false
       }
     ],
     "security": {
