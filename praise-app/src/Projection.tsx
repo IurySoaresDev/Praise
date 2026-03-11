@@ -82,7 +82,7 @@ function Projection() {
           className={`text-white font-bold text-center w-full leading-snug tracking-wide projection-shadow drop-shadow-2xl ${
             data.item_type === 'bible' 
               ? 'text-4xl md:text-6xl lg:text-7xl italic font-medium' 
-              : 'text-4xl md:text-6xl lg:text-[5.5rem] uppercase'
+              : 'text-4xl md:text-6xl lg:text-[4.8rem] uppercase'
           }`}
           dangerouslySetInnerHTML={{ __html: data.content }} 
         />

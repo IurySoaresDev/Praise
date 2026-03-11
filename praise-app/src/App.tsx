@@ -1309,7 +1309,7 @@ function App() {
                           className={`text-white font-bold text-center w-full leading-snug tracking-wide projection-shadow ${
                             selectedSong?.collection === 'Bíblia'
                               ? 'text-[0.6rem] italic font-medium'
-                              : 'text-[0.65rem] uppercase'
+                              : 'text-[0.6rem] uppercase'
                           }`}
                           dangerouslySetInnerHTML={{ __html: slides[activeSlideIndex] }} 
                         />
