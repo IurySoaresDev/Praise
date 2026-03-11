@@ -176,7 +176,7 @@ function App() {
         monitor: selectedMonitor,
         content: content,
         background: background || null,
-        item_type: itemType
+        itemType: itemType
       });
     } catch (e) {
       console.error("Erro ao projetar:", e);
