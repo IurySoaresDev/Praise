@@ -88,13 +88,32 @@ fn project_slide(
     Ok(())
 }
 
+#[tauri::command]
+fn save_songs(app_handle: tauri::AppHandle, data: serde_json::Value) -> Result<(), String> {
+    // Resolve the path to the data.json file inside the src/assets directory
+    // This allows the app to overwrite the default data file
+    let current_dir = std::env::current_dir().map_err(|e| e.to_string())?;
+    
+    // Naive resolution to the src/assets/data.json in development
+    let file_path = current_dir.join("src").join("assets").join("data.json");
+    
+    // Write the JSON data directly to the file
+    let json_string = serde_json::to_string(&data).map_err(|e| e.to_string())?;
+    
+    std::fs::write(&file_path, json_string).map_err(|e| {
+        format!("Failed to write to file {:?}: {}", file_path, e)
+    })?;
+    
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
-        .invoke_handler(tauri::generate_handler![get_monitors, project_slide])
+        .invoke_handler(tauri::generate_handler![get_monitors, project_slide, save_songs])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -1,5 +1,7 @@
 import { create } from 'zustand';
+import { invoke } from '@tauri-apps/api/core';
 import rawData from './assets/data.json';
+
 
 export interface Song {
   title: string;
@@ -73,6 +75,14 @@ initialCollections.forEach(c => {
   });
   collections.push({ ...c, songs: uniqueSongs });
 });
+
+const saveCollectionsToDisk = async (collectionsToSave: Collection[]) => {
+  try {
+    await invoke('save_songs', { data: collectionsToSave });
+  } catch (error) {
+    console.error('Failed to save songs to disk:', error);
+  }
+};
 
 export const useStore = create<AppState>((set, get) => ({
   collections,
@@ -152,6 +162,8 @@ export const useStore = create<AppState>((set, get) => ({
       };
     });
 
+    saveCollectionsToDisk(get().collections);
+
     return { duplicate: false };
   },
 
@@ -221,6 +233,7 @@ export const useStore = create<AppState>((set, get) => ({
 
     if (added > 0) {
       set({ collections: updatedCollections, songs: [...state.songs, ...newSongs] });
+      saveCollectionsToDisk(updatedCollections);
     }
 
     return { added, duplicates };
@@ -275,6 +288,8 @@ export const useStore = create<AppState>((set, get) => ({
         collections: updatedCollections,
       };
     });
+
+    saveCollectionsToDisk(get().collections);
 
     return { success: true };
   },
