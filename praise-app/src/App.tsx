@@ -38,8 +38,15 @@ function App() {
   const [activeTab, setActiveTab] = useState<'songs' | 'bible'>('songs');
   const [selectedBook, setSelectedBook] = useState<any>(null);
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
+  const [searchBibleQuery, setSearchBibleQuery] = useState('');
 
-  const bibleBooks = bibleData;
+  const bibleBooks = searchBibleQuery.trim() === ''
+    ? bibleData 
+    : bibleData.filter(book => 
+        book.name.toLowerCase().includes(searchBibleQuery.toLowerCase()) || 
+        book.abbrev.toLowerCase().includes(searchBibleQuery.toLowerCase())
+      );
+      
   const bibleVerses = selectedBook && selectedChapter 
     ? selectedBook.chapters[selectedChapter - 1].map((text: string, i: number) => ({
         number: i + 1,
@@ -310,17 +317,38 @@ function App() {
               
               {/* Livros */}
               {!selectedBook && (
-                <div className="grid grid-cols-1 gap-1">
-                  {bibleBooks.map(book => (
-                    <button
-                      key={book.abbrev}
-                      onClick={() => setSelectedBook(book)}
-                      className="w-full text-left px-3 py-2 rounded-lg text-[13px] text-white/70 hover:text-white hover:bg-white/5 transition-all flex justify-between items-center group"
-                    >
-                      <span className="font-medium">{book.name}</span>
-                      <span className="text-[10px] text-white/20 group-hover:text-white/40 bg-white/5 px-2 py-0.5 rounded-md">{book.chapters.length} cap.</span>
-                    </button>
-                  ))}
+                <div className="flex flex-col gap-3">
+                  <div className="relative shrink-0">
+                    <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+                    <input
+                      type="text"
+                      placeholder="Buscar livro..."
+                      className="w-full pl-9 pr-4 py-2 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-slate-500/50 focus:ring-1 focus:ring-slate-500/20 placeholder:text-white/25"
+                      style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+                      value={searchBibleQuery}
+                      onChange={(e) => setSearchBibleQuery(e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-1 gap-1">
+                    {bibleBooks.length > 0 ? bibleBooks.map(book => (
+                      <button
+                        key={book.abbrev}
+                        onClick={() => {
+                          setSelectedBook(book);
+                          setSearchBibleQuery('');
+                        }}
+                        className="w-full text-left px-3 py-2 rounded-lg text-[13px] text-white/70 hover:text-white hover:bg-white/5 transition-all flex justify-between items-center group"
+                      >
+                        <span className="font-medium">{book.name}</span>
+                        <span className="text-[10px] text-white/20 group-hover:text-white/40 bg-white/5 px-2 py-0.5 rounded-md">{book.chapters.length} cap.</span>
+                      </button>
+                    )) : (
+                      <div className="px-3 py-6 text-center text-white/20 text-xs">
+                        Nenhum livro encontrado.
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 
