@@ -38,7 +38,7 @@ function App() {
   const [searchBibleQuery, setSearchBibleQuery] = useState('');
   const [searchChapterQuery, setSearchChapterQuery] = useState('');
   
-  const [bibleVersion, setBibleVersion] = useState<'NVI' | 'ACF' | 'ARA'>('NVI');
+  const [bibleVersion, setBibleVersion] = useState<'NVI' | 'ACF' | 'ARA'>('ACF');
   const [bibleData, setBibleData] = useState<any[]>([]);
   const [isLoadingBible, setIsLoadingBible] = useState(true);
 
@@ -346,15 +346,23 @@ function App() {
                       : `${selectedBook.name} ${selectedChapter}`}
                 </div>
               </div>
-              <select
-                value={bibleVersion}
-                onChange={(e) => setBibleVersion(e.target.value as any)}
-                className="bg-slate-800/80 border border-white/10 text-white/70 text-xs rounded-lg px-2 py-1 outline-none font-bold shrink-0 hover:bg-slate-700/80 transition-all cursor-pointer"
-              >
-                <option value="NVI">NVI</option>
-                <option value="ACF">ACF</option>
-                <option value="ARA">ARA</option>
-              </select>
+              
+              <div className="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar shrink-0">
+                {(['ACF', 'ARA', 'NVI'] as const).map(version => (
+                  <button
+                    key={version}
+                    onClick={() => setBibleVersion(version)}
+                    className={`whitespace-nowrap px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-all flex-shrink-0 ${
+                      bibleVersion === version 
+                        ? "text-white shadow-md" 
+                        : "text-white/40 hover:text-white/70 hover:bg-white/5"
+                    }`}
+                    style={bibleVersion === version ? { background: 'linear-gradient(135deg, #64748b, #475569)' } : {}}
+                  >
+                    {version}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="flex-1 overflow-y-auto p-2 min-h-0">
