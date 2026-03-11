@@ -51,16 +51,15 @@ function Projection() {
 
       {/* Título do louvor no topo (na faixa vermelha da imagem) */}
       {data.title && data.item_type !== 'empty' && (
-        <div className="relative z-10 w-full flex items-center justify-center pt-2" 
-             style={{ height: '12vh', minHeight: '80px', maxHeight: '120px' }}>
-          <h1 className="text-white text-3xl md:text-5xl lg:text-6xl font-bold uppercase tracking-widest text-center drop-shadow-2xl projection-shadow truncate px-8">
+        <div className="absolute top-[16.5%] left-0 right-0 z-20 w-full flex items-center justify-center">
+          <h1 className="text-white text-2xl md:text-3xl lg:text-4xl font-bold uppercase tracking-widest text-center drop-shadow-2xl projection-shadow truncate px-12">
             {data.title}
           </h1>
         </div>
       )}
 
       {/* Camada de Texto - letra da estrofe centralizada */}
-      <div className="relative z-10 flex-1 w-full flex items-center justify-center px-12 pb-12 lg:px-20 lg:pb-20">
+      <div className="relative z-10 flex-1 w-full flex items-center justify-center px-12 pb-8 pt-32 lg:px-20 lg:pt-40">
         <div 
           className={`text-white font-bold text-center w-full leading-snug tracking-wide projection-shadow drop-shadow-2xl ${
             data.item_type === 'bible' 
