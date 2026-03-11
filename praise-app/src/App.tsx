@@ -1292,8 +1292,10 @@ function App() {
                     <>
                       {/* Mostrar título simulado */}
                       {((selectedSong?.collection !== 'Bíblia' && activeSlideIndex === 0) || (selectedSong?.collection === 'Bíblia')) && (
-                        <div className={`w-full flex items-center justify-center ${selectedSong?.collection === 'Bíblia' ? 'pt-0' : 'pt-0.5'}`} style={{ height: '12%', minHeight: '15px' }}>
-                          <h4 className={`font-bold uppercase tracking-widest text-center drop-shadow-2xl projection-shadow truncate w-full ${
+                        <div className={`absolute left-0 right-0 w-full flex items-center justify-center ${
+                          selectedSong?.collection === 'Bíblia' ? 'top-[21%]' : 'top-[5.5%]'
+                        }`}>
+                          <h4 className={`font-bold uppercase tracking-widest text-center drop-shadow-2xl projection-shadow truncate w-full px-2 ${
                             selectedSong?.collection === 'Bíblia' ? 'text-white' : 'text-amber-400'
                           }`} style={{ fontSize: '0.4rem' }}>
                             {getSlideTitle(activeSlideIndex)}
@@ -1302,7 +1304,7 @@ function App() {
                       )}
                       
                       {/* Letra ou Versículo */}
-                      <div className={`flex-1 flex items-center justify-center w-full ${((selectedSong?.collection !== 'Bíblia' && activeSlideIndex === 0) || selectedSong?.collection === 'Bíblia') ? 'pb-2 pt-4' : 'px-4'}`}>
+                      <div className="absolute inset-x-2 bottom-2 top-[35%] flex items-center justify-center">
                         <div 
                           className={`text-white font-bold text-center w-full leading-snug tracking-wide projection-shadow ${
                             selectedSong?.collection === 'Bíblia'
