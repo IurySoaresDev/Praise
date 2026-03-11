@@ -4,7 +4,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { useStore, ALLOWED_COLLECTIONS } from "./store";
-import { Search, Monitor, Play, MonitorDot, ChevronRight, ChevronLeft, Plus, Trash2, GripVertical, Square, Music, ListMusic, BookOpen, ArrowLeft, Loader2, FilePenLine, Upload, Send, X, Minus, Snowflake, AlertTriangle, CheckCircle2, Settings, Image as ImageIcon } from "lucide-react";
+import { Search, Monitor, Play, MonitorDot, ChevronRight, ChevronLeft, ChevronDown, Plus, Trash2, GripVertical, Square, Music, ListMusic, BookOpen, ArrowLeft, Loader2, FilePenLine, Upload, Send, X, Minus, Snowflake, AlertTriangle, CheckCircle2, Settings, Image as ImageIcon } from "lucide-react";
 import "./App.css";
 
 function App() {
@@ -1185,23 +1185,29 @@ function App() {
         
         {/* Top Bar */}
         <div className="h-14 border-b border-white/5 flex items-center justify-between px-6 shrink-0 glass" style={{ backgroundColor: 'rgba(15,23,42,0.8)' }}>
-          <div className="flex items-center gap-3 text-white/50">
-            <Monitor className="w-4 h-4" />
-            <span className="text-[13px] font-medium">Projetar em:</span>
-            <select
-              className="border border-white/10 rounded-lg py-1.5 px-3 text-[13px] outline-none focus:border-slate-500/50 text-white/80"
-              style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
-              value={selectedMonitor}
-              onChange={(e) => setSelectedMonitor(e.target.value)}
-            >
-              {monitors.length > 0 ? (
-                monitors.map((m, i) => (
-                  <option key={i} value={m}>{m}</option>
-                ))
-              ) : (
-                <option value="">Carregando monitores...</option>
-              )}
-            </select>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center bg-white/[0.03] border border-white/10 rounded-xl px-3 py-1.5 transition-all focus-within:border-slate-400/40 hover:bg-white/[0.06] group/monitor shadow-sm">
+              <div className="flex items-center gap-2 border-r border-white/10 pr-3 mr-1 text-white/40 group-focus-within/monitor:text-slate-400 group-hover/monitor:text-white/60 transition-colors">
+                <Monitor className="w-4 h-4" />
+                <span className="text-[11px] font-bold uppercase tracking-wider whitespace-nowrap">Projetar em</span>
+              </div>
+              <div className="relative flex items-center">
+                <select
+                  className="appearance-none bg-transparent pl-2 pr-7 py-0.5 text-[13px] font-semibold text-white/90 outline-none cursor-pointer w-full min-w-[140px]"
+                  value={selectedMonitor}
+                  onChange={(e) => setSelectedMonitor(e.target.value)}
+                >
+                  {monitors.length > 0 ? (
+                    monitors.map((m, i) => (
+                      <option key={i} value={m} className="bg-slate-900 text-white">{m}</option>
+                    ))
+                  ) : (
+                    <option value="" className="bg-slate-900 text-white">Carregando...</option>
+                  )}
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-white/30 absolute right-0 pointer-events-none group-hover/monitor:text-white/50 transition-colors" />
+              </div>
+            </div>
           </div>
           
           <div className="flex items-center gap-3">
