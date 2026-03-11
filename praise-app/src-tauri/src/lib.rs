@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::sync::Mutex;
+use image::GenericImageView;
 use tauri::{Manager, Emitter, WebviewWindowBuilder, WebviewUrl, State};
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -137,7 +138,16 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
-        .setup(|_app| {
+        .setup(|app| {
+            // No Linux, definir o ícone programaticamente resolve o problema do ícone de 'engrenagem'
+            let icon_bytes = include_bytes!("../../src/assets/logo.png");
+            if let Ok(icon) = image::load_from_memory(icon_bytes) {
+                let (width, height) = icon.dimensions();
+                let rgba = icon.to_rgba8().into_raw();
+                if let Ok(tauri_icon) = tauri::Icon::from_rgba(rgba, width, height) {
+                    let _ = app.set_icon(tauri_icon);
+                }
+            }
             Ok(())
         })
         .manage(CurrentSlideState(Mutex::new(None)))
