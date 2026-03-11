@@ -669,7 +669,8 @@ function App() {
           </div>
         )}
 
-        {/* ─── PLAYLIST DO CULTO (Dinâmica por Aba) ─── */}
+        {/* ─── PLAYLIST DO CULTO (Dinâmica por Aba — oculta no Editor) ─── */}
+        {activeTab !== 'editor' && (
         <div className="border-t border-white/5 flex flex-col min-h-0" style={{ height: '45%', backgroundColor: '#0f172a' }}>
           <div className="px-4 py-3 flex items-center gap-2 shrink-0 border-b border-white/5">
             {activeTab === 'songs' ? <ListMusic className="w-4 h-4 text-slate-400" /> : <BookOpen className="w-4 h-4 text-slate-400" />}
@@ -747,6 +748,7 @@ function App() {
             )}
           </div>
         </div>
+        )}
       </div>
 
       {/* ═══ MAIN CONTENT ═══ */}
