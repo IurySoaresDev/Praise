@@ -4,7 +4,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { useStore, ALLOWED_COLLECTIONS } from "./store";
-import { Search, Monitor, Play, MonitorDot, ChevronRight, ChevronLeft, Plus, Trash2, GripVertical, Square, Music, ListMusic, BookOpen, ArrowLeft, Loader2, FilePenLine, Upload, Send, X, Minus, AlertTriangle, CheckCircle2, Settings, Image as ImageIcon } from "lucide-react";
+import { Search, Monitor, Play, MonitorDot, ChevronRight, ChevronLeft, Plus, Trash2, GripVertical, Square, Music, ListMusic, BookOpen, ArrowLeft, Loader2, FilePenLine, Upload, Send, X, Minus, Snowflake, AlertTriangle, CheckCircle2, Settings, Image as ImageIcon } from "lucide-react";
 import "./App.css";
 
 function App() {
@@ -44,6 +44,7 @@ function App() {
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [overIdx, setOverIdx] = useState<number | null>(null);
   const [isProjecting, setIsProjecting] = useState(false);
+  const [isFrozen, setIsFrozen] = useState(false);
 
   // Bible State
   // REMOVIDO: const [activeTab, setActiveTab] = useState<'songs' | 'bible' | 'editor'>('songs');
@@ -176,6 +177,7 @@ function App() {
   const slides = selectedSong ? formatContent(selectedSong.content, selectedSong.collection) : [];
 
   const sendSlideToProjection = useCallback(async (content: string, background?: string | null, itemType: string = "song", title: string = "") => {
+    if (isFrozen) return;
     try {
       await invoke("project_slide", {
         monitor: selectedMonitor,
@@ -187,7 +189,7 @@ function App() {
     } catch (e) {
       console.error("Erro ao projetar:", e);
     }
-  }, [selectedMonitor]);
+  }, [selectedMonitor, isFrozen]);
 
   const getSlideTitle = useCallback((index: number) => {
     if (!selectedSong) return '';
@@ -1202,6 +1204,21 @@ function App() {
               </div>
             )}
             
+            {isProjecting && (
+              <button 
+                className={`px-3 py-1.5 rounded-xl text-[13px] font-semibold flex items-center gap-2 transition-all shadow-md ${
+                  isFrozen 
+                    ? 'bg-sky-500 text-white shadow-sky-500/20' 
+                    : 'bg-white/5 text-slate-400 hover:text-white hover:bg-white/10'
+                }`}
+                onClick={() => setIsFrozen(!isFrozen)}
+                title={isFrozen ? "Descongelar projeção" : "Congelar slide atual no telão"}
+              >
+                <Snowflake className={`w-4 h-4 ${isFrozen ? 'animate-pulse' : ''}`} />
+                {isFrozen ? 'Congelado' : 'Congelar'}
+              </button>
+            )}
+
             {!isProjecting ? (
               <button 
                 className="text-white px-5 py-1.5 rounded-xl text-[13px] font-semibold flex items-center gap-2 disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-90 transition-opacity shadow-lg"
@@ -1215,7 +1232,10 @@ function App() {
               <button 
                 className="text-white px-5 py-1.5 rounded-xl text-[13px] font-semibold flex items-center gap-2 hover:opacity-90 transition-opacity shadow-lg"
                 style={{ background: 'linear-gradient(135deg, #ef4444, #dc2626)' }}
-                onClick={handleStopProjection}
+                onClick={() => {
+                  handleStopProjection();
+                  setIsFrozen(false);
+                }}
               >
                 <Square className="w-3.5 h-3.5" /> Parar
               </button>
