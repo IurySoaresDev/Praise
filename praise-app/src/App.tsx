@@ -749,20 +749,7 @@ function App() {
               </div>
             </div>
 
-            <div className="mt-12 p-8 rounded-3xl bg-slate-900/60 border border-white/5 backdrop-blur-sm relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-64 h-64 bg-slate-500/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
-               <div className="relative flex gap-6">
-                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
-                  <AlertTriangle className="w-6 h-6 text-amber-500" />
-                </div>
-                <div>
-                  <h4 className="text-xl font-bold text-white mb-2">Dica de Projeção</h4>
-                  <p className="text-slate-400 leading-relaxed">
-                    As imagens de fundo ajudam a criar uma atmosfera de adoração. Escolha fundos que mantenham o contraste alto com o texto branco. O sistema aplica automaticamente uma camada de escurecimento para garantir a legibilidade.
-                  </p>
-                </div>
-              </div>
-            </div>
+
           </div>
         </div>
       )}
