@@ -40,6 +40,7 @@ export interface AppState {
   moveSongInBiblePlaylist: (oldIndex: number, newIndex: number) => void;
   addSongToCollection: (title: string, content: string, collectionName: string) => { duplicate: boolean; existingTitle?: string };
   getExportData: () => Collection[];
+  importSongsFromJSON: (data: Collection[]) => { added: number; duplicates: number };
 }
 
 export const ALLOWED_COLLECTIONS = ["Coletânea 2018", "CIA 2018", "Avulsos 2018"];
@@ -124,5 +125,45 @@ export const useStore = create<AppState>((set, get) => ({
 
   getExportData: () => {
     return get().collections;
+  },
+
+  importSongsFromJSON: (data: Collection[]) => {
+    const state = get();
+    let added = 0;
+    let duplicates = 0;
+    const existingTitles = new Set(
+      state.songs.map(s => s.title.trim().toUpperCase())
+    );
+    const newSongs: Song[] = [];
+    const updatedCollections = state.collections.map(c => ({ ...c, songs: [...c.songs] }));
+
+    for (const importedCollection of data) {
+      // Encontra ou usa a coleção mais próxima das permitidas
+      const targetCollectionName = ALLOWED_COLLECTIONS.find(
+        ac => ac === importedCollection.name
+      ) || ALLOWED_COLLECTIONS[0];
+
+      for (const song of importedCollection.songs) {
+        const normalizedTitle = song.title.trim().toUpperCase();
+        if (existingTitles.has(normalizedTitle)) {
+          duplicates++;
+          continue;
+        }
+        existingTitles.add(normalizedTitle);
+        added++;
+        newSongs.push({ title: song.title.trim(), content: song.content, collection: targetCollectionName });
+
+        const col = updatedCollections.find(c => c.name === targetCollectionName);
+        if (col) {
+          col.songs.push({ title: song.title.trim(), content: song.content });
+        }
+      }
+    }
+
+    if (added > 0) {
+      set({ collections: updatedCollections, songs: [...state.songs, ...newSongs] });
+    }
+
+    return { added, duplicates };
   },
 }));

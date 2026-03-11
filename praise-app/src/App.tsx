@@ -1,9 +1,9 @@
 import { useEffect, useState, useCallback } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { save } from "@tauri-apps/plugin-dialog";
-import { writeTextFile } from "@tauri-apps/plugin-fs";
+import { open } from "@tauri-apps/plugin-dialog";
+import { readTextFile } from "@tauri-apps/plugin-fs";
 import { useStore, ALLOWED_COLLECTIONS } from "./store";
-import { Search, Monitor, Play, MonitorDot, ChevronRight, ChevronLeft, Plus, Trash2, GripVertical, Square, Music, ListMusic, BookOpen, ArrowLeft, Loader2, FilePenLine, Download, Send, X, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Search, Monitor, Play, MonitorDot, ChevronRight, ChevronLeft, Plus, Trash2, GripVertical, Square, Music, ListMusic, BookOpen, ArrowLeft, Loader2, FilePenLine, Upload, Send, X, AlertTriangle, CheckCircle2 } from "lucide-react";
 import "./App.css";
 
 function App() {
@@ -26,7 +26,7 @@ function App() {
     removeFromBiblePlaylist,
     moveSongInBiblePlaylist,
     addSongToCollection,
-    getExportData,
+    importSongsFromJSON,
   } = useStore();
 
   const [monitors, setMonitors] = useState<string[]>([]);
@@ -281,38 +281,43 @@ function App() {
 
           <div className="flex-1 overflow-y-auto p-8">
             <div className="max-w-2xl mx-auto flex flex-col gap-6">
-              {/* Botão Exportar */}
+              {/* Botão Importar */}
               <div className="p-5 rounded-xl border border-white/5" style={{ backgroundColor: 'rgba(255,255,255,0.02)' }}>
                 <h3 className="text-[14px] font-semibold text-white/80 flex items-center gap-2 mb-2">
-                  <Download className="w-4 h-4 text-slate-400" />
-                  Exportar Louvores
+                  <Upload className="w-4 h-4 text-slate-400" />
+                  Importar Louvores
                 </h3>
                 <p className="text-[12px] text-white/30 mb-4 leading-relaxed">
-                  Baixe um arquivo JSON com todos os louvores atuais da biblioteca.
+                  Selecione um arquivo JSON para importar louvores para a biblioteca.
                 </p>
                 <button
                   onClick={async () => {
                     try {
-                      const data = getExportData();
-                      const filePath = await save({
-                        defaultPath: 'louvores.json',
+                      const filePath = await open({
+                        multiple: false,
                         filters: [{ name: 'JSON', extensions: ['json'] }],
                       });
                       if (filePath) {
-                        await writeTextFile(filePath, JSON.stringify(data, null, 2));
-                        setSuccessMessage('Louvores exportados com sucesso!');
+                        const content = await readTextFile(filePath as string);
+                        const data = JSON.parse(content);
+                        const result = importSongsFromJSON(Array.isArray(data) ? data : [data]);
+                        if (result.added > 0) {
+                          setSuccessMessage(`${result.added} louvor(es) importado(s)!${result.duplicates > 0 ? ` (${result.duplicates} duplicata(s) ignorada(s))` : ''}`);
+                        } else {
+                          setSuccessMessage(`Nenhum louvor novo encontrado. ${result.duplicates} já existiam.`);
+                        }
                         setShowSuccessToast(true);
-                        setTimeout(() => setShowSuccessToast(false), 3000);
+                        setTimeout(() => setShowSuccessToast(false), 4000);
                       }
                     } catch (e) {
-                      console.error('Erro ao exportar:', e);
+                      console.error('Erro ao importar:', e);
                     }
                   }}
                   className="w-full py-2.5 rounded-xl text-[13px] font-semibold text-white flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-md"
                   style={{ background: 'linear-gradient(135deg, #64748b, #475569)' }}
                 >
-                  <Download className="w-4 h-4" />
-                  Exportar JSON
+                  <Upload className="w-4 h-4" />
+                  Importar JSON
                 </button>
               </div>
 
