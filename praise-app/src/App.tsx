@@ -39,6 +39,7 @@ function App() {
   const [selectedBook, setSelectedBook] = useState<any>(null);
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
   const [searchBibleQuery, setSearchBibleQuery] = useState('');
+  const [searchChapterQuery, setSearchChapterQuery] = useState('');
 
   const bibleBooks = searchBibleQuery.trim() === ''
     ? bibleData 
@@ -298,7 +299,14 @@ function App() {
             <div className="p-3 flex items-center gap-2 border-b border-white/5 shrink-0 min-h-[53px]">
               {selectedBook && (
                 <button 
-                  onClick={() => selectedChapter ? setSelectedChapter(null) : setSelectedBook(null)}
+                  onClick={() => {
+                    if (selectedChapter) {
+                      setSelectedChapter(null);
+                    } else {
+                      setSelectedBook(null);
+                      setSearchChapterQuery('');
+                    }
+                  }}
                   className="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-all"
                 >
                   <ArrowLeft className="w-4 h-4" />
@@ -354,31 +362,57 @@ function App() {
 
               {/* Capítulos */}
               {selectedBook && !selectedChapter && (
-                <div className="grid grid-cols-5 gap-1 p-1">
-                  {Array.from({ length: selectedBook.chapters.length }).map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => {
-                        const chapNumber = i + 1;
-                        setSelectedChapter(chapNumber);
-                        
-                        // Carrega o capítulo inteiro no Lobby
-                        const chapterVerses = selectedBook.chapters[i];
-                        const chapterSongTitle = `${selectedBook.name} ${chapNumber}`;
-                        const chapterContent = chapterVerses.map((text: string, vIdx: number) => `[${selectedBook.name} ${chapNumber}:${vIdx + 1}]\n${vIdx + 1}. ${text}`).join('\n\n');
-                        
-                        setSelectedSong({
-                          title: chapterSongTitle,
-                          content: chapterContent,
-                          collection: 'Bíblia'
-                        });
-                        setActiveSlideIndex(0);
-                      }}
-                      className="aspect-square flex items-center justify-center rounded-lg text-[13px] font-medium text-white/70 hover:text-white hover:bg-slate-500/20 hover:border-slate-500/30 border border-transparent transition-all"
-                    >
-                      {i + 1}
-                    </button>
-                  ))}
+                <div className="flex flex-col gap-3">
+                  <div className="relative shrink-0">
+                    <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+                    <input
+                      type="text"
+                      placeholder={`Buscar no livro de ${selectedBook.name}...`}
+                      className="w-full pl-9 pr-4 py-2 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-slate-500/50 focus:ring-1 focus:ring-slate-500/20 placeholder:text-white/25"
+                      style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+                      value={searchChapterQuery}
+                      onChange={(e) => setSearchChapterQuery(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-5 gap-1 p-1">
+                    {Array.from({ length: selectedBook.chapters.length })
+                      .map((_, i) => i + 1)
+                      .filter(chapNumber => 
+                        searchChapterQuery.trim() === '' || 
+                        chapNumber.toString().includes(searchChapterQuery.trim())
+                      )
+                      .map(chapNumber => (
+                        <button
+                          key={chapNumber}
+                          onClick={() => {
+                            setSelectedChapter(chapNumber);
+                            setSearchChapterQuery('');
+                            
+                            // Carrega o capítulo inteiro no Lobby
+                            const chapterVerses = selectedBook.chapters[chapNumber - 1];
+                            const chapterSongTitle = `${selectedBook.name} ${chapNumber}`;
+                            const chapterContent = chapterVerses.map((text: string, vIdx: number) => `[${selectedBook.name} ${chapNumber}:${vIdx + 1}]\n${vIdx + 1}. ${text}`).join('\n\n');
+                            
+                            setSelectedSong({
+                              title: chapterSongTitle,
+                              content: chapterContent,
+                              collection: 'Bíblia'
+                            });
+                            setActiveSlideIndex(0);
+                          }}
+                          className="aspect-square flex items-center justify-center rounded-lg text-[13px] font-medium text-white/70 hover:text-white hover:bg-slate-500/20 hover:border-slate-500/30 border border-transparent transition-all"
+                        >
+                          {chapNumber}
+                        </button>
+                      ))}
+                  </div>
+                  {Array.from({ length: selectedBook.chapters.length })
+                    .filter((c: any) => (c + 1).toString().includes(searchChapterQuery.trim())).length === 0 && (
+                      <div className="px-3 py-6 text-center text-white/20 text-xs">
+                        Nenhum capítulo encontrado.
+                      </div>
+                  )}
                 </div>
               )}
 
