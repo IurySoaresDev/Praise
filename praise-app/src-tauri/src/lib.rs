@@ -44,9 +44,11 @@ fn project_slide(
             e.to_string()
         })?;
     } else if !content.is_empty() {
-        // Navega para /projection (usando roteamento hash do React)
-        let url = WebviewUrl::App("/#/projection".into());
-        let mut builder = WebviewWindowBuilder::new(
+        // Verifica se a rota da webview está correta.
+        let url = tauri::WebviewUrl::App("/#/projection".into());
+        println!("Tentando criar janela de projeção em URL: {:?}", url);
+        
+        let mut builder = tauri::WebviewWindowBuilder::new(
             &app_handle,
             "projection",
             url
@@ -61,6 +63,7 @@ fn project_slide(
             for m in monitors {
                 let name = m.name().map(|n| n.to_string()).unwrap_or_default();
                 if name == monitor {
+                    println!("Monitor selecionado encontrado: {:?}", monitor);
                     let position = m.position();
                     builder = builder.position(position.x.into(), position.y.into());
                     break;
@@ -68,8 +71,17 @@ fn project_slide(
             }
         }
 
-        let window = builder.build().map_err(|e| e.to_string())?;
+        let window_result = builder.build();
         
+        let window = match window_result {
+            Ok(w) => w,
+            Err(e) => {
+                println!("Erro ao criar janela: {:?}", e);
+                return Err(e.to_string());
+            }
+        };
+        
+        println!("Janela criada com sucesso.");
         let content_clone = content.clone();
         let background_clone = background.clone();
         let item_type_clone = item_type.clone();
@@ -77,6 +89,7 @@ fn project_slide(
         std::thread::spawn(move || {
             // Give React time to load the projection route before emitting
             std::thread::sleep(std::time::Duration::from_millis(1500));
+            println!("Emitindo update_projection inicial para a nova janela.");
             let _ = window.emit("update_projection", ProjectionPayload { 
                 content: content_clone,
                 background: background_clone,
