@@ -144,8 +144,10 @@ pub fn run() {
             if let Ok(icon) = image::load_from_memory(icon_bytes) {
                 let (width, height) = icon.dimensions();
                 let rgba = icon.to_rgba8().into_raw();
-                if let Ok(tauri_icon) = tauri::Icon::from_rgba(rgba, width, height) {
-                    let _ = app.set_icon(tauri_icon);
+                let tauri_icon = tauri::image::Image::new_owned(rgba, width, height);
+                // Define o ícone para a janela principal
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.set_icon(tauri_icon);
                 }
             }
             Ok(())
