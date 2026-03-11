@@ -1,5 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { save } from "@tauri-apps/plugin-dialog";
+import { writeTextFile } from "@tauri-apps/plugin-fs";
 import { useStore, ALLOWED_COLLECTIONS } from "./store";
 import { Search, Monitor, Play, MonitorDot, ChevronRight, ChevronLeft, Plus, Trash2, GripVertical, Square, Music, ListMusic, BookOpen, ArrowLeft, Loader2, FilePenLine, Download, Send, X, AlertTriangle, CheckCircle2 } from "lucide-react";
 import "./App.css";
@@ -289,17 +291,22 @@ function App() {
                   Baixe um arquivo JSON com todos os louvores atuais da biblioteca.
                 </p>
                 <button
-                  onClick={() => {
-                    const data = getExportData();
-                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'louvores.json';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
+                  onClick={async () => {
+                    try {
+                      const data = getExportData();
+                      const filePath = await save({
+                        defaultPath: 'louvores.json',
+                        filters: [{ name: 'JSON', extensions: ['json'] }],
+                      });
+                      if (filePath) {
+                        await writeTextFile(filePath, JSON.stringify(data, null, 2));
+                        setSuccessMessage('Louvores exportados com sucesso!');
+                        setShowSuccessToast(true);
+                        setTimeout(() => setShowSuccessToast(false), 3000);
+                      }
+                    } catch (e) {
+                      console.error('Erro ao exportar:', e);
+                    }
                   }}
                   className="w-full py-2.5 rounded-xl text-[13px] font-semibold text-white flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-md"
                   style={{ background: 'linear-gradient(135deg, #64748b, #475569)' }}
