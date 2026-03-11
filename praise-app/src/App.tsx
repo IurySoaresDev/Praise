@@ -307,9 +307,7 @@ function App() {
       <div className="flex flex-1 overflow-hidden">
         {/* ═══ SYSTEM NAV (Thick Left Rail) ═══ */}
         <div className="w-[72px] flex flex-col items-center py-4 border-r border-white/5 z-20 shrink-0" style={{ backgroundColor: '#0f172a' }}>
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-6 shadow-md" style={{ background: 'linear-gradient(135deg, #64748b, #475569)' }}>
-          <MonitorDot className="w-5 h-5 text-white" />
-        </div>
+
 
         <div className="flex flex-col gap-2 w-full px-2">
           <button 
