@@ -312,7 +312,7 @@ function App() {
       {/* ═══ EDITOR FULL-WIDTH ═══ */}
       {activeTab === 'editor' && (
         <div className="flex-1 flex flex-col h-full overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
-        <div className="flex-1 flex min-w-0" style={{ backgroundColor: '#0f172a' }}>
+        <div className="flex-1 flex h-full overflow-hidden min-w-0" style={{ backgroundColor: '#0f172a' }}>
           {/* Sidebar de Seleção para Edição */}
           <div className="w-[300px] flex flex-col border-r border-white/5 bg-[#1e293b]/30 h-full min-h-0 overflow-hidden">
             <div className="p-4 border-b border-white/5 bg-slate-900/20">
@@ -409,8 +409,8 @@ function App() {
           </div>
 
           {/* Painel de Conteúdo */}
-          <div className="flex-1 overflow-y-auto p-8 bg-slate-950/20">
-            <div className="max-w-2xl mx-auto flex flex-col gap-8">
+          <div className="flex-1 overflow-y-auto p-8 bg-slate-950/20 custom-scroll">
+            <div className="max-w-2xl mx-auto flex flex-col gap-8 pb-32">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-2xl font-bold text-white tracking-tight">
