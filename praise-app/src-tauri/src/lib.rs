@@ -94,6 +94,14 @@ fn project_slide(
 }
 
 #[tauri::command]
+fn close_projection(app_handle: tauri::AppHandle) -> Result<(), String> {
+    if let Some(window) = app_handle.get_webview_window("projection") {
+        window.close().map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
+#[tauri::command]
 fn save_songs(_app_handle: tauri::AppHandle, data: serde_json::Value) -> Result<(), String> {
     let current_dir = std::env::current_dir().map_err(|e| e.to_string())?;
     
@@ -118,7 +126,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
-        .invoke_handler(tauri::generate_handler![get_monitors, project_slide, save_songs])
+        .invoke_handler(tauri::generate_handler![get_monitors, project_slide, save_songs, close_projection])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

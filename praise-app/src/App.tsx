@@ -217,8 +217,12 @@ function App() {
 
   const handleStopProjection = useCallback(async () => {
     setIsProjecting(false);
-    await sendSlideToProjection("", null, "empty", "");
-  }, [sendSlideToProjection]);
+    try {
+      await invoke("close_projection");
+    } catch (e) {
+      console.error("Erro ao fechar projeção:", e);
+    }
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
