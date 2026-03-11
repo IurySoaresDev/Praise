@@ -31,6 +31,7 @@ export interface AppState {
   // Settings & Backgrounds
   activeTab: 'songs' | 'bible' | 'editor' | 'settings';
   songBackground: string;
+  songBodyBackground: string;
   bibleBackground: string;
 
   setSearchQuery: (query: string) => void;
@@ -52,6 +53,7 @@ export interface AppState {
   
   setActiveTab: (tab: 'songs' | 'bible' | 'editor' | 'settings') => void;
   setSongBackground: (path: string) => void;
+  setSongBodyBackground: (path: string) => void;
   setBibleBackground: (path: string) => void;
 }
 
@@ -99,6 +101,7 @@ export const useStore = create<AppState>((set, get) => ({
   // Initial Backgrounds (using relative paths for Vite/Tauri)
   activeTab: 'songs',
   songBackground: '/backgrounds/bg-song.jpg',
+  songBodyBackground: '/backgrounds/bg-song.jpg',
   bibleBackground: '/backgrounds/bg-bible.jpg',
 
   setSearchQuery: (query) => set({ searchQuery: query }),
@@ -132,6 +135,7 @@ export const useStore = create<AppState>((set, get) => ({
 
   setActiveTab: (tab) => set({ activeTab: tab }),
   setSongBackground: (path) => set({ songBackground: path }),
+  setSongBodyBackground: (path) => set({ songBodyBackground: path }),
   setBibleBackground: (path) => set({ bibleBackground: path }),
 
   addSongToCollection: (title, content, collectionName) => {

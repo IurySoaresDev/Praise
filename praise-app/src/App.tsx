@@ -31,8 +31,10 @@ function App() {
     activeTab,
     setActiveTab,
     songBackground,
+    songBodyBackground,
     bibleBackground,
     setSongBackground,
+    setSongBodyBackground,
     setBibleBackground,
   } = useStore();
 
@@ -190,12 +192,12 @@ function App() {
       const isBible = selectedSong?.collection === 'Bíblia';
       sendSlideToProjection(
         slides[index], 
-        isBible ? bibleBackground : songBackground,
+        isBible ? bibleBackground : (index === 0 ? songBackground : songBodyBackground),
         isBible ? 'bible' : 'song',
-        selectedSong?.title || ''
+        isBible ? (selectedSong?.title || '') : (index === 0 ? (selectedSong?.title || '') : '')
       );
     }
-  }, [isProjecting, slides, setActiveSlideIndex, sendSlideToProjection, selectedSong, bibleBackground, songBackground]);
+  }, [isProjecting, slides, setActiveSlideIndex, sendSlideToProjection, selectedSong, bibleBackground, songBackground, songBodyBackground]);
 
   const handleStartProjection = useCallback(async () => {
     if (!selectedSong || slides.length === 0) return;
@@ -206,12 +208,12 @@ function App() {
     if (slides[idx] !== undefined) {
       await sendSlideToProjection(
         slides[idx], 
-        isBible ? bibleBackground : songBackground,
+        isBible ? bibleBackground : (idx === 0 ? songBackground : songBodyBackground),
         isBible ? 'bible' : 'song',
-        selectedSong?.title || ''
+        isBible ? (selectedSong?.title || '') : (idx === 0 ? (selectedSong?.title || '') : '')
       );
     }
-  }, [selectedSong, slides, activeSlideIndex, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground]);
+  }, [selectedSong, slides, activeSlideIndex, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground]);
 
   const handleStopProjection = useCallback(async () => {
     setIsProjecting(false);
@@ -230,9 +232,9 @@ function App() {
           const isBible = selectedSong?.collection === 'Bíblia';
           sendSlideToProjection(
             slides[newIdx], 
-            isBible ? bibleBackground : songBackground,
+            isBible ? bibleBackground : (newIdx === 0 ? songBackground : songBodyBackground),
             isBible ? 'bible' : 'song',
-            selectedSong?.title || ''
+            isBible ? (selectedSong?.title || '') : (newIdx === 0 ? (selectedSong?.title || '') : '')
           );
         }
       } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
@@ -242,9 +244,9 @@ function App() {
           const isBible = selectedSong?.collection === 'Bíblia';
           sendSlideToProjection(
             slides[newIdx], 
-            isBible ? bibleBackground : songBackground,
+            isBible ? bibleBackground : (newIdx === 0 ? songBackground : songBodyBackground),
             isBible ? 'bible' : 'song',
-            selectedSong?.title || ''
+            isBible ? (selectedSong?.title || '') : (newIdx === 0 ? (selectedSong?.title || '') : '')
           );
         }
       }
@@ -252,7 +254,7 @@ function App() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeSlideIndex, slides, selectedSong, isProjecting, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground]);
+  }, [activeSlideIndex, slides, selectedSong, isProjecting, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground]);
 
   return (
     <div className="flex h-screen overflow-hidden font-['Inter',system-ui,sans-serif]" style={{ backgroundColor: '#0f172a', color: 'rgba(255,255,255,0.9)' }}>
@@ -612,14 +614,14 @@ function App() {
               <p className="text-slate-400 mt-2 text-lg">Personalize a aparência da sua projeção.</p>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Box Louvor */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Box Louvor - Título */}
               <div className="bg-[#1e293b]/50 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-md hover:border-emerald-500/20 transition-all group">
                 <div className="flex justify-between items-start mb-6">
                   <div>
                     <h3 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
                        <Music className="w-6 h-6 text-emerald-400" />
-                       Fundo de Louvor
+                       Fundo 1ª Estrofe (Título)
                     </h3>
                     <p className="text-xs text-white/30 uppercase tracking-widest font-semibold">Resolução Recomendada: 1080p</p>
                   </div>
@@ -645,6 +647,49 @@ function App() {
                      if (path) {
                        setSongBackground(path as string);
                        setSuccessMessage("Fundo de louvor atualizado!");
+                       setShowSuccessToast(true);
+                       setTimeout(() => setShowSuccessToast(false), 3000);
+                     }
+                   }}
+                   className="w-full py-4 rounded-2xl bg-white/5 hover:bg-emerald-500/20 text-white font-bold text-sm transition-all border border-white/10 hover:border-emerald-500/30 flex items-center justify-center gap-2"
+                >
+                  <ImageIcon className="w-4 h-4" />
+                  Alterar Imagem
+                </button>
+              </div>
+
+              {/* Box Louvor - Restante */}
+              <div className="bg-[#1e293b]/50 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-md hover:border-emerald-500/20 transition-all group">
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
+                       <Music className="w-6 h-6 text-emerald-400 opacity-60" />
+                       Fundo Restante (Louvor)
+                    </h3>
+                    <p className="text-xs text-white/30 uppercase tracking-widest font-semibold">Resolução Recomendada: 1080p</p>
+                  </div>
+                </div>
+
+                <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border-2 border-white/5 mb-6 group relative shadow-inner">
+                  <img 
+                    src={songBodyBackground.startsWith('/backgrounds/') ? songBodyBackground : convertFileSrc(songBodyBackground)} 
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                    alt="Song Body Background Preview"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <ImageIcon className="w-12 h-12 text-white/50" />
+                  </div>
+                </div>
+                
+                <button 
+                   onClick={async () => {
+                     const path = await open({
+                       multiple: false,
+                       filters: [{ name: 'Imagens', extensions: ['jpg', 'png', 'jpeg', 'webp'] }],
+                     });
+                     if (path) {
+                       setSongBodyBackground(path as string);
+                       setSuccessMessage("Fundo (restante do louvor) atualizado!");
                        setShowSuccessToast(true);
                        setTimeout(() => setShowSuccessToast(false), 3000);
                      }
