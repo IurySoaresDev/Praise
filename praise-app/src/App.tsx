@@ -818,12 +818,12 @@ function App() {
         {selectedSong ? (
           <div className="flex-1 flex overflow-hidden">
             
-            {/* Seção de Cenas */}
+            {/* Seção de Estrofes */}
             <div className="flex-1 overflow-y-auto p-6 border-r border-white/5 bg-slate-900/50">
               <div className="flex justify-between items-center mb-5">
                 <div>
                   <h2 className="text-lg font-bold text-white/90">{selectedSong.title}</h2>
-                  <p className="text-[11px] text-white/25 mt-0.5">{slides.length} cenas</p>
+                  <p className="text-[11px] text-white/25 mt-0.5">{slides.length} estrofes</p>
                 </div>
                 {isProjecting && (
                   <span className="text-[11px] text-white/30 px-3 py-1.5 rounded-xl border border-white/5 flex items-center gap-2" style={{ backgroundColor: 'rgba(255,255,255,0.03)' }}>
@@ -867,7 +867,7 @@ function App() {
                     />
                     
                     <div className="mt-3 text-[10px] font-mono text-white/15 uppercase tracking-wider">
-                      Cena {index + 1}
+                      Estrofe {index + 1}
                     </div>
                   </div>
                 ))}
@@ -905,7 +905,7 @@ function App() {
               {/* Info da cena atual */}
               {activeSlideIndex >= 0 && activeSlideIndex < slides.length && (
                 <div className="mt-4 flex items-center justify-between text-[11px] text-white/25 px-1">
-                  <span>Cena {activeSlideIndex + 1} de {slides.length}</span>
+                  <span>Estrofe {activeSlideIndex + 1} de {slides.length}</span>
                   <span className="font-mono">{Math.round(((activeSlideIndex + 1) / slides.length) * 100)}%</span>
                 </div>
               )}
