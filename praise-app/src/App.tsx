@@ -272,7 +272,7 @@ function App() {
         <div className="flex-1 flex flex-col h-screen overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
         <div className="flex-1 flex min-w-0 animate-fade-in" style={{ backgroundColor: '#0f172a' }}>
           {/* Sidebar de Seleção para Edição */}
-          <div className="w-[300px] flex flex-col border-r border-white/5 bg-[#1e293b]/30">
+          <div className="w-[300px] flex flex-col border-r border-white/5 bg-[#1e293b]/30 h-full min-h-0 overflow-hidden">
             <div className="p-4 border-b border-white/5 bg-slate-900/20">
               <h2 className="text-[13px] font-bold text-white/70 uppercase tracking-widest mb-3 flex items-center gap-2">
                 <Music className="w-4 h-4" />
@@ -284,6 +284,9 @@ function App() {
                   type="text"
                   placeholder="Buscar para editar..."
                   className="w-full pl-9 pr-4 py-2 rounded-xl text-xs outline-none border border-white/5 transition-all focus:border-slate-500/50 focus:ring-1 focus:ring-slate-500/10 placeholder:text-white/20 bg-white/5"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  spellCheck={false}
                   value={searchEditQuery}
                   onChange={(e) => setSearchEditQuery(e.target.value)}
                 />
@@ -306,7 +309,7 @@ function App() {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-2 space-y-1">
+            <div className="flex-1 overflow-y-auto p-2 space-y-1 min-h-0">
               {songs
                 .filter(s => {
                   const matchesSearch = s.title.toLowerCase().includes(searchEditQuery.toLowerCase());

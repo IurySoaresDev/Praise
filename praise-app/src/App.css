@@ -44,7 +44,7 @@
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(148, 163, 184, 0.25) transparent; /* slate-400 */
+  scrollbar-color: rgba(148, 163, 184, 0.4) transparent; /* slate-400 com mais opacidade */
 }
 
 *::-webkit-scrollbar {
@@ -54,7 +54,7 @@
   background: transparent;
 }
 *::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.25);
+  background: rgba(148, 163, 184, 0.4);
   border-radius: 999px;
 }
 *::-webkit-scrollbar-thumb:hover {
