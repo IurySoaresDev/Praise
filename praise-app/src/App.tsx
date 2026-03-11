@@ -311,6 +311,7 @@ function App() {
                       }
                     } catch (e) {
                       console.error('Erro ao importar:', e);
+                      alert('Erro ao abrir seletor de arquivos: ' + JSON.stringify(e));
                     }
                   }}
                   className="w-full py-2.5 rounded-xl text-[13px] font-semibold text-white flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-md"

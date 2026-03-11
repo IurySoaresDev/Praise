@@ -3,7 +3,7 @@
   "identifier": "default",
   "description": "Capability for the main window",
   "windows": [
-    "praise-app", "projection"
+    "main", "praise-app", "projection"
   ],
   "permissions": [
     "core:default",
