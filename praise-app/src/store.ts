@@ -127,7 +127,7 @@ export const useStore = create<AppState>((set, get) => ({
     return get().collections;
   },
 
-  importSongsFromJSON: (data: Collection[]) => {
+  importSongsFromJSON: (data: any) => {
     const state = get();
     let added = 0;
     let duplicates = 0;
@@ -137,26 +137,53 @@ export const useStore = create<AppState>((set, get) => ({
     const newSongs: Song[] = [];
     const updatedCollections = state.collections.map(c => ({ ...c, songs: [...c.songs] }));
 
-    for (const importedCollection of data) {
-      // Encontra ou usa a coleção mais próxima das permitidas
-      const targetCollectionName = ALLOWED_COLLECTIONS.find(
-        ac => ac === importedCollection.name
-      ) || ALLOWED_COLLECTIONS[0];
+    // Se o dado não for array, tenta tratar como objeto único
+    const items = Array.isArray(data) ? data : [data];
+    
+    // Lista para processar
+    const songsToProcess: Song[] = [];
 
-      for (const song of importedCollection.songs) {
-        const normalizedTitle = song.title.trim().toUpperCase();
-        if (existingTitles.has(normalizedTitle)) {
-          duplicates++;
-          continue;
+    for (const item of items) {
+      if (!item) continue;
+      
+      // Caso 1: Array de Collections (formato exportado pelo app)
+      if (item.songs && Array.isArray(item.songs)) {
+        for (const s of item.songs) {
+          songsToProcess.push({ 
+            title: s.title, 
+            content: s.content, 
+            collection: item.name || ALLOWED_COLLECTIONS[0] 
+          });
         }
-        existingTitles.add(normalizedTitle);
-        added++;
-        newSongs.push({ title: song.title.trim(), content: song.content, collection: targetCollectionName });
+      } 
+      // Caso 2: Objeto Song direto ou Array de Songs
+      else if (item.title && item.content) {
+        songsToProcess.push({ 
+          title: item.title, 
+          content: item.content, 
+          collection: item.collection || ALLOWED_COLLECTIONS[0] 
+        });
+      }
+    }
 
-        const col = updatedCollections.find(c => c.name === targetCollectionName);
-        if (col) {
-          col.songs.push({ title: song.title.trim(), content: song.content });
-        }
+    for (const song of songsToProcess) {
+      const normalizedTitle = song.title.trim().toUpperCase();
+      if (existingTitles.has(normalizedTitle)) {
+        duplicates++;
+        continue;
+      }
+      existingTitles.add(normalizedTitle);
+      added++;
+      
+      const targetCol = ALLOWED_COLLECTIONS.includes(song.collection) 
+        ? song.collection 
+        : ALLOWED_COLLECTIONS[0];
+        
+      newSongs.push({ ...song, title: song.title.trim(), collection: targetCol });
+
+      const col = updatedCollections.find(c => c.name === targetCol);
+      if (col) {
+        col.songs.push({ title: song.title.trim(), content: song.content });
       }
     }
 
