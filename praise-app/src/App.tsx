@@ -261,7 +261,143 @@ function App() {
         </div>
       </div>
 
+      {/* ═══ EDITOR FULL-WIDTH ═══ */}
+      {activeTab === 'editor' && (
+        <div className="flex-1 flex flex-col h-screen overflow-y-auto" style={{ backgroundColor: '#0f172a' }}>
+          {/* Header */}
+          <div className="flex flex-col shrink-0 gradient-header border-b border-white/5">
+            <div className="p-5 px-8 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #64748b, #475569)' }}>
+                <FilePenLine className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-lg font-bold tracking-tight text-white leading-none">Editar Louvores</h1>
+                <p className="text-[11px] text-white/40 font-medium mt-0.5">Adicionar e Exportar</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-8">
+            <div className="max-w-2xl mx-auto flex flex-col gap-6">
+              {/* Botão Exportar */}
+              <div className="p-5 rounded-xl border border-white/5" style={{ backgroundColor: 'rgba(255,255,255,0.02)' }}>
+                <h3 className="text-[14px] font-semibold text-white/80 flex items-center gap-2 mb-2">
+                  <Download className="w-4 h-4 text-slate-400" />
+                  Exportar Louvores
+                </h3>
+                <p className="text-[12px] text-white/30 mb-4 leading-relaxed">
+                  Baixe um arquivo JSON com todos os louvores atuais da biblioteca.
+                </p>
+                <button
+                  onClick={() => {
+                    const data = getExportData();
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'louvores.json';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                  }}
+                  className="w-full py-2.5 rounded-xl text-[13px] font-semibold text-white flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-md"
+                  style={{ background: 'linear-gradient(135deg, #64748b, #475569)' }}
+                >
+                  <Download className="w-4 h-4" />
+                  Exportar JSON
+                </button>
+              </div>
+
+              {/* Separador */}
+              <div className="flex items-center gap-3">
+                <div className="flex-1 h-px bg-white/5"></div>
+                <span className="text-[11px] text-white/20 font-semibold uppercase tracking-widest">Novo Louvor</span>
+                <div className="flex-1 h-px bg-white/5"></div>
+              </div>
+
+              {/* Formulário Adicionar */}
+              <div className="flex flex-col gap-4">
+                {/* Título + Coleção lado a lado */}
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Título */}
+                  <div>
+                    <label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2 block">Título</label>
+                    <input
+                      type="text"
+                      placeholder="Ex: O Sangue de Jesus Tem Poder"
+                      className="w-full px-3 py-2.5 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-slate-500/50 focus:ring-1 focus:ring-slate-500/20 placeholder:text-white/20"
+                      style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+                      value={editorTitle}
+                      onChange={(e) => setEditorTitle(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Coleção */}
+                  <div>
+                    <label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2 block">Coleção</label>
+                    <div className="flex gap-1.5">
+                      {ALLOWED_COLLECTIONS.map(col => (
+                        <button
+                          key={col}
+                          onClick={() => setEditorCollection(col)}
+                          className={`flex-1 text-center px-3 py-2.5 rounded-xl text-[13px] font-medium border transition-all ${
+                            editorCollection === col 
+                              ? 'text-white border-slate-500/40 shadow-md' 
+                              : 'text-white/50 border-white/5 hover:text-white/80 hover:border-white/10 hover:bg-white/[0.03]'
+                          }`}
+                          style={editorCollection === col ? { background: 'linear-gradient(135deg, rgba(100,116,139,0.25), rgba(71,85,105,0.15))' } : { backgroundColor: 'rgba(255,255,255,0.02)' }}
+                        >
+                          {col.replace(" 2018", "")}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Letra */}
+                <div>
+                  <label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2 block">Letra do Louvor</label>
+                  <textarea
+                    placeholder={"Cole a letra aqui...\n\nSepare estrofes com uma linha em branco.\nCada bloco separado será uma cena na projeção."}
+                    className="w-full px-4 py-3 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-slate-500/50 focus:ring-1 focus:ring-slate-500/20 placeholder:text-white/15 resize-none leading-relaxed"
+                    style={{ backgroundColor: 'rgba(255,255,255,0.05)', minHeight: '320px' }}
+                    value={editorContent}
+                    onChange={(e) => setEditorContent(e.target.value)}
+                  />
+                </div>
+
+                {/* Botão Adicionar */}
+                <button
+                  onClick={() => {
+                    if (!editorTitle.trim() || !editorContent.trim()) return;
+                    const result = addSongToCollection(editorTitle, editorContent, editorCollection);
+                    if (result.duplicate) {
+                      setDuplicateTitle(result.existingTitle || editorTitle);
+                      setShowDuplicateModal(true);
+                    } else {
+                      setEditorTitle('');
+                      setEditorContent('');
+                      setSuccessMessage(`"${editorTitle.trim()}" adicionado com sucesso!`);
+                      setShowSuccessToast(true);
+                      setTimeout(() => setShowSuccessToast(false), 3000);
+                    }
+                  }}
+                  disabled={!editorTitle.trim() || !editorContent.trim()}
+                  className="w-full py-3 rounded-xl text-[14px] font-semibold text-white flex items-center justify-center gap-2 transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-90"
+                  style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
+                >
+                  <Send className="w-4 h-4" />
+                  Adicionar Louvor
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ═══ SIDEBAR ═══ */}
+      {activeTab !== 'editor' && (
       <div className="w-[340px] flex flex-col border-r border-white/5" style={{ backgroundColor: '#1e293b' }}>
         
         {/* Header */}
@@ -269,142 +405,17 @@ function App() {
           <div className="p-4 flex items-center gap-2.5">
             <div>
               <h1 className="text-base font-bold tracking-tight text-white leading-none">
-                {activeTab === 'songs' ? 'Louvores' : activeTab === 'bible' ? `Bíblia Sagrada (${bibleVersion})` : 'Editar Louvores'}
+                {activeTab === 'songs' ? 'Louvores' : `Bíblia Sagrada (${bibleVersion})`}
               </h1>
               <p className="text-[10px] text-white/40 font-medium mt-0.5">
-                {activeTab === 'songs' ? 'Biblioteca e Adoração' : activeTab === 'bible' ? 'Navegação por Livros' : 'Adicionar e Exportar'}
+                {activeTab === 'songs' ? 'Biblioteca e Adoração' : 'Navegação por Livros'}
               </p>
             </div>
           </div>
         </div>
 
         {/* Conteúdo Dinâmico */}
-        {activeTab === 'editor' ? (
-          /* ═══ ABA EDITOR ═══ */
-          <div className="flex flex-col flex-1 min-h-0 p-4 gap-4 overflow-y-auto">
-            {/* Botão Exportar */}
-            <div className="p-4 rounded-xl border border-white/5" style={{ backgroundColor: 'rgba(255,255,255,0.02)' }}>
-              <h3 className="text-[13px] font-semibold text-white/80 flex items-center gap-2 mb-3">
-                <Download className="w-4 h-4 text-slate-400" />
-                Exportar Louvores
-              </h3>
-              <p className="text-[11px] text-white/30 mb-3 leading-relaxed">
-                Baixe um arquivo JSON com todos os louvores atuais da biblioteca.
-              </p>
-              <button
-                onClick={() => {
-                  const data = getExportData();
-                  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement('a');
-                  a.href = url;
-                  a.download = 'louvores.json';
-                  document.body.appendChild(a);
-                  a.click();
-                  document.body.removeChild(a);
-                  URL.revokeObjectURL(url);
-                }}
-                className="w-full py-2 rounded-xl text-[13px] font-semibold text-white flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-md"
-                style={{ background: 'linear-gradient(135deg, #64748b, #475569)' }}
-              >
-                <Download className="w-4 h-4" />
-                Exportar JSON
-              </button>
-            </div>
-
-            {/* Separador */}
-            <div className="flex items-center gap-3">
-              <div className="flex-1 h-px bg-white/5"></div>
-              <span className="text-[10px] text-white/20 font-semibold uppercase tracking-widest">Novo Louvor</span>
-              <div className="flex-1 h-px bg-white/5"></div>
-            </div>
-
-            {/* Formulário Adicionar */}
-            <div className="flex flex-col gap-3">
-              {/* Título */}
-              <div>
-                <label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5 block">Título</label>
-                <input
-                  type="text"
-                  placeholder="Ex: O Sangue de Jesus Tem Poder"
-                  className="w-full px-3 py-2 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-slate-500/50 focus:ring-1 focus:ring-slate-500/20 placeholder:text-white/20"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
-                  value={editorTitle}
-                  onChange={(e) => setEditorTitle(e.target.value)}
-                />
-              </div>
-
-              {/* Coleção */}
-              <div>
-                <label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2 block">Coleção</label>
-                <div className="flex flex-col gap-1.5">
-                  {ALLOWED_COLLECTIONS.map(col => (
-                    <button
-                      key={col}
-                      onClick={() => setEditorCollection(col)}
-                      className={`w-full text-left px-3 py-2.5 rounded-xl text-[13px] font-medium border transition-all flex items-center gap-2.5 ${
-                        editorCollection === col 
-                          ? 'text-white border-slate-500/40 shadow-md' 
-                          : 'text-white/50 border-white/5 hover:text-white/80 hover:border-white/10 hover:bg-white/[0.03]'
-                      }`}
-                      style={editorCollection === col ? { background: 'linear-gradient(135deg, rgba(100,116,139,0.25), rgba(71,85,105,0.15))' } : { backgroundColor: 'rgba(255,255,255,0.02)' }}
-                    >
-                      <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
-                        editorCollection === col 
-                          ? 'border-slate-400' 
-                          : 'border-white/15'
-                      }`}>
-                        {editorCollection === col && (
-                          <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
-                        )}
-                      </div>
-                      <span>{col.replace(" 2018", "")}</span>
-                      {editorCollection === col && (
-                        <span className="ml-auto text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Selecionado</span>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Letra */}
-              <div>
-                <label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5 block">Letra do Louvor</label>
-                <textarea
-                  placeholder={"Cole a letra aqui...\n\nSepare estrofes com uma linha em branco.\nCada bloco separado será uma cena na projeção."}
-                  className="w-full px-3 py-2.5 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-slate-500/50 focus:ring-1 focus:ring-slate-500/20 placeholder:text-white/15 resize-none leading-relaxed"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', minHeight: '200px' }}
-                  value={editorContent}
-                  onChange={(e) => setEditorContent(e.target.value)}
-                />
-              </div>
-
-              {/* Botão Adicionar */}
-              <button
-                onClick={() => {
-                  if (!editorTitle.trim() || !editorContent.trim()) return;
-                  const result = addSongToCollection(editorTitle, editorContent, editorCollection);
-                  if (result.duplicate) {
-                    setDuplicateTitle(result.existingTitle || editorTitle);
-                    setShowDuplicateModal(true);
-                  } else {
-                    setEditorTitle('');
-                    setEditorContent('');
-                    setSuccessMessage(`"${editorTitle.trim()}" adicionado com sucesso!`);
-                    setShowSuccessToast(true);
-                    setTimeout(() => setShowSuccessToast(false), 3000);
-                  }
-                }}
-                disabled={!editorTitle.trim() || !editorContent.trim()}
-                className="w-full py-2.5 rounded-xl text-[13px] font-semibold text-white flex items-center justify-center gap-2 transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-90"
-                style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
-              >
-                <Send className="w-4 h-4" />
-                Adicionar Louvor
-              </button>
-            </div>
-          </div>
-        ) : activeTab === 'songs' ? (
+        {activeTab === 'songs' ? (
           <div className="flex flex-col flex-1 min-h-0">
             {/* Search + Categories */}
             <div className="p-4 flex flex-col gap-3 shrink-0 border-b border-white/5">
@@ -669,8 +680,7 @@ function App() {
           </div>
         )}
 
-        {/* ─── PLAYLIST DO CULTO (Dinâmica por Aba — oculta no Editor) ─── */}
-        {activeTab !== 'editor' && (
+        {/* ─── PLAYLIST DO CULTO (Dinâmica por Aba) ─── */}
         <div className="border-t border-white/5 flex flex-col min-h-0" style={{ height: '45%', backgroundColor: '#0f172a' }}>
           <div className="px-4 py-3 flex items-center gap-2 shrink-0 border-b border-white/5">
             {activeTab === 'songs' ? <ListMusic className="w-4 h-4 text-slate-400" /> : <BookOpen className="w-4 h-4 text-slate-400" />}
@@ -748,10 +758,11 @@ function App() {
             )}
           </div>
         </div>
-        )}
       </div>
+      )}
 
       {/* ═══ MAIN CONTENT ═══ */}
+      {activeTab !== 'editor' && (
       <div className="flex-1 flex flex-col h-screen" style={{ backgroundColor: '#0f172a' }}>
         
         {/* Top Bar */}
@@ -925,6 +936,7 @@ function App() {
           </div>
         )}
       </div>
+      )}
       {/* ═══ MODAL DE DUPLICATA ═══ */}
       {showDuplicateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop" onClick={() => setShowDuplicateModal(false)}>
