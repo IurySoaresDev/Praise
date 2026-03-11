@@ -172,35 +172,12 @@ function App() {
 
   const sendSlideToProjection = useCallback(async (content: string, background?: string | null, itemType: string = "song") => {
     try {
-      // Replaces Rust invocation with JS WebviewWindow creation
-      const { WebviewWindow } = await import('@tauri-apps/api/webviewWindow');
-      const { emit } = await import('@tauri-apps/api/event');
-      // const { currentMonitor } = await import('@tauri-apps/api/window');
-      
-      let projectionWindow = await WebviewWindow.getByLabel('projection');
-      
-      if (!projectionWindow && content) {
-        // Create it if it doesn't exist
-        projectionWindow = new WebviewWindow('projection', {
-          url: '/#/projection',
-          title: 'Praise Projection',
-          fullscreen: true,
-          alwaysOnTop: false,
-          decorations: false
-        });
-        
-        // Wait for it to be created
-        await new Promise(resolve => setTimeout(resolve, 800));
-      }
-      
-      if (projectionWindow) {
-        await emit('update_projection', {
-          content: content,
-          background: background || null,
-          item_type: itemType
-        });
-      }
-      
+      await invoke("project_slide", {
+        monitor: selectedMonitor,
+        content: content,
+        background: background || null,
+        item_type: itemType
+      });
     } catch (e) {
       console.error("Erro ao projetar:", e);
     }

@@ -43,27 +43,25 @@ fn project_slide(
             println!("Erro ao emitir evento: {}", e);
             e.to_string()
         })?;
+            
     } else if !content.is_empty() {
-        // Verifica se a rota da webview está correta.
-        let url = tauri::WebviewUrl::App("/#/projection".into());
-        println!("Tentando criar janela de projeção em URL: {:?}", url);
-        
-        let mut builder = tauri::WebviewWindowBuilder::new(
+        // Se a janela não existe e tem conteúdo pra projetar, nós a criamos.
+        let mut builder = WebviewWindowBuilder::new(
             &app_handle,
             "projection",
-            url
+            WebviewUrl::App("index.html#/projection".into())
         )
         .title("Praise Projection")
         .fullscreen(true)
-        .always_on_top(false) // Desliguei temporariamente pra nao travar o dev caso de erro
+        .always_on_top(true)
         .decorations(false);
 
-        // Tenta achar o monitor escolhido
+        // Tenta achar o monitor escolhido pelo nome
         if let Ok(monitors) = app_handle.available_monitors() {
             for m in monitors {
                 let name = m.name().map(|n| n.to_string()).unwrap_or_default();
                 if name == monitor {
-                    println!("Monitor selecionado encontrado: {:?}", monitor);
+                    // Move a janela para o monitor específico
                     let position = m.position();
                     builder = builder.position(position.x.into(), position.y.into());
                     break;
@@ -71,25 +69,14 @@ fn project_slide(
             }
         }
 
-        let window_result = builder.build();
+        let window = builder.build().map_err(|e| e.to_string())?;
         
-        let window = match window_result {
-            Ok(w) => w,
-            Err(e) => {
-                println!("Erro ao criar janela: {:?}", e);
-                return Err(e.to_string());
-            }
-        };
-        
-        println!("Janela criada com sucesso.");
         let content_clone = content.clone();
         let background_clone = background.clone();
         let item_type_clone = item_type.clone();
         
         std::thread::spawn(move || {
-            // Give React time to load the projection route before emitting
-            std::thread::sleep(std::time::Duration::from_millis(1500));
-            println!("Emitindo update_projection inicial para a nova janela.");
+            std::thread::sleep(std::time::Duration::from_millis(500));
             let _ = window.emit("update_projection", ProjectionPayload { 
                 content: content_clone,
                 background: background_clone,
@@ -103,19 +90,14 @@ fn project_slide(
 
 #[tauri::command]
 fn save_songs(_app_handle: tauri::AppHandle, data: serde_json::Value) -> Result<(), String> {
-    // Resolve the path to the data.json file inside the src/assets directory
-    // This allows the app to overwrite the default data file
     let current_dir = std::env::current_dir().map_err(|e| e.to_string())?;
     
-    // Naive resolution to the src/assets/data.json in development
-    // During `tauri dev`, current_dir is usually src-tauri.
     let file_path = if current_dir.ends_with("src-tauri") {
         current_dir.join("..").join("src").join("assets").join("data.json")
     } else {
         current_dir.join("src").join("assets").join("data.json")
     };
     
-    // Write the JSON data directly to the file
     let json_string = serde_json::to_string_pretty(&data).map_err(|e| e.to_string())?;
     
     std::fs::write(&file_path, json_string).map_err(|e| {
