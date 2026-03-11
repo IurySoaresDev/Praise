@@ -1252,19 +1252,61 @@ function App() {
                 )}
               </h3>
               
-              <div className={`w-full aspect-video rounded-xl border relative overflow-hidden flex items-center justify-center shadow-md shadow-black/20 ${
+              <div className={`w-full aspect-video rounded-xl border relative overflow-hidden flex flex-col shadow-md shadow-black/20 ${
                 isProjecting 
                   ? "border-emerald-500/30 glow-green" 
                   : "border-white/10"
               }`} style={{ backgroundColor: '#000' }}>
-                <div className="absolute inset-0 flex items-center justify-center p-3">
+                {/* Imagem de Fundo do Preview */}
+                {activeSlideIndex >= 0 && activeSlideIndex < slides.length && (
+                  <div 
+                    className="absolute inset-0 z-0"
+                    style={{
+                      backgroundImage: `url(${
+                        selectedSong?.collection === 'Bíblia' 
+                          ? (bibleBackground.startsWith('/backgrounds/') ? bibleBackground : convertFileSrc(bibleBackground))
+                          : (activeSlideIndex === 0 
+                              ? (songBackground.startsWith('/backgrounds/') ? songBackground : convertFileSrc(songBackground))
+                              : (songBodyBackground.startsWith('/backgrounds/') ? songBodyBackground : convertFileSrc(songBodyBackground))
+                            )
+                      })`,
+                      backgroundSize: '100% 100%',
+                      backgroundPosition: 'center center',
+                      backgroundRepeat: 'no-repeat',
+                    }}
+                  />
+                )}
+                
+                {/* Overlay escuro simulando o do projetor */}
+                <div className="absolute inset-0 z-[1] bg-black/40" />
+
+                {/* Camada de Texto do Preview */}
+                <div className="relative z-10 flex flex-col items-center justify-center w-full h-full p-2">
                   {activeSlideIndex >= 0 && activeSlideIndex < slides.length ? (
-                    <div 
-                      className="text-white text-[10px] md:text-xs font-bold text-left max-w-full leading-snug tracking-wide projection-shadow"
-                      dangerouslySetInnerHTML={{ __html: slides[activeSlideIndex] }} 
-                    />
+                    <>
+                      {/* Mostrar título simulado se for o primeiro slide de um louvor */}
+                      {selectedSong?.collection !== 'Bíblia' && activeSlideIndex === 0 && (
+                        <div className="w-full flex items-center justify-center pt-0.5" style={{ height: '12%', minHeight: '15px' }}>
+                          <h4 className="text-white font-bold uppercase tracking-widest text-center drop-shadow-2xl projection-shadow truncate w-full" style={{ fontSize: '0.4rem' }}>
+                            {selectedSong?.title}
+                          </h4>
+                        </div>
+                      )}
+                      
+                      {/* Letra ou Versículo */}
+                      <div className={`flex-1 flex items-center justify-center w-full ${selectedSong?.collection !== 'Bíblia' && activeSlideIndex === 0 ? 'pb-2 pt-4' : 'px-4'}`}>
+                        <div 
+                          className={`text-white font-bold text-center w-full leading-snug tracking-wide projection-shadow ${
+                            selectedSong?.collection === 'Bíblia'
+                              ? 'text-[0.6rem] italic font-medium'
+                              : 'text-[0.65rem] uppercase'
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: slides[activeSlideIndex] }} 
+                        />
+                      </div>
+                    </>
                   ) : (
-                    <div className="text-white/10 text-[10px] text-center">Tela Preta</div>
+                    <div className="text-white/30 text-[10px] text-center font-medium">Tela Preta</div>
                   )}
                 </div>
               </div>
