@@ -38,7 +38,7 @@ function App() {
   const [searchBibleQuery, setSearchBibleQuery] = useState('');
   const [searchChapterQuery, setSearchChapterQuery] = useState('');
   
-  const [bibleVersion, setBibleVersion] = useState<'NVI' | 'ACF' | 'ARA'>('ACF');
+  const [bibleVersion, setBibleVersion] = useState<'NVI' | 'ACF' | 'ARA'>('ARA');
   const [bibleData, setBibleData] = useState<any[]>([]);
   const [isLoadingBible, setIsLoadingBible] = useState(true);
 
