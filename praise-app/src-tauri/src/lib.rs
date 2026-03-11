@@ -1,0 +1,89 @@
+use serde::{Deserialize, Serialize};
+use tauri::{Manager, Emitter, Listener, WebviewWindowBuilder, WebviewUrl};
+
+#[derive(Clone, Serialize, Deserialize)]
+struct ProjectionPayload {
+    content: String,
+}
+
+#[tauri::command]
+fn get_monitors(app_handle: tauri::AppHandle) -> Result<Vec<String>, String> {
+    let monitors = app_handle.available_monitors().map_err(|e| e.to_string())?;
+    let mut monitor_names = Vec::new();
+    
+    for (i, monitor) in monitors.iter().enumerate() {
+        let name = monitor.name().map(|n| n.to_string()).unwrap_or_else(|| format!("Monitor {}", i + 1));
+        monitor_names.push(name);
+    }
+    
+    Ok(monitor_names)
+}
+
+#[tauri::command]
+fn project_slide(app_handle: tauri::AppHandle, monitor: String, content: String) -> Result<(), String> {
+    // Busca a janela de projeção se ela já existir
+    let projection_window = app_handle.get_webview_window("projection");
+
+    if let Some(window) = projection_window {
+        // Se a janela já existe, apenas emite o evento para atualizar o conteúdo
+        window.emit("update_projection", ProjectionPayload { content: content.clone() })
+            .map_err(|e| e.to_string())?;
+            
+        // Se for string vazia, talvez o usuário queira esconder (ou limpar).
+        // Aqui limpamos apenas emitindo vazio, a UI trata.
+    } else if !content.is_empty() {
+        // Se a janela não existe e tem conteúdo pra projetar, nós a criamos.
+        let mut builder = WebviewWindowBuilder::new(
+            &app_handle,
+            "projection",
+            WebviewUrl::App("/projection".into())
+        )
+        .title("Praise Projection")
+        .fullscreen(true)
+        .always_on_top(true)
+        .decorations(false); // Sem botões de fechar, minimizar, etc
+
+        // Tenta achar o monitor escolhido pelo nome
+        if let Ok(monitors) = app_handle.available_monitors() {
+            for m in monitors {
+                let name = m.name().map(|n| n.to_string()).unwrap_or_default();
+                if name == monitor {
+                    // Move a janela para o monitor específico
+                    let position = m.position();
+                    builder = builder.position(position.x.into(), position.y.into());
+                    break;
+                }
+            }
+        }
+
+        let window = builder.build().map_err(|e| e.to_string())?;
+        
+        // Esperamos a janela carregar e depois emitimos o conteúdo
+        let content_clone = content.clone();
+        window.once("tauri://created", move |_| {
+             // Opcionalmente podemos adicionar um pequeno delay aqui para garantir 
+             // que o React carregou e registrou os listeners, porém a abordagem de mandar 
+             // via prop não funciona no Tauri diretamente. Vamos enviar o evento.
+        });
+        
+        // Como a janela acabou de ser criada, o React pode não estar pronto pra ouvir "update_projection".
+        // Uma solução é o Front-end pedir o conteúdo atual quando o componente montar, 
+        // mas enviaremos o evento de qualquer forma.
+        
+        std::thread::spawn(move || {
+            std::thread::sleep(std::time::Duration::from_millis(500));
+            let _ = window.emit("update_projection", ProjectionPayload { content: content_clone });
+        });
+    }
+
+    Ok(())
+}
+
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub fn run() {
+    tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
+        .invoke_handler(tauri::generate_handler![get_monitors, project_slide])
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
+}
