@@ -282,7 +282,17 @@ function App() {
     <div className="flex flex-col h-screen overflow-hidden font-['Inter',system-ui,sans-serif]" style={{ backgroundColor: '#0f172a', color: 'rgba(255,255,255,0.9)' }}>
       
       {/* ═══ CUSTOM TITLE BAR ═══ */}
-      <div data-tauri-drag-region className="h-8 flex items-center justify-between px-4 select-none shrink-0" style={{ backgroundColor: '#0f172a', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+      <div 
+        data-tauri-drag-region 
+        onMouseDown={(e) => {
+          // Apenas se for o botão esquerdo e não estiver clicando nos botões de controle
+          if (e.buttons === 1) {
+            appWindow.startDragging();
+          }
+        }}
+        className="h-8 flex items-center justify-between px-4 select-none shrink-0 cursor-default" 
+        style={{ backgroundColor: '#0f172a', borderBottom: '1px solid rgba(255,255,255,0.03)' }}
+      >
         <div className="flex items-center gap-2 pointer-events-none">
           <MonitorDot className="w-3.5 h-3.5 text-slate-400" />
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Praise</span>
