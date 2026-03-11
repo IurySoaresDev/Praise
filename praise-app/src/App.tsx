@@ -358,11 +358,9 @@ function App() {
             <div className="flex-1 overflow-y-auto p-2 space-y-1 min-h-0">
               {(() => {
                 const filtered = songs
-                  .filter(s => {
-                    const title = s?.title || '';
-                    const collection = (s?.collection || '').trim();
-                    const matchesSearch = title.toLowerCase().includes(searchEditQuery.toLowerCase().trim());
-                    const matchesCategory = selectedEditCategory === "Todas" || collection === selectedEditCategory.trim();
+                  .filter(song => {
+                    const matchesSearch = song.title.toLowerCase().includes(searchEditQuery.toLowerCase());
+                    const matchesCategory = selectedEditCategory === "Todas" || song.collection === selectedEditCategory;
                     return matchesSearch && matchesCategory;
                   })
                   .sort((a, b) => a.title.localeCompare(b.title));
