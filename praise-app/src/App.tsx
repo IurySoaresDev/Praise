@@ -143,8 +143,10 @@ function App() {
         let formatted = isBible ? trimmed : trimmed.toUpperCase();
         
         if (isBible) {
-          // Destaca a referência do versículo (ex: [Gênesis 1:1]) em amarelo no topo
-          formatted = formatted.replace(/^\[(.*?)\]$/, '<span class="text-yellow-400 font-bold block mb-1 text-[0.65em] uppercase tracking-widest opacity-90">$1</span>');
+          // Remove a referência original do versículo do corpo do texto (pois agora ela vai para o título da janela)
+          if (/^\[(.*?)\]$/.test(formatted)) {
+            return '';
+          }
           
           // Remove o número inicial do versículo (ex: "1. ")
           formatted = formatted.replace(/^(\d+\.)\s/, '');
@@ -186,6 +188,19 @@ function App() {
     }
   }, [selectedMonitor]);
 
+  const getSlideTitle = useCallback((index: number) => {
+    if (!selectedSong) return '';
+    const isBible = selectedSong.collection === 'Bíblia';
+    if (isBible) {
+      // Extrai a referência do versículo (ex: [Gênesis 1:1]) do texto original
+      const rawSlide = selectedSong.content.split('\n\n')[index] || '';
+      const match = rawSlide.match(/^\[(.*?)\]/);
+      return match ? match[1] : selectedSong.title;
+    }
+    // Para louvores, o título só aparece no primeiro slide
+    return index === 0 ? selectedSong.title : '';
+  }, [selectedSong]);
+
   const handleSelectSlide = useCallback((index: number) => {
     setActiveSlideIndex(index);
     if (isProjecting && slides[index] !== undefined) {
@@ -194,10 +209,10 @@ function App() {
         slides[index], 
         isBible ? bibleBackground : (index === 0 ? songBackground : songBodyBackground),
         isBible ? 'bible' : 'song',
-        isBible ? (selectedSong?.title || '') : (index === 0 ? (selectedSong?.title || '') : '')
+        getSlideTitle(index)
       );
     }
-  }, [isProjecting, slides, setActiveSlideIndex, sendSlideToProjection, selectedSong, bibleBackground, songBackground, songBodyBackground]);
+  }, [isProjecting, slides, setActiveSlideIndex, sendSlideToProjection, selectedSong, bibleBackground, songBackground, songBodyBackground, getSlideTitle]);
 
   const handleStartProjection = useCallback(async () => {
     if (!selectedSong || slides.length === 0) return;
@@ -210,10 +225,10 @@ function App() {
         slides[idx], 
         isBible ? bibleBackground : (idx === 0 ? songBackground : songBodyBackground),
         isBible ? 'bible' : 'song',
-        isBible ? (selectedSong?.title || '') : (idx === 0 ? (selectedSong?.title || '') : '')
+        getSlideTitle(idx)
       );
     }
-  }, [selectedSong, slides, activeSlideIndex, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground]);
+  }, [selectedSong, slides, activeSlideIndex, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle]);
 
   const handleStopProjection = useCallback(async () => {
     setIsProjecting(false);
@@ -238,7 +253,7 @@ function App() {
             slides[newIdx], 
             isBible ? bibleBackground : (newIdx === 0 ? songBackground : songBodyBackground),
             isBible ? 'bible' : 'song',
-            isBible ? (selectedSong?.title || '') : (newIdx === 0 ? (selectedSong?.title || '') : '')
+            getSlideTitle(newIdx)
           );
         }
       } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
@@ -250,7 +265,7 @@ function App() {
             slides[newIdx], 
             isBible ? bibleBackground : (newIdx === 0 ? songBackground : songBodyBackground),
             isBible ? 'bible' : 'song',
-            isBible ? (selectedSong?.title || '') : (newIdx === 0 ? (selectedSong?.title || '') : '')
+            getSlideTitle(newIdx)
           );
         }
       }
@@ -258,7 +273,7 @@ function App() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeSlideIndex, slides, selectedSong, isProjecting, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground]);
+  }, [activeSlideIndex, slides, selectedSong, isProjecting, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle]);
 
   return (
     <div className="flex h-screen overflow-hidden font-['Inter',system-ui,sans-serif]" style={{ backgroundColor: '#0f172a', color: 'rgba(255,255,255,0.9)' }}>
@@ -1275,19 +1290,19 @@ function App() {
                 <div className="relative z-10 flex flex-col items-center justify-center w-full h-full p-2">
                   {activeSlideIndex >= 0 && activeSlideIndex < slides.length ? (
                     <>
-                      {/* Mostrar título simulado se for o primeiro slide */}
-                      {activeSlideIndex === 0 && (
+                      {/* Mostrar título simulado */}
+                      {((selectedSong?.collection !== 'Bíblia' && activeSlideIndex === 0) || (selectedSong?.collection === 'Bíblia')) && (
                         <div className={`w-full flex items-center justify-center ${selectedSong?.collection === 'Bíblia' ? 'pt-0' : 'pt-0.5'}`} style={{ height: '12%', minHeight: '15px' }}>
                           <h4 className={`font-bold uppercase tracking-widest text-center drop-shadow-2xl projection-shadow truncate w-full ${
                             selectedSong?.collection === 'Bíblia' ? 'text-white' : 'text-amber-400'
                           }`} style={{ fontSize: '0.4rem' }}>
-                            {selectedSong?.title}
+                            {getSlideTitle(activeSlideIndex)}
                           </h4>
                         </div>
                       )}
                       
                       {/* Letra ou Versículo */}
-                      <div className={`flex-1 flex items-center justify-center w-full ${selectedSong?.collection !== 'Bíblia' && activeSlideIndex === 0 ? 'pb-2 pt-4' : 'px-4'}`}>
+                      <div className={`flex-1 flex items-center justify-center w-full ${((selectedSong?.collection !== 'Bíblia' && activeSlideIndex === 0) || selectedSong?.collection === 'Bíblia') ? 'pb-2 pt-4' : 'px-4'}`}>
                         <div 
                           className={`text-white font-bold text-center w-full leading-snug tracking-wide projection-shadow ${
                             selectedSong?.collection === 'Bíblia'
