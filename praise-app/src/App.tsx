@@ -269,14 +269,17 @@ function App() {
 
       {/* ═══ EDITOR FULL-WIDTH ═══ */}
       {activeTab === 'editor' && (
-        <div className="flex-1 flex flex-col h-screen overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
-        <div className="flex-1 flex min-w-0 animate-fade-in" style={{ backgroundColor: '#0f172a' }}>
+        <div className="flex-1 flex flex-col h-full overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
+        <div className="flex-1 flex min-w-0" style={{ backgroundColor: '#0f172a' }}>
           {/* Sidebar de Seleção para Edição */}
           <div className="w-[300px] flex flex-col border-r border-white/5 bg-[#1e293b]/30 h-full min-h-0 overflow-hidden">
             <div className="p-4 border-b border-white/5 bg-slate-900/20">
               <h2 className="text-[13px] font-bold text-white/70 uppercase tracking-widest mb-3 flex items-center gap-2">
                 <Music className="w-4 h-4" />
                 Editar Louvor
+                <span className="ml-auto bg-white/5 px-1.5 py-0.5 rounded text-[9px] lowercase font-normal">
+                  {songs.length} total
+                </span>
               </h2>
               <div className="relative">
                 <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
@@ -287,6 +290,7 @@ function App() {
                   autoComplete="off"
                   autoCorrect="off"
                   spellCheck={false}
+                  autoFocus
                   value={searchEditQuery}
                   onChange={(e) => setSearchEditQuery(e.target.value)}
                 />
@@ -309,15 +313,23 @@ function App() {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-2 space-y-1 min-h-0">
-              {songs
-                .filter(s => {
-                  const matchesSearch = s.title.toLowerCase().includes(searchEditQuery.toLowerCase());
-                  const matchesCategory = selectedEditCategory === "Todas" || s.collection === selectedEditCategory;
-                  return matchesSearch && matchesCategory;
-                })
-                .sort((a, b) => a.title.localeCompare(b.title))
-                .map(song => (
+            <div className="flex-1 overflow-y-auto p-2 space-y-1 min-h-0 custom-scroll-forced">
+              {(() => {
+                const filtered = songs
+                  .filter(s => {
+                    const title = s?.title || '';
+                    const collection = (s?.collection || '').trim();
+                    const matchesSearch = title.toLowerCase().includes(searchEditQuery.toLowerCase().trim());
+                    const matchesCategory = selectedEditCategory === "Todas" || collection === selectedEditCategory.trim();
+                    return matchesSearch && matchesCategory;
+                  })
+                  .sort((a, b) => a.title.localeCompare(b.title));
+                
+                if (filtered.length === 0) {
+                  return <div className="text-center py-10 opacity-20 text-[10px]">Nenhum louvor encontrado</div>;
+                }
+
+                return filtered.map(song => (
                   <button
                     key={song.title}
                     onClick={() => {
@@ -335,8 +347,8 @@ function App() {
                     <span className="font-semibold truncate">{song.title}</span>
                     <span className="text-[10px] opacity-50">{song.collection}</span>
                   </button>
-                ))
-              }
+                ));
+              })()}
             </div>
 
             {editingSongTitle && (

@@ -145,3 +145,18 @@ button, [draggable="true"] {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+.custom-scroll-forced {
+  overflow-y: scroll !important;
+  height: 0;
+  flex: 1 1 0%;
+}
+
+.custom-scroll-forced::-webkit-scrollbar {
+  width: 8px;
+  display: block !important;
+}
+
+.custom-scroll-forced::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.6) !important;
+}
