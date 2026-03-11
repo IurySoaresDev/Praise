@@ -4,7 +4,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { useStore, ALLOWED_COLLECTIONS } from "./store";
-import { Search, Monitor, Play, MonitorDot, ChevronRight, ChevronLeft, ChevronDown, Plus, Trash2, GripVertical, Square, Music, ListMusic, BookOpen, ArrowLeft, Loader2, FilePenLine, Upload, Send, X, Minus, Snowflake, AlertTriangle, CheckCircle2, Settings, Image as ImageIcon } from "lucide-react";
+import { Search, Monitor, Play, MonitorDot, ChevronRight, ChevronLeft, Plus, Trash2, GripVertical, Square, Music, ListMusic, BookOpen, ArrowLeft, Loader2, FilePenLine, Upload, Send, X, Minus, Snowflake, AlertTriangle, CheckCircle2, Settings } from "lucide-react";
 import "./App.css";
 
 function App() {
@@ -670,36 +670,28 @@ function App() {
       {activeTab === 'settings' && (
         <div className="flex-1 flex flex-col h-full overflow-hidden bg-slate-950/20">
           <div className="p-8 max-w-4xl mx-auto w-full overflow-y-auto">
-            <header className="mb-10 animate-fade-in">
-              <h2 className="text-4xl font-extrabold text-white flex items-center gap-4">
-                <Settings className="w-10 h-10 text-slate-400 animate-spin-slow" />
+            <header className="mb-12 animate-fade-in text-center md:text-left">
+              <h2 className="text-4xl font-black text-white tracking-tight">
                 Configurações
               </h2>
-              <p className="text-slate-400 mt-2 text-lg">Personalize a aparência da sua projeção.</p>
+              <p className="text-slate-500 mt-2 text-lg font-medium">Personalize os fundos da sua projeção.</p>
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {/* Box Louvor - Título */}
-              <div className="bg-[#1e293b]/50 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-md hover:border-emerald-500/20 transition-all group">
-                <div className="flex justify-between items-start mb-6">
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
-                       <Music className="w-6 h-6 text-emerald-400" />
-                       Fundo 1ª Estrofe (Título)
+              <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl hover:border-emerald-500/20 transition-all group">
+                <div className="mb-6">
+                    <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">
+                       Fundo de Título
                     </h3>
-                    <p className="text-xs text-white/30 uppercase tracking-widest font-semibold">Resolução Recomendada: 1080p</p>
-                  </div>
+                    <p className="text-[10px] text-white/20 uppercase tracking-[0.2em] font-bold">Resolução: 1080p</p>
                 </div>
 
-                <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border-2 border-white/5 mb-6 group relative shadow-inner">
+                <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border border-white/5 mb-6 group relative shadow-2xl">
                   <img 
                     src={songBackground.startsWith('/backgrounds/') ? songBackground : convertFileSrc(songBackground)} 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
                     alt="Song Background Preview"
                   />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <ImageIcon className="w-12 h-12 text-white/50" />
-                  </div>
                 </div>
                 
                 <button 
@@ -710,39 +702,31 @@ function App() {
                      });
                      if (path) {
                        setSongBackground(path as string);
-                       setSuccessMessage("Fundo de louvor atualizado!");
+                       setSuccessMessage("Fundo de título atualizado!");
                        setShowSuccessToast(true);
                        setTimeout(() => setShowSuccessToast(false), 3000);
                      }
                    }}
-                   className="w-full py-4 rounded-2xl bg-white/5 hover:bg-emerald-500/20 text-white font-bold text-sm transition-all border border-white/10 hover:border-emerald-500/30 flex items-center justify-center gap-2"
+                   className="w-full py-4 rounded-xl bg-white/[0.03] hover:bg-emerald-500/10 text-white font-bold text-[13px] tracking-wide transition-all border border-white/5 hover:border-emerald-500/20 shadow-sm active:scale-[0.98]"
                 >
-                  <ImageIcon className="w-4 h-4" />
                   Alterar Imagem
                 </button>
               </div>
 
-              {/* Box Louvor - Restante */}
-              <div className="bg-[#1e293b]/50 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-md hover:border-emerald-500/20 transition-all group">
-                <div className="flex justify-between items-start mb-6">
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
-                       <Music className="w-6 h-6 text-emerald-400 opacity-60" />
-                       Fundo Restante (Louvor)
+              <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl hover:border-emerald-500/20 transition-all group">
+                <div className="mb-6">
+                    <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">
+                       Fundo de Louvor
                     </h3>
-                    <p className="text-xs text-white/30 uppercase tracking-widest font-semibold">Resolução Recomendada: 1080p</p>
-                  </div>
+                    <p className="text-[10px] text-white/20 uppercase tracking-[0.2em] font-bold">Resolução: 1080p</p>
                 </div>
 
-                <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border-2 border-white/5 mb-6 group relative shadow-inner">
+                <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border border-white/5 mb-6 group relative shadow-2xl">
                   <img 
                     src={songBodyBackground.startsWith('/backgrounds/') ? songBodyBackground : convertFileSrc(songBodyBackground)} 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
                     alt="Song Body Background Preview"
                   />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <ImageIcon className="w-12 h-12 text-white/50" />
-                  </div>
                 </div>
                 
                 <button 
@@ -753,39 +737,31 @@ function App() {
                      });
                      if (path) {
                        setSongBodyBackground(path as string);
-                       setSuccessMessage("Fundo (restante do louvor) atualizado!");
+                       setSuccessMessage("Fundo de louvor atualizado!");
                        setShowSuccessToast(true);
                        setTimeout(() => setShowSuccessToast(false), 3000);
                      }
                    }}
-                   className="w-full py-4 rounded-2xl bg-white/5 hover:bg-emerald-500/20 text-white font-bold text-sm transition-all border border-white/10 hover:border-emerald-500/30 flex items-center justify-center gap-2"
+                   className="w-full py-4 rounded-xl bg-white/[0.03] hover:bg-emerald-500/10 text-white font-bold text-[13px] tracking-wide transition-all border border-white/5 hover:border-emerald-500/20 shadow-sm active:scale-[0.98]"
                 >
-                  <ImageIcon className="w-4 h-4" />
                   Alterar Imagem
                 </button>
               </div>
 
-              {/* Box Bíblia */}
-              <div className="bg-[#1e293b]/50 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-md hover:border-blue-500/20 transition-all group">
-                <div className="flex justify-between items-start mb-6">
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
-                       <BookOpen className="w-6 h-6 text-blue-400" />
+              <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl hover:border-blue-500/20 transition-all group">
+                <div className="mb-6">
+                    <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">
                        Fundo de Bíblia
                     </h3>
-                    <p className="text-xs text-white/30 uppercase tracking-widest font-semibold">Resolução Recomendada: 1080p</p>
-                  </div>
+                    <p className="text-[10px] text-white/20 uppercase tracking-[0.2em] font-bold">Resolução: 1080p</p>
                 </div>
 
-                <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border-2 border-white/5 mb-6 group relative shadow-inner">
+                <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border border-white/5 mb-6 group relative shadow-2xl">
                   <img 
                     src={bibleBackground.startsWith('/backgrounds/') ? bibleBackground : convertFileSrc(bibleBackground)} 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
                     alt="Bible Background Preview"
                   />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <ImageIcon className="w-12 h-12 text-white/50" />
-                  </div>
                 </div>
                 
                 <button 
@@ -801,9 +777,8 @@ function App() {
                        setTimeout(() => setShowSuccessToast(false), 3000);
                      }
                    }}
-                   className="w-full py-4 rounded-2xl bg-white/5 hover:bg-blue-500/20 text-white font-bold text-sm transition-all border border-white/10 hover:border-blue-500/30 flex items-center justify-center gap-2"
+                   className="w-full py-4 rounded-xl bg-white/[0.03] hover:bg-blue-500/10 text-white font-bold text-[13px] tracking-wide transition-all border border-white/5 hover:border-blue-500/20 shadow-sm active:scale-[0.98]"
                 >
-                  <ImageIcon className="w-4 h-4" />
                   Alterar Imagem
                 </button>
               </div>
@@ -1186,14 +1161,13 @@ function App() {
         {/* Top Bar */}
         <div className="h-14 border-b border-white/5 flex items-center justify-between px-6 shrink-0 glass" style={{ backgroundColor: 'rgba(15,23,42,0.8)' }}>
           <div className="flex items-center gap-3">
-            <div className="flex items-center bg-white/[0.03] border border-white/10 rounded-xl px-3 py-1.5 transition-all focus-within:border-slate-400/40 hover:bg-white/[0.06] group/monitor shadow-sm">
-              <div className="flex items-center gap-2 border-r border-white/10 pr-3 mr-1 text-white/40 group-focus-within/monitor:text-slate-400 group-hover/monitor:text-white/60 transition-colors">
-                <Monitor className="w-4 h-4" />
-                <span className="text-[11px] font-bold uppercase tracking-wider whitespace-nowrap">Projetar em</span>
+            <div className="flex items-center bg-white/[0.03] border border-white/10 rounded-xl px-4 py-1.5 transition-all focus-within:border-slate-400/40 hover:bg-white/[0.06] group/monitor shadow-sm">
+              <div className="flex items-center border-r border-white/10 pr-3 mr-2 text-white/40 group-focus-within/monitor:text-slate-400 group-hover/monitor:text-white/60 transition-colors">
+                <span className="text-[10px] font-bold uppercase tracking-widest whitespace-nowrap">Exibir em</span>
               </div>
-              <div className="relative flex items-center">
+              <div className="relative flex items-center pr-1">
                 <select
-                  className="appearance-none bg-transparent pl-2 pr-7 py-0.5 text-[13px] font-semibold text-white/90 outline-none cursor-pointer w-full min-w-[140px]"
+                  className="appearance-none bg-transparent py-0.5 text-[13px] font-semibold text-white/90 outline-none cursor-pointer w-full min-w-[120px]"
                   value={selectedMonitor}
                   onChange={(e) => setSelectedMonitor(e.target.value)}
                 >
@@ -1205,7 +1179,6 @@ function App() {
                     <option value="" className="bg-slate-900 text-white">Carregando...</option>
                   )}
                 </select>
-                <ChevronDown className="w-3.5 h-3.5 text-white/30 absolute right-0 pointer-events-none group-hover/monitor:text-white/50 transition-colors" />
               </div>
             </div>
           </div>
