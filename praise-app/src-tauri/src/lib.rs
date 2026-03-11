@@ -3,6 +3,7 @@ use tauri::{Manager, Emitter, Listener, WebviewWindowBuilder, WebviewUrl};
 
 #[derive(Clone, Serialize, Deserialize)]
 struct ProjectionPayload {
+    title: String,
     content: String,
     background: Option<String>,
     item_type: String, // "song" | "bible" | "empty"
@@ -24,7 +25,8 @@ fn get_monitors(app_handle: tauri::AppHandle) -> Result<Vec<String>, String> {
 #[tauri::command]
 fn project_slide(
     app_handle: tauri::AppHandle, 
-    monitor: String, 
+    monitor: String,
+    title: String,
     content: String, 
     background: Option<String>,
     item_type: String
@@ -35,6 +37,7 @@ fn project_slide(
     if let Some(window) = projection_window {
         // Se a janela já existe, apenas emite o evento para atualizar o conteúdo
         window.emit("update_projection", ProjectionPayload { 
+            title: title.clone(),
             content: content.clone(),
             background: background.clone(),
             item_type: item_type.clone(),
@@ -71,6 +74,7 @@ fn project_slide(
 
         let window = builder.build().map_err(|e| e.to_string())?;
         
+        let title_clone = title.clone();
         let content_clone = content.clone();
         let background_clone = background.clone();
         let item_type_clone = item_type.clone();
@@ -78,6 +82,7 @@ fn project_slide(
         std::thread::spawn(move || {
             std::thread::sleep(std::time::Duration::from_millis(500));
             let _ = window.emit("update_projection", ProjectionPayload { 
+                title: title_clone,
                 content: content_clone,
                 background: background_clone,
                 item_type: item_type_clone,

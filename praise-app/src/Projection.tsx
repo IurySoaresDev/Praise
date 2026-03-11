@@ -3,7 +3,8 @@ import { listen } from "@tauri-apps/api/event";
 import { convertFileSrc } from "@tauri-apps/api/core";
 
 function Projection() {
-  const [data, setData] = useState<{ content: string; background: string | null; item_type: string }>({
+  const [data, setData] = useState<{ title: string; content: string; background: string | null; item_type: string }>({
+    title: "",
     content: "",
     background: null,
     item_type: "empty"
@@ -12,8 +13,7 @@ function Projection() {
   useEffect(() => {
     console.log("Projetor montado, aguardando eventos...");
     
-    // Escuta o evento "update_projection" vindo da main window
-    const unlisten = listen<{ content: string; background: string | null; item_type: string }>("update_projection", (event) => {
+    const unlisten = listen<{ title: string; content: string; background: string | null; item_type: string }>("update_projection", (event) => {
       console.log("Evento recebido no projetor:", event.payload);
       setData(event.payload);
     });
@@ -27,37 +27,45 @@ function Projection() {
     return <div className="w-screen h-screen bg-black" />;
   }
 
-  // Se o background for um path local do arquivo (não começa com /backgrounds/), converte pra URL tauri
   const backgroundUrl = data.background 
     ? (data.background.startsWith('/backgrounds/') ? data.background : convertFileSrc(data.background))
     : null;
 
   return (
-    <div className="w-screen h-screen bg-black relative flex items-center justify-center overflow-hidden">
-      {/* Camada de Fundo */}
+    <div className="w-screen h-screen bg-black relative flex flex-col overflow-hidden">
+      {/* Camada de Fundo - cobre 100% da tela */}
       {backgroundUrl && (
         <div 
-          className="absolute inset-0 z-0 animate-fade-in"
+          className="absolute inset-0 z-0"
           style={{
             backgroundImage: `url(${backgroundUrl})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center center',
             backgroundRepeat: 'no-repeat',
-            opacity: 0.7,
           }}
-        >
-          {/* Overlay escuro para melhorar contraste do texto */}
-          <div className="absolute inset-0 bg-black/40" />
+        />
+      )}
+
+      {/* Overlay escuro para melhorar contraste */}
+      <div className="absolute inset-0 z-[1] bg-black/30" />
+
+      {/* Título do louvor no topo (na faixa vermelha da imagem) */}
+      {data.title && data.item_type !== 'empty' && (
+        <div className="relative z-10 w-full pt-4 pb-3 px-8 flex items-center justify-center" 
+             style={{ minHeight: '80px' }}>
+          <h1 className="text-white text-2xl md:text-3xl font-bold uppercase tracking-widest text-center drop-shadow-2xl projection-shadow">
+            {data.title}
+          </h1>
         </div>
       )}
 
-      {/* Camada de Texto */}
-      <div className="relative z-10 w-full h-full flex items-center justify-center p-12 lg:p-20">
+      {/* Camada de Texto - letra da estrofe centralizada */}
+      <div className="relative z-10 flex-1 w-full flex items-center justify-center px-12 pb-12 lg:px-20 lg:pb-20">
         <div 
           className={`text-white font-bold text-center w-full leading-snug tracking-wide projection-shadow drop-shadow-2xl ${
             data.item_type === 'bible' 
-              ? 'text-4xl md:text-5xl lg:text-5xl italic font-medium' 
-              : 'text-4xl md:text-6xl lg:text-8xl uppercase'
+              ? 'text-3xl md:text-4xl lg:text-5xl italic font-medium' 
+              : 'text-3xl md:text-5xl lg:text-7xl uppercase'
           }`}
           dangerouslySetInnerHTML={{ __html: data.content }} 
         />

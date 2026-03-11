@@ -170,10 +170,11 @@ function App() {
 
   const slides = selectedSong ? formatContent(selectedSong.content, selectedSong.collection) : [];
 
-  const sendSlideToProjection = useCallback(async (content: string, background?: string | null, itemType: string = "song") => {
+  const sendSlideToProjection = useCallback(async (content: string, background?: string | null, itemType: string = "song", title: string = "") => {
     try {
       await invoke("project_slide", {
         monitor: selectedMonitor,
+        title: title,
         content: content,
         background: background || null,
         itemType: itemType
@@ -190,7 +191,8 @@ function App() {
       sendSlideToProjection(
         slides[index], 
         isBible ? bibleBackground : songBackground,
-        isBible ? 'bible' : 'song'
+        isBible ? 'bible' : 'song',
+        selectedSong?.title || ''
       );
     }
   }, [isProjecting, slides, setActiveSlideIndex, sendSlideToProjection, selectedSong, bibleBackground, songBackground]);
@@ -205,14 +207,15 @@ function App() {
       await sendSlideToProjection(
         slides[idx], 
         isBible ? bibleBackground : songBackground,
-        isBible ? 'bible' : 'song'
+        isBible ? 'bible' : 'song',
+        selectedSong?.title || ''
       );
     }
   }, [selectedSong, slides, activeSlideIndex, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground]);
 
   const handleStopProjection = useCallback(async () => {
     setIsProjecting(false);
-    await sendSlideToProjection("", null, "empty");
+    await sendSlideToProjection("", null, "empty", "");
   }, [sendSlideToProjection]);
 
   useEffect(() => {
@@ -228,7 +231,8 @@ function App() {
           sendSlideToProjection(
             slides[newIdx], 
             isBible ? bibleBackground : songBackground,
-            isBible ? 'bible' : 'song'
+            isBible ? 'bible' : 'song',
+            selectedSong?.title || ''
           );
         }
       } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
@@ -239,7 +243,8 @@ function App() {
           sendSlideToProjection(
             slides[newIdx], 
             isBible ? bibleBackground : songBackground,
-            isBible ? 'bible' : 'song'
+            isBible ? 'bible' : 'song',
+            selectedSong?.title || ''
           );
         }
       }
