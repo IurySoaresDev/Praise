@@ -1,11 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { useStore } from "./store";
-import { Search, Monitor, Play, MonitorDot, ChevronRight, ChevronLeft, Plus, Trash2, GripVertical, Square, Music, ListMusic, BookOpen, ArrowLeft } from "lucide-react";
-import bibleDataRaw from "./assets/pt_nvi.json";
+import { Search, Monitor, Play, MonitorDot, ChevronRight, ChevronLeft, Plus, Trash2, GripVertical, Square, Music, ListMusic, BookOpen, ArrowLeft, Loader2 } from "lucide-react";
 import "./App.css";
-
-const bibleData: any[] = bibleDataRaw;
 
 function App() {
   const {
@@ -40,6 +37,34 @@ function App() {
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
   const [searchBibleQuery, setSearchBibleQuery] = useState('');
   const [searchChapterQuery, setSearchChapterQuery] = useState('');
+  
+  const [bibleVersion, setBibleVersion] = useState<'NVI' | 'ACF' | 'ARA'>('NVI');
+  const [bibleData, setBibleData] = useState<any[]>([]);
+  const [isLoadingBible, setIsLoadingBible] = useState(true);
+
+  useEffect(() => {
+    setIsLoadingBible(true);
+    const loadBible = async () => {
+      let mod;
+      switch(bibleVersion) {
+        case 'ACF': mod = await import('./assets/pt_acf.json'); break;
+        case 'ARA': mod = await import('./assets/pt_ara.json'); break;
+        case 'NVI': 
+        default: mod = await import('./assets/pt_nvi.json'); break;
+      }
+      
+      const newData = (mod.default as any[]) || [];
+      setBibleData(newData);
+      
+      // Se tivermos um livro Selecionado, atualizamos a referência dele pro novo JSON
+      setSelectedBook((prev: any) => {
+        if (!prev) return null;
+        return newData.find((b: any) => b.abbrev === prev.abbrev) || null;
+      });
+      setIsLoadingBible(false);
+    };
+    loadBible();
+  }, [bibleVersion]);
 
   const bibleBooks = searchBibleQuery.trim() === ''
     ? bibleData 
@@ -221,7 +246,7 @@ function App() {
           <div className="p-4 flex items-center gap-2.5">
             <div>
               <h1 className="text-base font-bold tracking-tight text-white leading-none">
-                {activeTab === 'songs' ? 'Louvores' : 'Bíblia Sagrada (NVI)'}
+                {activeTab === 'songs' ? 'Louvores' : `Bíblia Sagrada (${bibleVersion})`}
               </h1>
               <p className="text-[10px] text-white/40 font-medium mt-0.5">
                 {activeTab === 'songs' ? 'Biblioteca e Adoração' : 'Navegação por Livros'}
@@ -296,34 +321,51 @@ function App() {
         ) : (
           <div className="flex flex-col flex-1 min-h-0 bg-slate-900/30">
             {/* Nav Header Bible */}
-            <div className="p-3 flex items-center gap-2 border-b border-white/5 shrink-0 min-h-[53px]">
-              {selectedBook && (
-                <button 
-                  onClick={() => {
-                    if (selectedChapter) {
-                      setSelectedChapter(null);
-                    } else {
-                      setSelectedBook(null);
-                      setSearchChapterQuery('');
-                    }
-                  }}
-                  className="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-all"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </button>
-              )}
-              <div className="flex-1 truncate text-sm font-semibold text-white/80 pr-2 block">
-                {!selectedBook 
-                  ? "Selecione o Livro" 
-                  : !selectedChapter 
-                    ? selectedBook.name 
-                    : `${selectedBook.name} ${selectedChapter}`}
+            <div className="p-3 flex items-center justify-between gap-2 border-b border-white/5 shrink-0 min-h-[53px]">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                {selectedBook && (
+                  <button 
+                    onClick={() => {
+                      if (selectedChapter) {
+                        setSelectedChapter(null);
+                      } else {
+                        setSelectedBook(null);
+                        setSearchChapterQuery('');
+                      }
+                    }}
+                    className="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-all shrink-0"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                  </button>
+                )}
+                <div className="flex-1 truncate text-sm font-semibold text-white/80 pr-2 block">
+                  {!selectedBook 
+                    ? "Selecione o Livro" 
+                    : !selectedChapter 
+                      ? selectedBook.name 
+                      : `${selectedBook.name} ${selectedChapter}`}
+                </div>
               </div>
+              <select
+                value={bibleVersion}
+                onChange={(e) => setBibleVersion(e.target.value as any)}
+                className="bg-slate-800/80 border border-white/10 text-white/70 text-xs rounded-lg px-2 py-1 outline-none font-bold shrink-0 hover:bg-slate-700/80 transition-all cursor-pointer"
+              >
+                <option value="NVI">NVI</option>
+                <option value="ACF">ACF</option>
+                <option value="ARA">ARA</option>
+              </select>
             </div>
 
             <div className="flex-1 overflow-y-auto p-2 min-h-0">
-              
-              {/* Livros */}
+              {isLoadingBible ? (
+                <div className="flex-1 flex flex-col items-center justify-center h-full gap-3 opacity-50">
+                  <Loader2 className="w-8 h-8 text-white animate-spin" />
+                  <span className="text-white/60 text-xs font-semibold">Carregando Bíblia ({bibleVersion})...</span>
+                </div>
+              ) : (
+                <>
+                  {/* Livros */}
               {!selectedBook && (
                 <div className="flex flex-col gap-3">
                   <div className="relative shrink-0">
@@ -465,6 +507,8 @@ function App() {
                   })}
                 </div>
               )}
+              </>
+            )}
             </div>
           </div>
         )}
