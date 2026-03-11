@@ -3,7 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { useStore, ALLOWED_COLLECTIONS } from "./store";
-import { Search, Monitor, Play, MonitorDot, ChevronRight, ChevronLeft, Plus, Trash2, GripVertical, Square, Music, ListMusic, BookOpen, ArrowLeft, Loader2, FilePenLine, Upload, Send, X, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Search, Monitor, Play, MonitorDot, ChevronRight, ChevronLeft, Plus, Trash2, GripVertical, Square, Music, ListMusic, BookOpen, ArrowLeft, Loader2, FilePenLine, Upload, Send, X, AlertTriangle, CheckCircle2, Settings, Image as ImageIcon } from "lucide-react";
 import "./App.css";
 
 function App() {
@@ -28,6 +28,12 @@ function App() {
     addSongToCollection,
     importSongsFromJSON,
     updateSong,
+    activeTab,
+    setActiveTab,
+    songBackground,
+    bibleBackground,
+    setSongBackground,
+    setBibleBackground,
   } = useStore();
 
   const [monitors, setMonitors] = useState<string[]>([]);
@@ -37,7 +43,7 @@ function App() {
   const [isProjecting, setIsProjecting] = useState(false);
 
   // Bible State
-  const [activeTab, setActiveTab] = useState<'songs' | 'bible' | 'editor'>('songs');
+  // REMOVIDO: const [activeTab, setActiveTab] = useState<'songs' | 'bible' | 'editor'>('songs');
   const [selectedBook, setSelectedBook] = useState<any>(null);
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
   const [searchBibleQuery, setSearchBibleQuery] = useState('');
@@ -164,11 +170,13 @@ function App() {
 
   const slides = selectedSong ? formatContent(selectedSong.content, selectedSong.collection) : [];
 
-  const sendSlideToProjection = useCallback(async (content: string) => {
+  const sendSlideToProjection = useCallback(async (content: string, background?: string | null, itemType: string = "song") => {
     try {
       await invoke("project_slide", {
         monitor: selectedMonitor,
         content: content,
+        background: background || null,
+        item_type: itemType
       });
     } catch (e) {
       console.error("Erro ao projetar:", e);
@@ -178,21 +186,31 @@ function App() {
   const handleSelectSlide = useCallback((index: number) => {
     setActiveSlideIndex(index);
     if (isProjecting && slides[index]) {
-      sendSlideToProjection(slides[index]);
+      const isBible = selectedSong?.collection === 'Bíblia';
+      sendSlideToProjection(
+        slides[index], 
+        isBible ? bibleBackground : songBackground,
+        isBible ? 'bible' : 'song'
+      );
     }
-  }, [isProjecting, slides, setActiveSlideIndex, sendSlideToProjection]);
+  }, [isProjecting, slides, setActiveSlideIndex, sendSlideToProjection, selectedSong, bibleBackground, songBackground]);
 
   const handleStartProjection = useCallback(async () => {
     if (!selectedSong || slides.length === 0) return;
     setIsProjecting(true);
     const idx = activeSlideIndex >= 0 ? activeSlideIndex : 0;
     setActiveSlideIndex(idx);
-    await sendSlideToProjection(slides[idx]);
-  }, [selectedSong, slides, activeSlideIndex, setActiveSlideIndex, sendSlideToProjection]);
+    const isBible = selectedSong?.collection === 'Bíblia';
+    await sendSlideToProjection(
+      slides[idx], 
+      isBible ? bibleBackground : songBackground,
+      isBible ? 'bible' : 'song'
+    );
+  }, [selectedSong, slides, activeSlideIndex, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground]);
 
   const handleStopProjection = useCallback(async () => {
     setIsProjecting(false);
-    await sendSlideToProjection("");
+    await sendSlideToProjection("", null, "empty");
   }, [sendSlideToProjection]);
 
   useEffect(() => {
@@ -204,20 +222,30 @@ function App() {
         if (activeSlideIndex < slides.length - 1) {
           const newIdx = activeSlideIndex + 1;
           setActiveSlideIndex(newIdx);
-          sendSlideToProjection(slides[newIdx]);
+          const isBible = selectedSong?.collection === 'Bíblia';
+          sendSlideToProjection(
+            slides[newIdx], 
+            isBible ? bibleBackground : songBackground,
+            isBible ? 'bible' : 'song'
+          );
         }
       } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
         if (activeSlideIndex > 0) {
           const newIdx = activeSlideIndex - 1;
           setActiveSlideIndex(newIdx);
-          sendSlideToProjection(slides[newIdx]);
+          const isBible = selectedSong?.collection === 'Bíblia';
+          sendSlideToProjection(
+            slides[newIdx], 
+            isBible ? bibleBackground : songBackground,
+            isBible ? 'bible' : 'song'
+          );
         }
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeSlideIndex, slides, selectedSong, isProjecting, setActiveSlideIndex, sendSlideToProjection]);
+  }, [activeSlideIndex, slides, selectedSong, isProjecting, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground]);
 
   return (
     <div className="flex h-screen overflow-hidden font-['Inter',system-ui,sans-serif]" style={{ backgroundColor: '#0f172a', color: 'rgba(255,255,255,0.9)' }}>
@@ -263,6 +291,18 @@ function App() {
           >
             <FilePenLine className="w-5 h-5" />
             <span className="text-[9px] font-bold uppercase tracking-widest">Editar</span>
+          </button>
+
+          <button 
+            onClick={() => setActiveTab('settings')}
+            className={`w-full aspect-square rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all ${
+              activeTab === 'settings' 
+                ? 'bg-slate-500/30 text-white shadow-inner scale-95 glow-brand' 
+                : 'text-white/40 hover:text-white/70 hover:bg-white/5'
+            }`}
+          >
+            <Settings className="w-5 h-5" />
+            <span className="text-[9px] font-bold uppercase tracking-widest">Opções</span>
           </button>
         </div>
       </div>
@@ -555,8 +595,126 @@ function App() {
       </div>
       )}
 
+      {/* ═══ SETTINGS TAB ═══ */}
+      {activeTab === 'settings' && (
+        <div className="flex-1 flex flex-col h-full overflow-hidden bg-slate-950/20">
+          <div className="p-8 max-w-4xl mx-auto w-full overflow-y-auto">
+            <header className="mb-10 animate-fade-in">
+              <h2 className="text-4xl font-extrabold text-white flex items-center gap-4">
+                <Settings className="w-10 h-10 text-slate-400 animate-spin-slow" />
+                Configurações
+              </h2>
+              <p className="text-slate-400 mt-2 text-lg">Personalize a aparência da sua projeção.</p>
+            </header>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Box Louvor */}
+              <div className="bg-[#1e293b]/50 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-md hover:border-emerald-500/20 transition-all group">
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
+                       <Music className="w-6 h-6 text-emerald-400" />
+                       Fundo de Louvor
+                    </h3>
+                    <p className="text-xs text-white/30 uppercase tracking-widest font-semibold">Resolução Recomendada: 1080p</p>
+                  </div>
+                </div>
+
+                <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border-2 border-white/5 mb-6 group relative shadow-inner">
+                  <img 
+                    src={songBackground} 
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                    alt="Song Background Preview"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <ImageIcon className="w-12 h-12 text-white/50" />
+                  </div>
+                </div>
+                
+                <button 
+                   onClick={async () => {
+                     const path = await open({
+                       multiple: false,
+                       filters: [{ name: 'Imagens', extensions: ['jpg', 'png', 'jpeg', 'webp'] }],
+                     });
+                     if (path) {
+                       setSongBackground(path as string);
+                       setSuccessMessage("Fundo de louvor atualizado!");
+                       setShowSuccessToast(true);
+                       setTimeout(() => setShowSuccessToast(false), 3000);
+                     }
+                   }}
+                   className="w-full py-4 rounded-2xl bg-white/5 hover:bg-emerald-500/20 text-white font-bold text-sm transition-all border border-white/10 hover:border-emerald-500/30 flex items-center justify-center gap-2"
+                >
+                  <ImageIcon className="w-4 h-4" />
+                  Alterar Imagem
+                </button>
+              </div>
+
+              {/* Box Bíblia */}
+              <div className="bg-[#1e293b]/50 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-md hover:border-blue-500/20 transition-all group">
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
+                       <BookOpen className="w-6 h-6 text-blue-400" />
+                       Fundo de Bíblia
+                    </h3>
+                    <p className="text-xs text-white/30 uppercase tracking-widest font-semibold">Resolução Recomendada: 1080p</p>
+                  </div>
+                </div>
+
+                <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border-2 border-white/5 mb-6 group relative shadow-inner">
+                  <img 
+                    src={bibleBackground} 
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                    alt="Bible Background Preview"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <ImageIcon className="w-12 h-12 text-white/50" />
+                  </div>
+                </div>
+                
+                <button 
+                   onClick={async () => {
+                     const path = await open({
+                       multiple: false,
+                       filters: [{ name: 'Imagens', extensions: ['jpg', 'png', 'jpeg', 'webp'] }],
+                     });
+                     if (path) {
+                       setBibleBackground(path as string);
+                       setSuccessMessage("Fundo de bíblia atualizado!");
+                       setShowSuccessToast(true);
+                       setTimeout(() => setShowSuccessToast(false), 3000);
+                     }
+                   }}
+                   className="w-full py-4 rounded-2xl bg-white/5 hover:bg-blue-500/20 text-white font-bold text-sm transition-all border border-white/10 hover:border-blue-500/30 flex items-center justify-center gap-2"
+                >
+                  <ImageIcon className="w-4 h-4" />
+                  Alterar Imagem
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-12 p-8 rounded-3xl bg-slate-900/60 border border-white/5 backdrop-blur-sm relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-64 h-64 bg-slate-500/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+               <div className="relative flex gap-6">
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="w-6 h-6 text-amber-500" />
+                </div>
+                <div>
+                  <h4 className="text-xl font-bold text-white mb-2">Dica de Projeção</h4>
+                  <p className="text-slate-400 leading-relaxed">
+                    As imagens de fundo ajudam a criar uma atmosfera de adoração. Escolha fundos que mantenham o contraste alto com o texto branco. O sistema aplica automaticamente uma camada de escurecimento para garantir a legibilidade.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ═══ SIDEBAR ═══ */}
-      {activeTab !== 'editor' && (
+      {activeTab !== 'editor' && activeTab !== 'settings' && (
       <div className="w-[340px] flex flex-col border-r border-white/5" style={{ backgroundColor: '#1e293b' }}>
         
         {/* Header */}
@@ -921,7 +1079,7 @@ function App() {
       )}
 
       {/* ═══ MAIN CONTENT ═══ */}
-      {activeTab !== 'editor' && (
+      {activeTab !== 'editor' && activeTab !== 'settings' && (
       <div className="flex-1 flex flex-col h-screen" style={{ backgroundColor: '#0f172a' }}>
         
         {/* Top Bar */}

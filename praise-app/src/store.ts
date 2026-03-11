@@ -25,6 +25,11 @@ export interface AppState {
   selectedMonitor: string | null;
   playlist: Song[];
   biblePlaylist: Song[];
+  
+  // Settings & Backgrounds
+  activeTab: 'songs' | 'bible' | 'editor' | 'settings';
+  songBackground: string;
+  bibleBackground: string;
 
   setSearchQuery: (query: string) => void;
   setSelectedCategory: (category: string) => void;
@@ -42,6 +47,10 @@ export interface AppState {
   getExportData: () => Collection[];
   importSongsFromJSON: (data: any) => { added: number; duplicates: number };
   updateSong: (oldTitle: string, updatedSong: Song) => { success: boolean; duplicate?: boolean };
+  
+  setActiveTab: (tab: 'songs' | 'bible' | 'editor' | 'settings') => void;
+  setSongBackground: (path: string) => void;
+  setBibleBackground: (path: string) => void;
 }
 
 export const ALLOWED_COLLECTIONS = ["Coletânea 2018", "CIA 2018", "Avulsos 2018"];
@@ -63,6 +72,11 @@ export const useStore = create<AppState>((set, get) => ({
   selectedMonitor: null,
   playlist: [],
   biblePlaylist: [],
+
+  // Initial Backgrounds (using relative paths for Vite/Tauri)
+  activeTab: 'songs',
+  songBackground: '/backgrounds/bg-song.jpg',
+  bibleBackground: '/backgrounds/bg-bible.jpg',
 
   setSearchQuery: (query) => set({ searchQuery: query }),
   setSelectedCategory: (category) => set({ selectedCategory: category, selectedSong: null }),
@@ -92,6 +106,10 @@ export const useStore = create<AppState>((set, get) => ({
     newPlaylist.splice(newIndex, 0, moved);
     return { biblePlaylist: newPlaylist };
   }),
+
+  setActiveTab: (tab) => set({ activeTab: tab }),
+  setSongBackground: (path) => set({ songBackground: path }),
+  setBibleBackground: (path) => set({ bibleBackground: path }),
 
   addSongToCollection: (title, content, collectionName) => {
     const state = get();
