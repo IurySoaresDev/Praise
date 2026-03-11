@@ -27,6 +27,7 @@ function App() {
     moveSongInBiblePlaylist,
     addSongToCollection,
     importSongsFromJSON,
+    updateSong,
   } = useStore();
 
   const [monitors, setMonitors] = useState<string[]>([]);
@@ -54,6 +55,8 @@ function App() {
   const [duplicateTitle, setDuplicateTitle] = useState('');
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [editingSongTitle, setEditingSongTitle] = useState<string | null>(null);
+  const [searchEditQuery, setSearchEditQuery] = useState('');
 
   useEffect(() => {
     setIsLoadingBible(true);
@@ -266,100 +269,174 @@ function App() {
       {/* ═══ EDITOR FULL-WIDTH ═══ */}
       {activeTab === 'editor' && (
         <div className="flex-1 flex flex-col h-screen overflow-y-auto" style={{ backgroundColor: '#0f172a' }}>
-          {/* Header */}
-          <div className="flex flex-col shrink-0 gradient-header border-b border-white/5">
-            <div className="p-5 px-8 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #64748b, #475569)' }}>
-                <FilePenLine className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold tracking-tight text-white leading-none">Editar Louvores</h1>
-                <p className="text-[11px] text-white/40 font-medium mt-0.5">Adicionar e Exportar</p>
+        <div className="flex-1 flex min-w-0 animate-fade-in" style={{ backgroundColor: '#0f172a' }}>
+          {/* Sidebar de Seleção para Edição */}
+          <div className="w-[300px] flex flex-col border-r border-white/5 bg-[#1e293b]/30">
+            <div className="p-4 border-b border-white/5 bg-slate-900/20">
+              <h2 className="text-[13px] font-bold text-white/70 uppercase tracking-widest mb-3 flex items-center gap-2">
+                <Music className="w-4 h-4" />
+                Editar Louvor
+              </h2>
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+                <input
+                  type="text"
+                  placeholder="Buscar para editar..."
+                  className="w-full pl-9 pr-4 py-2 rounded-xl text-xs outline-none border border-white/5 transition-all focus:border-slate-500/50 focus:ring-1 focus:ring-slate-500/10 placeholder:text-white/20 bg-white/5"
+                  value={searchEditQuery}
+                  onChange={(e) => setSearchEditQuery(e.target.value)}
+                />
               </div>
             </div>
-          </div>
 
-          <div className="flex-1 overflow-y-auto p-8">
-            <div className="max-w-2xl mx-auto flex flex-col gap-6">
-              {/* Botão Importar */}
-              <div className="p-5 rounded-xl border border-white/5" style={{ backgroundColor: 'rgba(255,255,255,0.02)' }}>
-                <h3 className="text-[14px] font-semibold text-white/80 flex items-center gap-2 mb-2">
-                  <Upload className="w-4 h-4 text-slate-400" />
-                  Importar Louvores
-                </h3>
-                <p className="text-[12px] text-white/30 mb-4 leading-relaxed">
-                  Selecione um arquivo JSON para importar louvores para a biblioteca.
-                </p>
-                <button
-                  onClick={async () => {
-                    try {
-                      const filePath = await open({
-                        multiple: false,
-                        filters: [{ name: 'JSON', extensions: ['json'] }],
-                      });
-                      if (filePath) {
-                        const content = await readTextFile(filePath as string);
-                        const data = JSON.parse(content);
-                        const result = importSongsFromJSON(Array.isArray(data) ? data : [data]);
-                        if (result.added > 0) {
-                          setSuccessMessage(`${result.added} louvor(es) importado(s)!${result.duplicates > 0 ? ` (${result.duplicates} duplicata(s) ignorada(s))` : ''}`);
-                        } else {
-                          setSuccessMessage(`Nenhum louvor novo encontrado. ${result.duplicates} já existiam.`);
-                        }
-                        setShowSuccessToast(true);
-                        setTimeout(() => setShowSuccessToast(false), 4000);
-                      }
-                    } catch (e) {
-                      console.error('Erro ao importar:', e);
-                      alert('Erro ao abrir seletor de arquivos: ' + JSON.stringify(e));
-                    }
+            <div className="flex-1 overflow-y-auto p-2 space-y-1 no-scrollbar">
+              {songs
+                .filter(s => s.title.toLowerCase().includes(searchEditQuery.toLowerCase()))
+                .sort((a, b) => a.title.localeCompare(b.title))
+                .map(song => (
+                  <button
+                    key={song.title}
+                    onClick={() => {
+                      setEditingSongTitle(song.title);
+                      setEditorTitle(song.title);
+                      setEditorContent(song.content);
+                      setEditorCollection(song.collection);
+                    }}
+                    className={`w-full text-left p-2.5 rounded-lg text-xs transition-all flex flex-col gap-0.5 border ${
+                      editingSongTitle === song.title
+                      ? 'bg-slate-500/20 border-slate-500/30 text-white shadow-sm'
+                      : 'border-transparent text-white/40 hover:bg-white/5 hover:text-white/60'
+                    }`}
+                  >
+                    <span className="font-semibold truncate">{song.title}</span>
+                    <span className="text-[10px] opacity-50">{song.collection}</span>
+                  </button>
+                ))
+              }
+            </div>
+
+            {editingSongTitle && (
+              <div className="p-3 border-t border-white/5 bg-slate-900/40">
+                <button 
+                  onClick={() => {
+                    setEditingSongTitle(null);
+                    setEditorTitle('');
+                    setEditorContent('');
                   }}
-                  className="w-full py-2.5 rounded-xl text-[13px] font-semibold text-white flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-md"
-                  style={{ background: 'linear-gradient(135deg, #64748b, #475569)' }}
+                  className="w-full py-2 bg-white/5 hover:bg-white/10 text-white/50 text-[11px] font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
                 >
-                  <Upload className="w-4 h-4" />
-                  Importar JSON
+                  <Plus className="w-3 h-3" />
+                  Novo Louvor
                 </button>
               </div>
+            )}
+          </div>
 
-              {/* Separador */}
-              <div className="flex items-center gap-3">
-                <div className="flex-1 h-px bg-white/5"></div>
-                <span className="text-[11px] text-white/20 font-semibold uppercase tracking-widest">Novo Louvor</span>
-                <div className="flex-1 h-px bg-white/5"></div>
+          {/* Painel de Conteúdo */}
+          <div className="flex-1 overflow-y-auto p-8 bg-slate-950/20">
+            <div className="max-w-2xl mx-auto flex flex-col gap-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold text-white tracking-tight">
+                    {editingSongTitle ? 'Editar Louvor' : 'Adicionar Louvor'}
+                  </h2>
+                  <p className="text-sm text-white/30 mt-1">
+                    {editingSongTitle 
+                      ? `Editando: ${editingSongTitle}` 
+                      : 'Adicione um novo louvor à sua biblioteca ou importe um arquivo JSON.'}
+                  </p>
+                </div>
+                {editingSongTitle && (
+                  <button 
+                    onClick={() => {
+                      setEditingSongTitle(null);
+                      setEditorTitle('');
+                      setEditorContent('');
+                    }}
+                    className="p-2 hover:bg-white/5 rounded-full text-white/20 hover:text-white/50 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                )}
               </div>
 
-              {/* Formulário Adicionar */}
-              <div className="flex flex-col gap-4">
-                {/* Título + Coleção lado a lado */}
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Título */}
+              {!editingSongTitle && (
+                <>
+                  <div className="p-5 rounded-xl border border-white/5 bg-white/[0.02]">
+                    <h3 className="text-[14px] font-semibold text-white/80 flex items-center gap-2 mb-2">
+                      <Upload className="w-4 h-4 text-slate-400" />
+                      Importar Louvores
+                    </h3>
+                    <p className="text-[12px] text-white/30 mb-4 leading-relaxed">
+                      Selecione um arquivo JSON para importar louvores massa para a biblioteca.
+                    </p>
+                    <button
+                      onClick={async () => {
+                        try {
+                          const filePath = await open({
+                            multiple: false,
+                            filters: [{ name: 'JSON', extensions: ['json'] }],
+                          });
+                          if (filePath) {
+                            const content = await readTextFile(filePath as string);
+                            const data = JSON.parse(content);
+                            const result = importSongsFromJSON(Array.isArray(data) ? data : [data]);
+                            if (result.added > 0) {
+                              setSuccessMessage(`${result.added} louvor(es) importado(s)!${result.duplicates > 0 ? ` (${result.duplicates} duplicata(s) ignorada(s))` : ''}`);
+                            } else {
+                              setSuccessMessage(`Nenhum louvor novo encontrado. ${result.duplicates} já existiam.`);
+                            }
+                            setShowSuccessToast(true);
+                            setTimeout(() => setShowSuccessToast(false), 4000);
+                          }
+                        } catch (e) {
+                          console.error('Erro ao importar:', e);
+                          alert('Erro ao abrir seletor de arquivos: ' + JSON.stringify(e));
+                        }
+                      }}
+                      className="w-full py-2.5 rounded-xl text-[13px] font-semibold text-white flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-md"
+                      style={{ background: 'linear-gradient(135deg, #64748b, #475569)' }}
+                    >
+                      <Upload className="w-4 h-4" />
+                      Importar JSON
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-px bg-white/5"></div>
+                    <span className="text-[11px] text-white/20 font-semibold uppercase tracking-widest">Ou Manualmente</span>
+                    <div className="flex-1 h-px bg-white/5"></div>
+                  </div>
+                </>
+              )}
+
+              {/* Formulário */}
+              <div className="flex flex-col gap-6">
+                <div className="grid grid-cols-2 gap-6">
                   <div>
                     <label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2 block">Título</label>
                     <input
                       type="text"
                       placeholder="Ex: O Sangue de Jesus Tem Poder"
-                      className="w-full px-3 py-2.5 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-slate-500/50 focus:ring-1 focus:ring-slate-500/20 placeholder:text-white/20"
-                      style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+                      className="w-full px-4 py-3 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-slate-500/50 focus:ring-1 focus:ring-slate-500/20 placeholder:text-white/20 bg-white/5 text-white"
                       value={editorTitle}
                       onChange={(e) => setEditorTitle(e.target.value)}
                     />
                   </div>
 
-                  {/* Coleção */}
                   <div>
                     <label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2 block">Coleção</label>
-                    <div className="flex gap-1.5">
+                    <div className="flex gap-1.5 h-[46px]">
                       {ALLOWED_COLLECTIONS.map(col => (
                         <button
                           key={col}
                           onClick={() => setEditorCollection(col)}
-                          className={`flex-1 text-center px-3 py-2.5 rounded-xl text-[13px] font-medium border transition-all ${
+                          className={`flex-1 text-center px-1 py-1 rounded-xl text-[11px] font-medium border transition-all ${
                             editorCollection === col 
                               ? 'text-white border-slate-500/40 shadow-md' 
                               : 'text-white/50 border-white/5 hover:text-white/80 hover:border-white/10 hover:bg-white/[0.03]'
                           }`}
-                          style={editorCollection === col ? { background: 'linear-gradient(135deg, rgba(100,116,139,0.25), rgba(71,85,105,0.15))' } : { backgroundColor: 'rgba(255,255,255,0.02)' }}
+                          style={editorCollection === col ? { background: 'linear-gradient(135deg, rgba(100,116,139,0.3), rgba(71,85,105,0.2))' } : { backgroundColor: 'rgba(255,255,255,0.02)' }}
                         >
                           {col.replace(" 2018", "")}
                         </button>
@@ -368,45 +445,78 @@ function App() {
                   </div>
                 </div>
 
-                {/* Letra */}
                 <div>
                   <label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2 block">Letra do Louvor</label>
                   <textarea
                     placeholder={"Cole a letra aqui...\n\nSepare estrofes com uma linha em branco.\nCada bloco separado será uma cena na projeção."}
-                    className="w-full px-4 py-3 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-slate-500/50 focus:ring-1 focus:ring-slate-500/20 placeholder:text-white/15 resize-none leading-relaxed"
-                    style={{ backgroundColor: 'rgba(255,255,255,0.05)', minHeight: '320px' }}
+                    className="w-full px-4 py-4 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-slate-500/50 focus:ring-1 focus:ring-slate-500/20 placeholder:text-white/15 resize-none leading-relaxed text-white"
+                    style={{ backgroundColor: 'rgba(255,255,255,0.05)', minHeight: '400px' }}
                     value={editorContent}
                     onChange={(e) => setEditorContent(e.target.value)}
                   />
                 </div>
 
-                {/* Botão Adicionar */}
-                <button
-                  onClick={() => {
-                    if (!editorTitle.trim() || !editorContent.trim()) return;
-                    const result = addSongToCollection(editorTitle, editorContent, editorCollection);
-                    if (result.duplicate) {
-                      setDuplicateTitle(result.existingTitle || editorTitle);
-                      setShowDuplicateModal(true);
-                    } else {
-                      setEditorTitle('');
-                      setEditorContent('');
-                      setSuccessMessage(`"${editorTitle.trim()}" adicionado com sucesso!`);
-                      setShowSuccessToast(true);
-                      setTimeout(() => setShowSuccessToast(false), 3000);
-                    }
-                  }}
-                  disabled={!editorTitle.trim() || !editorContent.trim()}
-                  className="w-full py-3 rounded-xl text-[14px] font-semibold text-white flex items-center justify-center gap-2 transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-90"
-                  style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
-                >
-                  <Send className="w-4 h-4" />
-                  Adicionar Louvor
-                </button>
+                <div className="flex gap-3">
+                  {editingSongTitle && (
+                    <button
+                      onClick={() => {
+                        setEditingSongTitle(null);
+                        setEditorTitle('');
+                        setEditorContent('');
+                      }}
+                      className="flex-1 py-3.5 rounded-xl text-[14px] font-semibold text-white/60 bg-white/5 hover:bg-white/10 transition-all"
+                    >
+                      Cancelar
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      if (!editorTitle.trim() || !editorContent.trim()) return;
+                      
+                      if (editingSongTitle) {
+                        const result = updateSong(editingSongTitle, { 
+                          title: editorTitle, 
+                          content: editorContent, 
+                          collection: editorCollection 
+                        });
+                        if (result.duplicate) {
+                          setDuplicateTitle(editorTitle);
+                          setShowDuplicateModal(true);
+                        } else {
+                          setEditingSongTitle(null);
+                          setEditorTitle('');
+                          setEditorContent('');
+                          setSuccessMessage(`"${editorTitle.trim()}" atualizado com sucesso!`);
+                          setShowSuccessToast(true);
+                          setTimeout(() => setShowSuccessToast(false), 3000);
+                        }
+                      } else {
+                        const result = addSongToCollection(editorTitle, editorContent, editorCollection);
+                        if (result.duplicate) {
+                          setDuplicateTitle(result.existingTitle || editorTitle);
+                          setShowDuplicateModal(true);
+                        } else {
+                          setEditorTitle('');
+                          setEditorContent('');
+                          setSuccessMessage(`"${editorTitle.trim()}" adicionado com sucesso!`);
+                          setShowSuccessToast(true);
+                          setTimeout(() => setShowSuccessToast(false), 3000);
+                        }
+                      }
+                    }}
+                    disabled={!editorTitle.trim() || !editorContent.trim()}
+                    className="flex-[2] py-3.5 rounded-xl text-[14px] font-semibold text-white flex items-center justify-center gap-2 transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-90"
+                    style={{ background: editingSongTitle ? 'linear-gradient(135deg, #3b82f6, #2563eb)' : 'linear-gradient(135deg, #10b981, #059669)' }}
+                  >
+                    {editingSongTitle ? <FilePenLine className="w-4 h-4" /> : <Send className="w-4 h-4" />}
+                    {editingSongTitle ? 'Salvar Alterações' : 'Adicionar Louvor'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
       )}
 
       {/* ═══ SIDEBAR ═══ */}

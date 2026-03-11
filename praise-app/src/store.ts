@@ -40,7 +40,8 @@ export interface AppState {
   moveSongInBiblePlaylist: (oldIndex: number, newIndex: number) => void;
   addSongToCollection: (title: string, content: string, collectionName: string) => { duplicate: boolean; existingTitle?: string };
   getExportData: () => Collection[];
-  importSongsFromJSON: (data: Collection[]) => { added: number; duplicates: number };
+  importSongsFromJSON: (data: any) => { added: number; duplicates: number };
+  updateSong: (oldTitle: string, updatedSong: Song) => { success: boolean; duplicate?: boolean };
 }
 
 export const ALLOWED_COLLECTIONS = ["Coletânea 2018", "CIA 2018", "Avulsos 2018"];
@@ -192,5 +193,58 @@ export const useStore = create<AppState>((set, get) => ({
     }
 
     return { added, duplicates };
+  },
+
+  updateSong: (oldTitle, updatedSong) => {
+    const state = get();
+    const normalizedOldTitle = oldTitle.trim().toUpperCase();
+    const normalizedNewTitle = updatedSong.title.trim().toUpperCase();
+
+    // Se o título mudou, verificar se o novo título já existe em OUTRO louvor
+    if (normalizedOldTitle !== normalizedNewTitle) {
+      const isDuplicate = state.songs.some(
+        s => s.title.trim().toUpperCase() === normalizedNewTitle && s.title.trim().toUpperCase() !== normalizedOldTitle
+      );
+      if (isDuplicate) return { success: false, duplicate: true };
+    }
+
+    set((s) => {
+      // 1. Atualizar lista global de songs
+      const updatedSongs = s.songs.map(song => 
+        song.title.trim().toUpperCase() === normalizedOldTitle 
+          ? { ...updatedSong, title: updatedSong.title.trim() } 
+          : song
+      );
+
+      // 2. Atualizar coleções
+      const updatedCollections = s.collections.map(col => {
+        // Encontra a música na coleção (mesmo que ela esteja mudando de coleção, 
+        // removemos da antiga e adicionamos na nova se necessário, 
+        // mas aqui vamos apenas atualizar onde ela estiver ou recomeçar)
+        
+        // Remove a música da coleção onde ela estava (pelo título antigo)
+        const songsWithoutOld = col.songs.filter(
+          s => s.title.trim().toUpperCase() !== normalizedOldTitle
+        );
+
+        // Se esta for a coleção de destino, adicionamos a música atualizada
+        if (col.name === updatedSong.collection) {
+          return {
+            ...col,
+            songs: [...songsWithoutOld, { title: updatedSong.title.trim(), content: updatedSong.content }]
+          };
+        }
+        
+        // Se não for a coleção de destino, apenas retornamos a lista sem a música antiga
+        return { ...col, songs: songsWithoutOld };
+      });
+
+      return {
+        songs: updatedSongs,
+        collections: updatedCollections,
+      };
+    });
+
+    return { success: true };
   },
 }));
