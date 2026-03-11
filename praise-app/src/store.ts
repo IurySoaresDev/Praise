@@ -101,7 +101,7 @@ export const useStore = create<AppState>((set, get) => ({
   // Initial Backgrounds (using relative paths for Vite/Tauri)
   activeTab: 'songs',
   songBackground: '/backgrounds/bg-song.jpg',
-  songBodyBackground: '/backgrounds/bg-song.jpg',
+  songBodyBackground: '/backgrounds/bg-song-body.jpg',
   bibleBackground: '/backgrounds/bg-bible.jpg',
 
   setSearchQuery: (query) => set({ searchQuery: query }),
