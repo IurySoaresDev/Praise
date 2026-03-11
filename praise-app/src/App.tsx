@@ -306,7 +306,7 @@ function App() {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-2 space-y-1 no-scrollbar">
+            <div className="flex-1 overflow-y-auto p-2 space-y-1">
               {songs
                 .filter(s => {
                   const matchesSearch = s.title.toLowerCase().includes(searchEditQuery.toLowerCase());
