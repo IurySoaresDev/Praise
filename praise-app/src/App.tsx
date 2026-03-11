@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { invoke } from "@tauri-apps/api/core";
+import { invoke, convertFileSrc } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { useStore, ALLOWED_COLLECTIONS } from "./store";
@@ -622,7 +622,7 @@ function App() {
 
                 <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border-2 border-white/5 mb-6 group relative shadow-inner">
                   <img 
-                    src={songBackground} 
+                    src={songBackground.startsWith('/') ? songBackground : convertFileSrc(songBackground)} 
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                     alt="Song Background Preview"
                   />
@@ -665,7 +665,7 @@ function App() {
 
                 <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border-2 border-white/5 mb-6 group relative shadow-inner">
                   <img 
-                    src={bibleBackground} 
+                    src={bibleBackground.startsWith('/') ? bibleBackground : convertFileSrc(bibleBackground)} 
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                     alt="Bible Background Preview"
                   />
