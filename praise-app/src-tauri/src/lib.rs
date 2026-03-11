@@ -89,16 +89,21 @@ fn project_slide(
 }
 
 #[tauri::command]
-fn save_songs(app_handle: tauri::AppHandle, data: serde_json::Value) -> Result<(), String> {
+fn save_songs(_app_handle: tauri::AppHandle, data: serde_json::Value) -> Result<(), String> {
     // Resolve the path to the data.json file inside the src/assets directory
     // This allows the app to overwrite the default data file
     let current_dir = std::env::current_dir().map_err(|e| e.to_string())?;
     
     // Naive resolution to the src/assets/data.json in development
-    let file_path = current_dir.join("src").join("assets").join("data.json");
+    // During `tauri dev`, current_dir is usually src-tauri.
+    let file_path = if current_dir.ends_with("src-tauri") {
+        current_dir.join("..").join("src").join("assets").join("data.json")
+    } else {
+        current_dir.join("src").join("assets").join("data.json")
+    };
     
     // Write the JSON data directly to the file
-    let json_string = serde_json::to_string(&data).map_err(|e| e.to_string())?;
+    let json_string = serde_json::to_string_pretty(&data).map_err(|e| e.to_string())?;
     
     std::fs::write(&file_path, json_string).map_err(|e| {
         format!("Failed to write to file {:?}: {}", file_path, e)
