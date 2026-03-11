@@ -302,13 +302,21 @@ function App() {
         
         <div className="flex items-center h-full">
           <button 
-            onClick={() => appWindow.minimize()}
+            onClick={() => {
+              console.log("Minimizing...");
+              appWindow.minimize();
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
             className="h-8 w-10 flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/5 transition-colors"
           >
             <Minus className="w-4 h-4" />
           </button>
           <button 
-            onClick={() => appWindow.close()}
+            onClick={() => {
+              console.log("Closing...");
+              appWindow.close();
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
             className="h-8 w-10 flex items-center justify-center text-slate-500 hover:text-white hover:bg-red-500/80 transition-colors"
           >
             <X className="w-4 h-4" />
