@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::sync::Mutex;
-use tauri::{Manager, Emitter, Listener, WebviewWindowBuilder, WebviewUrl, State};
+use tauri::{Manager, Emitter, WebviewWindowBuilder, WebviewUrl, State};
 
 #[derive(Clone, Serialize, Deserialize)]
 struct ProjectionPayload {
@@ -137,6 +137,9 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
+        .setup(|_app| {
+            Ok(())
+        })
         .manage(CurrentSlideState(Mutex::new(None)))
         .invoke_handler(tauri::generate_handler![get_monitors, project_slide, save_songs, close_projection, get_current_slide])
         .run(tauri::generate_context!())
