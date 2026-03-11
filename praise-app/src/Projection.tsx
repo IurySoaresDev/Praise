@@ -33,13 +33,13 @@ function Projection() {
 
   return (
     <div className="w-screen h-screen bg-black relative flex flex-col overflow-hidden">
-      {/* Camada de Fundo - cobre 100% da tela */}
+      {/* Camada de Fundo - cobre 100% da tela exatamente como original */}
       {backgroundUrl && (
         <div 
           className="absolute inset-0 z-0"
           style={{
             backgroundImage: `url(${backgroundUrl})`,
-            backgroundSize: 'cover',
+            backgroundSize: '100% 100%',
             backgroundPosition: 'center center',
             backgroundRepeat: 'no-repeat',
           }}
@@ -51,9 +51,9 @@ function Projection() {
 
       {/* Título do louvor no topo (na faixa vermelha da imagem) */}
       {data.title && data.item_type !== 'empty' && (
-        <div className="relative z-10 w-full pt-4 pb-3 px-8 flex items-center justify-center" 
-             style={{ minHeight: '80px' }}>
-          <h1 className="text-white text-2xl md:text-3xl font-bold uppercase tracking-widest text-center drop-shadow-2xl projection-shadow">
+        <div className="relative z-10 w-full flex items-center justify-center pt-2" 
+             style={{ height: '12vh', minHeight: '80px', maxHeight: '120px' }}>
+          <h1 className="text-white text-3xl md:text-5xl lg:text-6xl font-bold uppercase tracking-widest text-center drop-shadow-2xl projection-shadow truncate px-8">
             {data.title}
           </h1>
         </div>
@@ -64,8 +64,8 @@ function Projection() {
         <div 
           className={`text-white font-bold text-center w-full leading-snug tracking-wide projection-shadow drop-shadow-2xl ${
             data.item_type === 'bible' 
-              ? 'text-3xl md:text-4xl lg:text-5xl italic font-medium' 
-              : 'text-3xl md:text-5xl lg:text-7xl uppercase'
+              ? 'text-4xl md:text-6xl lg:text-7xl italic font-medium' 
+              : 'text-4xl md:text-6xl lg:text-[5.5rem] uppercase'
           }`}
           dangerouslySetInnerHTML={{ __html: data.content }} 
         />
