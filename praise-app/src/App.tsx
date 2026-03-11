@@ -57,6 +57,7 @@ function App() {
   const [successMessage, setSuccessMessage] = useState('');
   const [editingSongTitle, setEditingSongTitle] = useState<string | null>(null);
   const [searchEditQuery, setSearchEditQuery] = useState('');
+  const [selectedEditCategory, setSelectedEditCategory] = useState("Todas");
 
   useEffect(() => {
     setIsLoadingBible(true);
@@ -268,7 +269,7 @@ function App() {
 
       {/* ═══ EDITOR FULL-WIDTH ═══ */}
       {activeTab === 'editor' && (
-        <div className="flex-1 flex flex-col h-screen overflow-y-auto" style={{ backgroundColor: '#0f172a' }}>
+        <div className="flex-1 flex flex-col h-screen overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
         <div className="flex-1 flex min-w-0 animate-fade-in" style={{ backgroundColor: '#0f172a' }}>
           {/* Sidebar de Seleção para Edição */}
           <div className="w-[300px] flex flex-col border-r border-white/5 bg-[#1e293b]/30">
@@ -287,11 +288,31 @@ function App() {
                   onChange={(e) => setSearchEditQuery(e.target.value)}
                 />
               </div>
+
+              <div className="flex gap-1 overflow-x-auto mt-3 pb-1 no-scrollbar">
+                {categories.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedEditCategory(cat)}
+                    className={`whitespace-nowrap px-2 py-1 text-[10px] font-bold rounded-lg transition-all flex-shrink-0 border ${
+                      selectedEditCategory === cat 
+                        ? "text-white border-slate-500/30 bg-slate-500/20 shadow-sm" 
+                        : "text-white/30 border-transparent hover:text-white/60 hover:bg-white/5"
+                    }`}
+                  >
+                    {cat.replace(" 2018", "")}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="flex-1 overflow-y-auto p-2 space-y-1 no-scrollbar">
               {songs
-                .filter(s => s.title.toLowerCase().includes(searchEditQuery.toLowerCase()))
+                .filter(s => {
+                  const matchesSearch = s.title.toLowerCase().includes(searchEditQuery.toLowerCase());
+                  const matchesCategory = selectedEditCategory === "Todas" || s.collection === selectedEditCategory;
+                  return matchesSearch && matchesCategory;
+                })
                 .sort((a, b) => a.title.localeCompare(b.title))
                 .map(song => (
                   <button
