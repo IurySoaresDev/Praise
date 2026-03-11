@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
-import { convertFileSrc } from "@tauri-apps/api/core";
+import { invoke, convertFileSrc } from "@tauri-apps/api/core";
 
 function Projection() {
   const [data, setData] = useState<{ title: string; content: string; background: string | null; item_type: string }>({
@@ -11,6 +11,16 @@ function Projection() {
   });
 
   useEffect(() => {
+    // Busca o slide atual do estado do Rust assim que a janela montar
+    invoke<{ title: string; content: string; background: string | null; item_type: string } | null>("get_current_slide")
+      .then(slide => {
+        if (slide) {
+          console.log("Slide inicial carregado:", slide);
+          setData(slide);
+        }
+      })
+      .catch(err => console.error("Erro ao carregar slide inicial:", err));
+
     console.log("Projetor montado, aguardando eventos...");
     
     const unlisten = listen<{ title: string; content: string; background: string | null; item_type: string }>("update_projection", (event) => {

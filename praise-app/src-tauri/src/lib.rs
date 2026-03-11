@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
-use tauri::{Manager, Emitter, Listener, WebviewWindowBuilder, WebviewUrl};
+use std::sync::Mutex;
+use tauri::{Manager, Emitter, Listener, WebviewWindowBuilder, WebviewUrl, State};
 
 #[derive(Clone, Serialize, Deserialize)]
 struct ProjectionPayload {
@@ -8,6 +9,8 @@ struct ProjectionPayload {
     background: Option<String>,
     item_type: String, // "song" | "bible" | "empty"
 }
+
+struct CurrentSlideState(Mutex<Option<ProjectionPayload>>);
 
 #[tauri::command]
 fn get_monitors(app_handle: tauri::AppHandle) -> Result<Vec<String>, String> {
@@ -31,17 +34,25 @@ fn project_slide(
     background: Option<String>,
     item_type: String
 ) -> Result<(), String> {
+    let payload = ProjectionPayload { 
+        title: title.clone(),
+        content: content.clone(),
+        background: background.clone(),
+        item_type: item_type.clone(),
+    };
+
+    // Save payload to state
+    let state: State<'_, CurrentSlideState> = app_handle.state();
+    if let Ok(mut current_slide) = state.0.lock() {
+        *current_slide = Some(payload.clone());
+    }
+
     // Busca a janela de projeção se ela já existir
     let projection_window = app_handle.get_webview_window("projection");
 
     if let Some(window) = projection_window {
         // Se a janela já existe, apenas emite o evento para atualizar o conteúdo
-        window.emit("update_projection", ProjectionPayload { 
-            title: title.clone(),
-            content: content.clone(),
-            background: background.clone(),
-            item_type: item_type.clone(),
-        })
+        window.emit("update_projection", payload)
         .map_err(|e| {
             println!("Erro ao emitir evento: {}", e);
             e.to_string()
@@ -74,23 +85,23 @@ fn project_slide(
 
         let window = builder.build().map_err(|e| e.to_string())?;
         
-        let title_clone = title.clone();
-        let content_clone = content.clone();
-        let background_clone = background.clone();
-        let item_type_clone = item_type.clone();
-        
+        // We still keep the slight delay just in case, but now the window can also actively check the state via get_current_slide when it mounts.
         std::thread::spawn(move || {
             std::thread::sleep(std::time::Duration::from_millis(500));
-            let _ = window.emit("update_projection", ProjectionPayload { 
-                title: title_clone,
-                content: content_clone,
-                background: background_clone,
-                item_type: item_type_clone,
-            });
+            let _ = window.emit("update_projection", payload);
         });
     }
 
     Ok(())
+}
+
+#[tauri::command]
+fn get_current_slide(state: State<'_, CurrentSlideState>) -> Result<Option<ProjectionPayload>, String> {
+    if let Ok(current_slide) = state.0.lock() {
+        Ok(current_slide.clone())
+    } else {
+        Err("Failed to lock state".into())
+    }
 }
 
 #[tauri::command]
@@ -126,7 +137,8 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
-        .invoke_handler(tauri::generate_handler![get_monitors, project_slide, save_songs, close_projection])
+        .manage(CurrentSlideState(Mutex::new(None)))
+        .invoke_handler(tauri::generate_handler![get_monitors, project_slide, save_songs, close_projection, get_current_slide])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
