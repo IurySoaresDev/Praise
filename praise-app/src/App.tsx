@@ -369,9 +369,9 @@ function App() {
                   return <div className="text-center py-10 opacity-20 text-[10px]">Nenhum louvor encontrado</div>;
                 }
 
-                return filtered.map(song => (
+                return filtered.map((song, idx) => (
                   <button
-                    key={song.title}
+                    key={`${song.title}-${song.collection}-${idx}`}
                     onClick={() => {
                       setEditingSongTitle(song.title);
                       setEditorTitle(song.title);

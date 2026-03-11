@@ -55,11 +55,24 @@ export interface AppState {
 
 export const ALLOWED_COLLECTIONS = ["Coletânea 2018", "CIA 2018", "Avulsos 2018"];
 
-// Flatten songs from all collections for easier searching
-const collections = (rawData as Collection[]).filter(c => ALLOWED_COLLECTIONS.includes(c.name));
-const allSongs: Song[] = collections.flatMap(c => 
-  c.songs.map(s => ({ ...s, collection: c.name }))
-);
+// Flatten songs from all collections and ensure uniqueness
+const initialCollections = (rawData as Collection[]).filter(c => ALLOWED_COLLECTIONS.includes(c.name));
+const collections: Collection[] = [];
+const allSongs: Song[] = [];
+const seenTitles = new Set<string>();
+
+initialCollections.forEach(c => {
+  const uniqueSongs: Omit<Song, 'collection'>[] = [];
+  c.songs.forEach(s => {
+    const normalizedTitle = (s.title || "").trim().toUpperCase();
+    if (normalizedTitle && !seenTitles.has(normalizedTitle)) {
+      seenTitles.add(normalizedTitle);
+      uniqueSongs.push(s);
+      allSongs.push({ ...s, collection: c.name });
+    }
+  });
+  collections.push({ ...c, songs: uniqueSongs });
+});
 
 export const useStore = create<AppState>((set, get) => ({
   collections,
