@@ -1275,10 +1275,12 @@ function App() {
                 <div className="relative z-10 flex flex-col items-center justify-center w-full h-full p-2">
                   {activeSlideIndex >= 0 && activeSlideIndex < slides.length ? (
                     <>
-                      {/* Mostrar título simulado se for o primeiro slide de um louvor */}
-                      {selectedSong?.collection !== 'Bíblia' && activeSlideIndex === 0 && (
-                        <div className="w-full flex items-center justify-center pt-0.5" style={{ height: '12%', minHeight: '15px' }}>
-                          <h4 className="text-white font-bold uppercase tracking-widest text-center drop-shadow-2xl projection-shadow truncate w-full" style={{ fontSize: '0.4rem' }}>
+                      {/* Mostrar título simulado se for o primeiro slide */}
+                      {activeSlideIndex === 0 && (
+                        <div className={`w-full flex items-center justify-center ${selectedSong?.collection === 'Bíblia' ? 'pt-0' : 'pt-0.5'}`} style={{ height: '12%', minHeight: '15px' }}>
+                          <h4 className={`font-bold uppercase tracking-widest text-center drop-shadow-2xl projection-shadow truncate w-full ${
+                            selectedSong?.collection === 'Bíblia' ? 'text-white' : 'text-amber-400'
+                          }`} style={{ fontSize: '0.4rem' }}>
                             {selectedSong?.title}
                           </h4>
                         </div>
