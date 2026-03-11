@@ -11,15 +11,22 @@ function Projection() {
 
   useEffect(() => {
     console.log("Projetor montado, aguardando eventos...");
+    let unlistenFn: (() => void) | undefined;
     
     // Escuta o evento "update_projection" vindo da main window
-    const unlisten = listen<{ content: string; background: string | null; item_type: string }>("update_projection", (event) => {
-      console.log("Evento recebido no projetor:", event.payload);
-      setData(event.payload);
-    });
+    const setupKeys = async () => {
+      unlistenFn = await listen<{ content: string; background: string | null; item_type: string }>("update_projection", (event) => {
+        console.log("Evento recebido no projetor:", event.payload);
+        setData(event.payload);
+      });
+    };
+    
+    setupKeys();
 
     return () => {
-      unlisten.then(f => f());
+      if (unlistenFn) {
+        unlistenFn();
+      }
     };
   }, []);
 

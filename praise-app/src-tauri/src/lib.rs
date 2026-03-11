@@ -43,25 +43,24 @@ fn project_slide(
             println!("Erro ao emitir evento: {}", e);
             e.to_string()
         })?;
-            
     } else if !content.is_empty() {
-        // Se a janela não existe e tem conteúdo pra projetar, nós a criamos.
+        // Navega para /projection (usando roteamento hash do React)
+        let url = WebviewUrl::App("/#/projection".into());
         let mut builder = WebviewWindowBuilder::new(
             &app_handle,
             "projection",
-            WebviewUrl::App("index.html#/projection".into())
+            url
         )
         .title("Praise Projection")
         .fullscreen(true)
-        .always_on_top(true)
+        .always_on_top(false) // Desliguei temporariamente pra nao travar o dev caso de erro
         .decorations(false);
 
-        // Tenta achar o monitor escolhido pelo nome
+        // Tenta achar o monitor escolhido
         if let Ok(monitors) = app_handle.available_monitors() {
             for m in monitors {
                 let name = m.name().map(|n| n.to_string()).unwrap_or_default();
                 if name == monitor {
-                    // Move a janela para o monitor específico
                     let position = m.position();
                     builder = builder.position(position.x.into(), position.y.into());
                     break;
@@ -76,7 +75,8 @@ fn project_slide(
         let item_type_clone = item_type.clone();
         
         std::thread::spawn(move || {
-            std::thread::sleep(std::time::Duration::from_millis(500));
+            // Give React time to load the projection route before emitting
+            std::thread::sleep(std::time::Duration::from_millis(1500));
             let _ = window.emit("update_projection", ProjectionPayload { 
                 content: content_clone,
                 background: background_clone,
