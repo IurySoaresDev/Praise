@@ -336,17 +336,35 @@ function App() {
 
               {/* Coleção */}
               <div>
-                <label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5 block">Coleção</label>
-                <select
-                  className="w-full px-3 py-2 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-slate-500/50 text-white/80"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
-                  value={editorCollection}
-                  onChange={(e) => setEditorCollection(e.target.value)}
-                >
+                <label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2 block">Coleção</label>
+                <div className="flex flex-col gap-1.5">
                   {ALLOWED_COLLECTIONS.map(col => (
-                    <option key={col} value={col}>{col}</option>
+                    <button
+                      key={col}
+                      onClick={() => setEditorCollection(col)}
+                      className={`w-full text-left px-3 py-2.5 rounded-xl text-[13px] font-medium border transition-all flex items-center gap-2.5 ${
+                        editorCollection === col 
+                          ? 'text-white border-slate-500/40 shadow-md' 
+                          : 'text-white/50 border-white/5 hover:text-white/80 hover:border-white/10 hover:bg-white/[0.03]'
+                      }`}
+                      style={editorCollection === col ? { background: 'linear-gradient(135deg, rgba(100,116,139,0.25), rgba(71,85,105,0.15))' } : { backgroundColor: 'rgba(255,255,255,0.02)' }}
+                    >
+                      <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+                        editorCollection === col 
+                          ? 'border-slate-400' 
+                          : 'border-white/15'
+                      }`}>
+                        {editorCollection === col && (
+                          <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
+                        )}
+                      </div>
+                      <span>{col.replace(" 2018", "")}</span>
+                      {editorCollection === col && (
+                        <span className="ml-auto text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Selecionado</span>
+                      )}
+                    </button>
                   ))}
-                </select>
+                </div>
               </div>
 
               {/* Letra */}
