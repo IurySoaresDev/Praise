@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { invoke, convertFileSrc } from "@tauri-apps/api/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 
 function Projection() {
   const [data, setData] = useState<{ title: string; content: string; background: string | null; item_type: string }>({
@@ -28,8 +29,17 @@ function Projection() {
       setData(event.payload);
     });
 
+    // Tecla ESC fecha a janela de projeção (essencial para Windows fullscreen)
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        getCurrentWindow().close();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
     return () => {
       unlisten.then(f => f());
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 

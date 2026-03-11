@@ -184,7 +184,7 @@ function App() {
         title: title,
         content: content,
         background: background || null,
-        itemType: itemType
+        item_type: itemType
       });
     } catch (e) {
       console.error("Erro ao projetar:", e);
