@@ -355,7 +355,7 @@ function App() {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-2 space-y-1 min-h-0 custom-scroll-forced">
+            <div className="flex-1 overflow-y-auto p-2 space-y-1 min-h-0">
               {(() => {
                 const filtered = songs
                   .filter(s => {
