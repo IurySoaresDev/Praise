@@ -4,7 +4,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { useStore, ALLOWED_COLLECTIONS } from "./store";
-import { Search, Monitor, Play, MonitorDot, ChevronRight, ChevronLeft, Plus, Trash2, GripVertical, Square, Music, ListMusic, BookOpen, ArrowLeft, Loader2, FilePenLine, Upload, Send, X, Minus, Snowflake, AlertTriangle, CheckCircle2, Settings } from "lucide-react";
+import { Search, Monitor, Play, MonitorDot, ChevronRight, ChevronLeft, Plus, Trash2, GripVertical, Square, Music, ListMusic, BookOpen, ArrowLeft, Loader2, FilePenLine, Upload, Send, X, Minus, Snowflake, AlertTriangle, CheckCircle2, Settings, Image as ImageIcon } from "lucide-react";
 import "./App.css";
 
 function App() {
@@ -707,8 +707,9 @@ function App() {
                        setTimeout(() => setShowSuccessToast(false), 3000);
                      }
                    }}
-                   className="w-full py-4 rounded-xl bg-white/[0.03] hover:bg-emerald-500/10 text-white font-bold text-[13px] tracking-wide transition-all border border-white/5 hover:border-emerald-500/20 shadow-sm active:scale-[0.98]"
+                   className="w-full py-4 rounded-xl bg-white/[0.03] hover:bg-emerald-500/10 text-white font-bold text-[13px] tracking-wide transition-all border border-white/5 hover:border-emerald-500/20 shadow-sm active:scale-[0.98] flex items-center justify-center gap-2"
                 >
+                  <ImageIcon className="w-4 h-4" />
                   Alterar Imagem
                 </button>
               </div>
@@ -742,8 +743,9 @@ function App() {
                        setTimeout(() => setShowSuccessToast(false), 3000);
                      }
                    }}
-                   className="w-full py-4 rounded-xl bg-white/[0.03] hover:bg-emerald-500/10 text-white font-bold text-[13px] tracking-wide transition-all border border-white/5 hover:border-emerald-500/20 shadow-sm active:scale-[0.98]"
+                   className="w-full py-4 rounded-xl bg-white/[0.03] hover:bg-emerald-500/10 text-white font-bold text-[13px] tracking-wide transition-all border border-white/5 hover:border-emerald-500/20 shadow-sm active:scale-[0.98] flex items-center justify-center gap-2"
                 >
+                  <ImageIcon className="w-4 h-4" />
                   Alterar Imagem
                 </button>
               </div>
@@ -777,8 +779,9 @@ function App() {
                        setTimeout(() => setShowSuccessToast(false), 3000);
                      }
                    }}
-                   className="w-full py-4 rounded-xl bg-white/[0.03] hover:bg-blue-500/10 text-white font-bold text-[13px] tracking-wide transition-all border border-white/5 hover:border-blue-500/20 shadow-sm active:scale-[0.98]"
+                   className="w-full py-4 rounded-xl bg-white/[0.03] hover:bg-blue-500/10 text-white font-bold text-[13px] tracking-wide transition-all border border-white/5 hover:border-blue-500/20 shadow-sm active:scale-[0.98] flex items-center justify-center gap-2"
                 >
+                  <ImageIcon className="w-4 h-4" />
                   Alterar Imagem
                 </button>
               </div>
