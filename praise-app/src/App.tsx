@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { useStore } from "./store";
-import { Search, Monitor, Play, MonitorDot, ChevronRight, ChevronLeft, Plus, Trash2, GripVertical, Square, Music, ListMusic, BookOpen, ArrowLeft, Loader2 } from "lucide-react";
+import { useStore, ALLOWED_COLLECTIONS } from "./store";
+import { Search, Monitor, Play, MonitorDot, ChevronRight, ChevronLeft, Plus, Trash2, GripVertical, Square, Music, ListMusic, BookOpen, ArrowLeft, Loader2, FilePenLine, Download, Send, X, AlertTriangle, CheckCircle2 } from "lucide-react";
 import "./App.css";
 
 function App() {
@@ -23,6 +23,8 @@ function App() {
     addToBiblePlaylist,
     removeFromBiblePlaylist,
     moveSongInBiblePlaylist,
+    addSongToCollection,
+    getExportData,
   } = useStore();
 
   const [monitors, setMonitors] = useState<string[]>([]);
@@ -32,7 +34,7 @@ function App() {
   const [isProjecting, setIsProjecting] = useState(false);
 
   // Bible State
-  const [activeTab, setActiveTab] = useState<'songs' | 'bible'>('songs');
+  const [activeTab, setActiveTab] = useState<'songs' | 'bible' | 'editor'>('songs');
   const [selectedBook, setSelectedBook] = useState<any>(null);
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
   const [searchBibleQuery, setSearchBibleQuery] = useState('');
@@ -41,6 +43,15 @@ function App() {
   const [bibleVersion, setBibleVersion] = useState<'NVI' | 'ACF' | 'ARA'>('ARA');
   const [bibleData, setBibleData] = useState<any[]>([]);
   const [isLoadingBible, setIsLoadingBible] = useState(true);
+
+  // Editor State
+  const [editorTitle, setEditorTitle] = useState('');
+  const [editorContent, setEditorContent] = useState('');
+  const [editorCollection, setEditorCollection] = useState(ALLOWED_COLLECTIONS[0]);
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [duplicateTitle, setDuplicateTitle] = useState('');
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     setIsLoadingBible(true);
@@ -235,6 +246,18 @@ function App() {
             <BookOpen className="w-5 h-5" />
             <span className="text-[9px] font-bold uppercase tracking-widest">Bíblia</span>
           </button>
+
+          <button 
+            onClick={() => setActiveTab('editor')}
+            className={`w-full aspect-square rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all ${
+              activeTab === 'editor' 
+                ? 'bg-slate-500/30 text-white shadow-inner scale-95 glow-brand' 
+                : 'text-white/40 hover:text-white/70 hover:bg-white/5'
+            }`}
+          >
+            <FilePenLine className="w-5 h-5" />
+            <span className="text-[9px] font-bold uppercase tracking-widest">Editar</span>
+          </button>
         </div>
       </div>
 
@@ -246,17 +269,124 @@ function App() {
           <div className="p-4 flex items-center gap-2.5">
             <div>
               <h1 className="text-base font-bold tracking-tight text-white leading-none">
-                {activeTab === 'songs' ? 'Louvores' : `Bíblia Sagrada (${bibleVersion})`}
+                {activeTab === 'songs' ? 'Louvores' : activeTab === 'bible' ? `Bíblia Sagrada (${bibleVersion})` : 'Editar Louvores'}
               </h1>
               <p className="text-[10px] text-white/40 font-medium mt-0.5">
-                {activeTab === 'songs' ? 'Biblioteca e Adoração' : 'Navegação por Livros'}
+                {activeTab === 'songs' ? 'Biblioteca e Adoração' : activeTab === 'bible' ? 'Navegação por Livros' : 'Adicionar e Exportar'}
               </p>
             </div>
           </div>
         </div>
 
         {/* Conteúdo Dinâmico */}
-        {activeTab === 'songs' ? (
+        {activeTab === 'editor' ? (
+          /* ═══ ABA EDITOR ═══ */
+          <div className="flex flex-col flex-1 min-h-0 p-4 gap-4 overflow-y-auto">
+            {/* Botão Exportar */}
+            <div className="p-4 rounded-xl border border-white/5" style={{ backgroundColor: 'rgba(255,255,255,0.02)' }}>
+              <h3 className="text-[13px] font-semibold text-white/80 flex items-center gap-2 mb-3">
+                <Download className="w-4 h-4 text-slate-400" />
+                Exportar Louvores
+              </h3>
+              <p className="text-[11px] text-white/30 mb-3 leading-relaxed">
+                Baixe um arquivo JSON com todos os louvores atuais da biblioteca.
+              </p>
+              <button
+                onClick={() => {
+                  const data = getExportData();
+                  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = 'louvores.json';
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  URL.revokeObjectURL(url);
+                }}
+                className="w-full py-2 rounded-xl text-[13px] font-semibold text-white flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-md"
+                style={{ background: 'linear-gradient(135deg, #64748b, #475569)' }}
+              >
+                <Download className="w-4 h-4" />
+                Exportar JSON
+              </button>
+            </div>
+
+            {/* Separador */}
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-px bg-white/5"></div>
+              <span className="text-[10px] text-white/20 font-semibold uppercase tracking-widest">Novo Louvor</span>
+              <div className="flex-1 h-px bg-white/5"></div>
+            </div>
+
+            {/* Formulário Adicionar */}
+            <div className="flex flex-col gap-3">
+              {/* Título */}
+              <div>
+                <label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5 block">Título</label>
+                <input
+                  type="text"
+                  placeholder="Ex: O Sangue de Jesus Tem Poder"
+                  className="w-full px-3 py-2 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-slate-500/50 focus:ring-1 focus:ring-slate-500/20 placeholder:text-white/20"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+                  value={editorTitle}
+                  onChange={(e) => setEditorTitle(e.target.value)}
+                />
+              </div>
+
+              {/* Coleção */}
+              <div>
+                <label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5 block">Coleção</label>
+                <select
+                  className="w-full px-3 py-2 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-slate-500/50 text-white/80"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+                  value={editorCollection}
+                  onChange={(e) => setEditorCollection(e.target.value)}
+                >
+                  {ALLOWED_COLLECTIONS.map(col => (
+                    <option key={col} value={col}>{col}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Letra */}
+              <div>
+                <label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5 block">Letra do Louvor</label>
+                <textarea
+                  placeholder={"Cole a letra aqui...\n\nSepare estrofes com uma linha em branco.\nCada bloco separado será uma cena na projeção."}
+                  className="w-full px-3 py-2.5 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-slate-500/50 focus:ring-1 focus:ring-slate-500/20 placeholder:text-white/15 resize-none leading-relaxed"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', minHeight: '200px' }}
+                  value={editorContent}
+                  onChange={(e) => setEditorContent(e.target.value)}
+                />
+              </div>
+
+              {/* Botão Adicionar */}
+              <button
+                onClick={() => {
+                  if (!editorTitle.trim() || !editorContent.trim()) return;
+                  const result = addSongToCollection(editorTitle, editorContent, editorCollection);
+                  if (result.duplicate) {
+                    setDuplicateTitle(result.existingTitle || editorTitle);
+                    setShowDuplicateModal(true);
+                  } else {
+                    setEditorTitle('');
+                    setEditorContent('');
+                    setSuccessMessage(`"${editorTitle.trim()}" adicionado com sucesso!`);
+                    setShowSuccessToast(true);
+                    setTimeout(() => setShowSuccessToast(false), 3000);
+                  }
+                }}
+                disabled={!editorTitle.trim() || !editorContent.trim()}
+                className="w-full py-2.5 rounded-xl text-[13px] font-semibold text-white flex items-center justify-center gap-2 transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-90"
+                style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
+              >
+                <Send className="w-4 h-4" />
+                Adicionar Louvor
+              </button>
+            </div>
+          </div>
+        ) : activeTab === 'songs' ? (
           <div className="flex flex-col flex-1 min-h-0">
             {/* Search + Categories */}
             <div className="p-4 flex flex-col gap-3 shrink-0 border-b border-white/5">
@@ -775,6 +905,43 @@ function App() {
           </div>
         )}
       </div>
+      {/* ═══ MODAL DE DUPLICATA ═══ */}
+      {showDuplicateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop" onClick={() => setShowDuplicateModal(false)}>
+          <div className="modal-content p-6 rounded-2xl border border-white/10 shadow-2xl max-w-sm w-full mx-4" style={{ backgroundColor: '#1e293b' }} onClick={e => e.stopPropagation()}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-500/10 border border-amber-500/20">
+                <AlertTriangle className="w-5 h-5 text-amber-400" />
+              </div>
+              <div>
+                <h3 className="text-[15px] font-bold text-white">Louvor Duplicado</h3>
+                <p className="text-[11px] text-white/40">Este louvor já existe na lista</p>
+              </div>
+            </div>
+            <p className="text-[13px] text-white/60 mb-5 leading-relaxed">
+              O louvor <span className="font-semibold text-amber-300">"{duplicateTitle}"</span> já está cadastrado na biblioteca.
+            </p>
+            <button
+              onClick={() => setShowDuplicateModal(false)}
+              className="w-full py-2 rounded-xl text-[13px] font-semibold text-white flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+              style={{ background: 'linear-gradient(135deg, #64748b, #475569)' }}
+            >
+              <X className="w-4 h-4" />
+              Entendi
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ TOAST DE SUCESSO ═══ */}
+      {showSuccessToast && (
+        <div className="fixed bottom-6 right-6 z-50 toast-enter">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-emerald-500/20 shadow-xl" style={{ backgroundColor: 'rgba(6,78,59,0.9)', backdropFilter: 'blur(12px)' }}>
+            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+            <span className="text-[13px] font-medium text-emerald-100">{successMessage}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
