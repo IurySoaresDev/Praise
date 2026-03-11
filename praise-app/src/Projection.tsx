@@ -29,7 +29,7 @@ function Projection() {
 
   // Se o background for um path local do arquivo (não começa com /backgrounds/), converte pra URL tauri
   const backgroundUrl = data.background 
-    ? (data.background.startsWith('/') ? data.background : convertFileSrc(data.background))
+    ? (data.background.startsWith('/backgrounds/') ? data.background : convertFileSrc(data.background))
     : null;
 
   return (

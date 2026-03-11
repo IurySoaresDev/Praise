@@ -185,7 +185,7 @@ function App() {
 
   const handleSelectSlide = useCallback((index: number) => {
     setActiveSlideIndex(index);
-    if (isProjecting && slides[index]) {
+    if (isProjecting && slides[index] !== undefined) {
       const isBible = selectedSong?.collection === 'Bíblia';
       sendSlideToProjection(
         slides[index], 
@@ -201,11 +201,13 @@ function App() {
     const idx = activeSlideIndex >= 0 ? activeSlideIndex : 0;
     setActiveSlideIndex(idx);
     const isBible = selectedSong?.collection === 'Bíblia';
-    await sendSlideToProjection(
-      slides[idx], 
-      isBible ? bibleBackground : songBackground,
-      isBible ? 'bible' : 'song'
-    );
+    if (slides[idx] !== undefined) {
+      await sendSlideToProjection(
+        slides[idx], 
+        isBible ? bibleBackground : songBackground,
+        isBible ? 'bible' : 'song'
+      );
+    }
   }, [selectedSong, slides, activeSlideIndex, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground]);
 
   const handleStopProjection = useCallback(async () => {
@@ -622,7 +624,7 @@ function App() {
 
                 <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border-2 border-white/5 mb-6 group relative shadow-inner">
                   <img 
-                    src={songBackground.startsWith('/') ? songBackground : convertFileSrc(songBackground)} 
+                    src={songBackground.startsWith('/backgrounds/') ? songBackground : convertFileSrc(songBackground)} 
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                     alt="Song Background Preview"
                   />
@@ -665,7 +667,7 @@ function App() {
 
                 <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border-2 border-white/5 mb-6 group relative shadow-inner">
                   <img 
-                    src={bibleBackground.startsWith('/') ? bibleBackground : convertFileSrc(bibleBackground)} 
+                    src={bibleBackground.startsWith('/backgrounds/') ? bibleBackground : convertFileSrc(bibleBackground)} 
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                     alt="Bible Background Preview"
                   />

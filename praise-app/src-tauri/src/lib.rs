@@ -39,14 +39,17 @@ fn project_slide(
             background: background.clone(),
             item_type: item_type.clone(),
         })
-        .map_err(|e| e.to_string())?;
+        .map_err(|e| {
+            println!("Erro ao emitir evento: {}", e);
+            e.to_string()
+        })?;
             
     } else if !content.is_empty() {
         // Se a janela não existe e tem conteúdo pra projetar, nós a criamos.
         let mut builder = WebviewWindowBuilder::new(
             &app_handle,
             "projection",
-            WebviewUrl::App("/projection".into())
+            WebviewUrl::App("index.html#/projection".into())
         )
         .title("Praise Projection")
         .fullscreen(true)
