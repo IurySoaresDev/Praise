@@ -36,13 +36,16 @@ function Projection() {
     <div className="w-screen h-screen bg-black relative flex items-center justify-center overflow-hidden">
       {/* Camada de Fundo */}
       {backgroundUrl && (
-        <div className="absolute inset-0 z-0 scale-105 animate-fade-in">
-          <img 
-            src={backgroundUrl} 
-            className="w-full h-full object-cover opacity-70" 
-            alt="background"
-            onError={(e) => console.error("Erro ao carregar imagem de fundo:", backgroundUrl, e)}
-          />
+        <div 
+          className="absolute inset-0 z-0 animate-fade-in"
+          style={{
+            backgroundImage: `url(${backgroundUrl})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center center',
+            backgroundRepeat: 'no-repeat',
+            opacity: 0.7,
+          }}
+        >
           {/* Overlay escuro para melhorar contraste do texto */}
           <div className="absolute inset-0 bg-black/40" />
         </div>
