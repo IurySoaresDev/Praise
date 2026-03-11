@@ -51,7 +51,7 @@ function Projection() {
 
       {/* Título do louvor no topo (na faixa vermelha da imagem) */}
       {data.title && data.item_type !== 'empty' && (
-        <div className="absolute top-[16.5%] left-0 right-0 z-20 w-full flex items-center justify-center">
+        <div className="absolute top-[8.5%] left-0 right-0 z-20 w-full flex items-center justify-center">
           <h1 className="text-white text-2xl md:text-3xl lg:text-4xl font-bold uppercase tracking-widest text-center drop-shadow-2xl projection-shadow truncate px-12">
             {data.title}
           </h1>
