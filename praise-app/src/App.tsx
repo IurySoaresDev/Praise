@@ -6,7 +6,7 @@ import { readTextFile } from "@tauri-apps/plugin-fs";
 import { check } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
 import { useStore, ALLOWED_COLLECTIONS } from "./store";
-import { Play, Square, Settings, RefreshCw, X, Plus, Trash2, Edit2, CheckCircle2, FilePenLine, Copy, GripVertical, AlertTriangle, ListMusic, BookOpen, Layers, Monitor, Type, LayoutTemplate, Send, SlidersHorizontal, Image as ImageIcon, Search, ArrowLeft, Loader2, MonitorDot, Snowflake, RotateCw, DownloadCloud, Minus, Music, Upload, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Play, Square, Settings, X, Plus, Trash2, CheckCircle2, FilePenLine, GripVertical, AlertTriangle, ListMusic, BookOpen, Monitor, Send, Image as ImageIcon, Search, ArrowLeft, Loader2, MonitorDot, Snowflake, RotateCw, DownloadCloud, Minus, Music, Upload, ChevronLeft, ChevronRight } from 'lucide-react';
 import "./App.css";
 
 function App() {
