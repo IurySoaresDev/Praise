@@ -1764,9 +1764,9 @@ function App() {
                         <div className={`
                       absolute top-3 right-3 w-6 h-6 rounded-lg flex items-center justify-center transition-all
                       ${activeSlideIndex === index && isProjecting
-                            ? "bg-blue-500 text-white opacity-100 shadow-md"
+                            ? "bg-brand-500 text-white opacity-100 shadow-md"
                             : activeSlideIndex === index
-                              ? "bg-blue-500 text-white opacity-100"
+                              ? "bg-brand-500 text-white opacity-100"
                               : "bg-white/5 text-white/20 opacity-0 group-hover:opacity-100"}
                     `}>
                           <Play className="w-3 h-3 ml-0.5" />
