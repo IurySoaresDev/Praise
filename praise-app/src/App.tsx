@@ -6,7 +6,7 @@ import { readTextFile } from "@tauri-apps/plugin-fs";
 import { check } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
 import { useStore, ALLOWED_COLLECTIONS } from "./store";
-import { Play, Square, Settings, X, Plus, Trash2, CheckCircle2, FilePenLine, GripVertical, AlertTriangle, ListMusic, BookOpen, Monitor, Send, Search, ArrowLeft, Loader2, MonitorDot, Snowflake, RotateCw, DownloadCloud, Minus, Music, Upload, ChevronLeft, ChevronRight, Palette, Type, Maximize2, Bold, Image as ImageIcon } from 'lucide-react';
+import { Play, Square, Settings, X, Plus, Trash2, CheckCircle2, FilePenLine, GripVertical, AlertTriangle, ListMusic, BookOpen, Monitor, Send, Search, ArrowLeft, Loader2, MonitorDot, Snowflake, RotateCw, Minus, Music, Upload, ChevronLeft, ChevronRight, Palette, Type, Maximize2, Bold, Image as ImageIcon } from 'lucide-react';
 import "./App.css";
 
 function App() {
@@ -1166,57 +1166,47 @@ function App() {
                     className="w-full max-w-5xl aspect-video bg-black rounded-3xl overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] border-4 border-slate-800/50 relative transform hover:scale-[1.01] transition-transform duration-700"
                   >
                     
-                    {/* Background Dinâmico */}
-                    <img
-                      src={
-                        settingsPreviewTab === 'title' ? (songBackground.startsWith('/backgrounds/') ? songBackground : convertFileSrc(songBackground)) :
-                        settingsPreviewTab === 'lyrics' ? (songBodyBackground.startsWith('/backgrounds/') ? songBodyBackground : convertFileSrc(songBodyBackground)) :
-                        (bibleBackground.startsWith('/backgrounds/') ? bibleBackground : convertFileSrc(bibleBackground))
-                      }
-                      className="w-full h-full object-cover absolute inset-0 transition-all duration-1000"
-                      alt="True Preview"
-                    />
+                     {/* Background Dinâmico (Sincronizado com Projection.tsx) */}
+                     <img
+                       src={
+                         settingsPreviewTab === 'title' ? (songBackground.startsWith('/backgrounds/') ? songBackground : convertFileSrc(songBackground)) :
+                         settingsPreviewTab === 'lyrics' ? (songBodyBackground.startsWith('/backgrounds/') ? songBodyBackground : convertFileSrc(songBodyBackground)) :
+                         (bibleBackground.startsWith('/backgrounds/') ? bibleBackground : convertFileSrc(bibleBackground))
+                       }
+                       className="w-full h-full absolute inset-0 transition-all duration-1000 z-0"
+                       style={{ backgroundSize: '100% 100%', objectFit: 'fill' }}
+                       alt="True Preview"
+                     />
+
+                     {/* Overlay escuro */}
+                     <div className="absolute inset-0 z-[1] bg-black/30" />
 
                     {/* Texto com Cálculo de Escala Real (FontSize * Width / 1920) */}
-                    <div className="absolute inset-0 flex items-center justify-center p-[5%] text-center pointer-events-none select-none">
+                    <div className="absolute inset-0 z-10 pointer-events-none select-none">
                       
+                      {/* Títulos Absolutos */}
                       {settingsPreviewTab === 'title' && (
-                        <div className="animate-in zoom-in-95 fade-in duration-500">
+                        <div className="absolute left-0 right-0 top-[5.5%] flex items-center justify-center px-[5%]">
                           <h1 style={{ 
                             color: songTitleColor,
                             fontFamily: songTitleFont ? `'${songTitleFont}', sans-serif` : undefined,
                             fontSize: `${(songTitleSize * previewWidth) / 1920}px`,
                             fontWeight: songTitleWeight,
                             textShadow: '0 4px 12px rgba(0,0,0,0.8)',
-                            lineHeight: '1.2'
+                            lineHeight: '1.2',
+                            textTransform: 'uppercase'
                           }}>
                             GRANDE É O SENHOR
                           </h1>
                         </div>
                       )}
 
-                      {settingsPreviewTab === 'lyrics' && (
-                        <div className="animate-in zoom-in-95 fade-in duration-500">
-                          <p style={{ 
-                            color: songLyricsColor,
-                            fontFamily: songLyricsFont ? `'${songLyricsFont}', sans-serif` : undefined,
-                            fontSize: `${(songLyricsSize * previewWidth) / 1920}px`,
-                            fontWeight: songLyricsWeight,
-                            textShadow: '0 4px 12px rgba(0,0,0,0.8)',
-                            lineHeight: '1.3',
-                            whiteSpace: 'pre-line'
-                          }}>
-                            {"Vim para adorar-Te\nVim para prostrar-me\nVim para dizer que és\nmeu Deus!"}
-                          </p>
-                        </div>
-                      )}
-
                       {settingsPreviewTab === 'bible' && (
-                        <div className="flex flex-col items-center gap-[4%] animate-in zoom-in-95 fade-in duration-500 w-full">
+                        <div className="absolute left-0 right-0 top-[21%] flex items-center justify-center px-[5%]">
                           <div style={{
                             backgroundColor: 'rgba(0,0,0,0.4)',
-                            padding: '1.5% 3%',
-                            borderRadius: '1rem',
+                            padding: '1% 2.5%',
+                            borderRadius: '0.6rem',
                             border: '1px solid rgba(255,255,255,0.1)',
                             backdropFilter: 'blur(12px)'
                           }}>
@@ -1230,19 +1220,49 @@ function App() {
                               SÃO JOÃO 8:32
                             </h2>
                           </div>
-                          <p style={{ 
-                            color: bibleLyricsColor,
-                            fontFamily: bibleLyricsFont ? `'${bibleLyricsFont}', sans-serif` : undefined,
-                            fontSize: `${(bibleLyricsSize * previewWidth) / 1920}px`,
-                            fontWeight: bibleLyricsWeight,
-                            textShadow: '0 4px 12px rgba(0,0,0,0.8)',
-                            lineHeight: '1.3',
-                            whiteSpace: 'pre-line'
-                          }}>
-                            {"E conhecereis a verdade,\ne a verdade vos libertará."}
-                          </p>
                         </div>
                       )}
+
+                      {/* Conteúdo Central */}
+                      <div className={`absolute inset-0 flex items-center justify-center px-[8%] ${
+                        settingsPreviewTab === 'bible' ? 'pt-[18%] pb-[5%]' : 'pt-[12%] pb-[8%]'
+                      }`}>
+                        {settingsPreviewTab === 'lyrics' && (
+                          <div className="w-full">
+                            <p style={{ 
+                              color: songLyricsColor,
+                              fontFamily: songLyricsFont ? `'${songLyricsFont}', sans-serif` : undefined,
+                              fontSize: `${(songLyricsSize * previewWidth) / 1920}px`,
+                              fontWeight: songLyricsWeight,
+                              textShadow: '0 4px 12px rgba(0,0,0,0.8)',
+                              lineHeight: '1.3',
+                              whiteSpace: 'pre-line',
+                              textAlign: 'left',
+                              textTransform: 'uppercase'
+                            }}>
+                              {"Vim para adorar-Te\nVim para prostrar-me\nVim para dizer que és\nmeu Deus!"}
+                            </p>
+                          </div>
+                        )}
+
+                        {settingsPreviewTab === 'bible' && (
+                          <div className="w-full">
+                            <p style={{ 
+                              color: bibleLyricsColor,
+                              fontFamily: bibleLyricsFont ? `'${bibleLyricsFont}', sans-serif` : undefined,
+                              fontSize: `${(bibleLyricsSize * previewWidth) / 1920}px`,
+                              fontWeight: bibleLyricsWeight,
+                              textShadow: '0 4px 12px rgba(0,0,0,0.8)',
+                              lineHeight: '1.3',
+                              whiteSpace: 'pre-line',
+                              textAlign: 'center',
+                              fontStyle: 'italic',
+                            }}>
+                              {"E conhecereis a verdade,\ne a verdade vos libertará."}
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
 
