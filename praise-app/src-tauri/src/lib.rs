@@ -9,9 +9,7 @@ struct ProjectionPayload {
     content: String,
     background: Option<String>,
     item_type: String, // "song" | "bible" | "empty"
-    #[serde(rename = "titleColor")]
     title_color: Option<String>,
-    #[serde(rename = "lyricsColor")]
     lyrics_color: Option<String>,
 }
 
@@ -38,9 +36,7 @@ fn project_slide(
     content: String, 
     background: Option<String>,
     item_type: String,
-    #[serde(rename = "titleColor")]
     title_color: Option<String>,
-    #[serde(rename = "lyricsColor")]
     lyrics_color: Option<String>,
 ) -> Result<(), String> {
     let payload = ProjectionPayload { 
