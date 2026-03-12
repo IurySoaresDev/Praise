@@ -81,6 +81,7 @@ function App() {
   const [isFrozen, setIsFrozen] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState<{ downloaded: number, total: number } | null>(null);
   const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
+  const [settingsPreviewTab, setSettingsPreviewTab] = useState<'title' | 'lyrics' | 'bible'>('title');
 
   // Bible State
   // REMOVIDO: const [activeTab, setActiveTab] = useState<'songs' | 'bible' | 'editor'>('songs');
@@ -780,350 +781,281 @@ function App() {
                 <p className="text-slate-500 mt-2 text-lg font-medium">Personalize os fundos da sua projeção.</p>
               </header>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl hover:border-blue-500/20 transition-all group">
-                  <div className="mb-6">
-                    <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">
-                      Fundo de Título
+              <div className="flex flex-col lg:flex-row gap-8 items-start relative">
+                
+                {/* ═══ COLUNA ESQUERDA: CONTROLES ═══ */}
+                <div className="w-full lg:w-7/12 flex flex-col gap-8">
+                  
+                  {/* --- CARD: FUNDO DE TÍTULO --- */}
+                  <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl hover:border-blue-500/20 transition-all group">
+                    <div className="mb-6 flex items-center justify-between">
+                      <div>
+                        <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">Fundo de Título</h3>
+                        <p className="text-[10px] text-white/20 uppercase tracking-[0.2em] font-bold">Resolução Recomendada: 1080p</p>
+                      </div>
+                      <button
+                        onClick={async () => {
+                          const path = await open({
+                            multiple: false,
+                            filters: [{ name: 'Imagens', extensions: ['jpg', 'png', 'jpeg', 'webp'] }],
+                          });
+                          if (path) {
+                            setSongBackground(path as string);
+                            setSuccessMessage("Fundo de título atualizado!");
+                            setShowSuccessToast(true);
+                            setTimeout(() => setShowSuccessToast(false), 3000);
+                          }
+                        }}
+                        className="px-4 py-2 rounded-xl bg-white/[0.03] hover:bg-blue-500/10 text-white font-bold text-[12px] tracking-wide transition-all border border-white/5 hover:border-blue-500/20 shadow-sm flex items-center gap-2"
+                      >
+                        <ImageIcon className="w-4 h-4" /> Alterar Imagem
+                      </button>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center justify-between p-3 rounded-xl bg-black/20 border border-white/5">
+                        <span className="text-xs font-semibold text-white/60">Cor do Título</span>
+                        <input type="color" value={songTitleColor} onChange={(e) => setSongTitleColor(e.target.value)} className="w-8 h-8 rounded-lg overflow-hidden border-none cursor-pointer bg-transparent" />
+                      </div>
+                      <div className="space-y-2 p-3 rounded-xl bg-black/10 border border-white/5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">Fonte</span>
+                          <select value={songTitleFont} onChange={(e) => setSongTitleFont(e.target.value)} className="bg-slate-900 text-white text-[11px] rounded px-2 py-1 outline-none border border-white/10">
+                            {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato', 'Serif', 'Sans-Serif'].map(f => (<option key={f} value={f}>{f}</option>))}
+                          </select>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">Tamanho</span>
+                          <div className="flex items-center gap-2">
+                            <input type="number" value={songTitleSize} onChange={(e) => setSongTitleSize(Number(e.target.value))} className="w-12 bg-slate-900 text-white text-[11px] rounded px-2 py-1 outline-none border border-white/10 text-center" />
+                            <span className="text-[9px] text-white/20">px</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">Peso</span>
+                          <select value={songTitleWeight} onChange={(e) => setSongTitleWeight(e.target.value)} className="bg-slate-900 text-white text-[11px] rounded px-2 py-1 outline-none border border-white/10">
+                            {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* --- CARD: FUNDO DE LOUVOR --- */}
+                  <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl hover:border-blue-500/20 transition-all group">
+                    <div className="mb-6 flex items-center justify-between">
+                      <div>
+                        <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">Fundo de Louvor</h3>
+                        <p className="text-[10px] text-white/20 uppercase tracking-[0.2em] font-bold">Resolução Recomendada: 1080p</p>
+                      </div>
+                      <button
+                        onClick={async () => {
+                          const path = await open({
+                            multiple: false,
+                            filters: [{ name: 'Imagens', extensions: ['jpg', 'png', 'jpeg', 'webp'] }],
+                          });
+                          if (path) {
+                            setSongBodyBackground(path as string);
+                            setSuccessMessage("Fundo de louvor atualizado!");
+                            setShowSuccessToast(true);
+                            setTimeout(() => setShowSuccessToast(false), 3000);
+                          }
+                        }}
+                        className="px-4 py-2 rounded-xl bg-white/[0.03] hover:bg-blue-500/10 text-white font-bold text-[12px] tracking-wide transition-all border border-white/5 hover:border-blue-500/20 shadow-sm flex items-center gap-2"
+                      >
+                        <ImageIcon className="w-4 h-4" /> Alterar Imagem
+                      </button>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center justify-between p-3 rounded-xl bg-black/20 border border-white/5">
+                        <span className="text-xs font-semibold text-white/60">Cor da Letra</span>
+                        <input type="color" value={songLyricsColor} onChange={(e) => setSongLyricsColor(e.target.value)} className="w-8 h-8 rounded-lg overflow-hidden border-none cursor-pointer bg-transparent" />
+                      </div>
+                      <div className="space-y-2 p-3 rounded-xl bg-black/10 border border-white/5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">Fonte</span>
+                          <select value={songLyricsFont} onChange={(e) => setSongLyricsFont(e.target.value)} className="bg-slate-900 text-white text-[11px] rounded px-2 py-1 outline-none border border-white/10">
+                            {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato', 'Serif', 'Sans-Serif'].map(f => (<option key={f} value={f}>{f}</option>))}
+                          </select>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">Tamanho</span>
+                          <div className="flex items-center gap-2">
+                            <input type="number" value={songLyricsSize} onChange={(e) => setSongLyricsSize(Number(e.target.value))} className="w-12 bg-slate-900 text-white text-[11px] rounded px-2 py-1 outline-none border border-white/10 text-center" />
+                            <span className="text-[9px] text-white/20">px</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">Peso</span>
+                          <select value={songLyricsWeight} onChange={(e) => setSongLyricsWeight(e.target.value)} className="bg-slate-900 text-white text-[11px] rounded px-2 py-1 outline-none border border-white/10">
+                            {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* --- CARD: FUNDO DE BÍBLIA --- */}
+                  <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl hover:border-blue-500/20 transition-all group">
+                    <div className="mb-6 flex items-center justify-between">
+                      <div>
+                        <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">Fundo de Bíblia</h3>
+                        <p className="text-[10px] text-white/20 uppercase tracking-[0.2em] font-bold">Resolução Recomendada: 1080p</p>
+                      </div>
+                      <button
+                        onClick={async () => {
+                          const path = await open({
+                            multiple: false,
+                            filters: [{ name: 'Imagens', extensions: ['jpg', 'png', 'jpeg', 'webp'] }],
+                          });
+                          if (path) {
+                            setBibleBackground(path as string);
+                            setSuccessMessage("Fundo de bíblia atualizado!");
+                            setShowSuccessToast(true);
+                            setTimeout(() => setShowSuccessToast(false), 3000);
+                          }
+                        }}
+                        className="px-4 py-2 rounded-xl bg-white/[0.03] hover:bg-blue-500/10 text-white font-bold text-[12px] tracking-wide transition-all border border-white/5 hover:border-blue-500/20 shadow-sm flex items-center gap-2"
+                      >
+                        <ImageIcon className="w-4 h-4" /> Alterar Imagem
+                      </button>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <div className="p-3 rounded-xl bg-black/10 border border-white/5 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-semibold text-white/60">Título</span>
+                          <input type="color" value={bibleTitleColor} onChange={(e) => setBibleTitleColor(e.target.value)} className="w-6 h-6 rounded overflow-hidden border-none cursor-pointer bg-transparent" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <select value={bibleTitleFont} onChange={(e) => setBibleTitleFont(e.target.value)} className="bg-slate-900 text-white text-[10px] rounded px-1 py-1 outline-none border border-white/10">
+                            {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato'].map(f => (<option key={f} value={f}>{f}</option>))}
+                          </select>
+                          <input type="number" value={bibleTitleSize} onChange={(e) => setBibleTitleSize(Number(e.target.value))} className="bg-slate-900 text-white text-[10px] rounded px-1 py-1 outline-none border border-white/10 text-center" />
+                        </div>
+                        <select value={bibleTitleWeight} onChange={(e) => setBibleTitleWeight(e.target.value)} className="w-full bg-slate-900 text-white text-[10px] rounded px-1 py-1 outline-none border border-white/10">
+                          {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
+                        </select>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-black/10 border border-white/5 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-semibold text-white/60">Versículo</span>
+                          <input type="color" value={bibleLyricsColor} onChange={(e) => setBibleLyricsColor(e.target.value)} className="w-6 h-6 rounded overflow-hidden border-none cursor-pointer bg-transparent" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <select value={bibleLyricsFont} onChange={(e) => setBibleLyricsFont(e.target.value)} className="bg-slate-900 text-white text-[10px] rounded px-1 py-1 outline-none border border-white/10">
+                            {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato'].map(f => (<option key={f} value={f}>{f}</option>))}
+                          </select>
+                          <input type="number" value={bibleLyricsSize} onChange={(e) => setBibleLyricsSize(Number(e.target.value))} className="bg-slate-900 text-white text-[10px] rounded px-1 py-1 outline-none border border-white/10 text-center" />
+                        </div>
+                        <select value={bibleLyricsWeight} onChange={(e) => setBibleLyricsWeight(e.target.value)} className="w-full bg-slate-900 text-white text-[10px] rounded px-1 py-1 outline-none border border-white/10">
+                          {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* ═══ COLUNA DIREITA: PREVIEW (STICKY) ═══ */}
+                <div className="w-full lg:w-5/12 sticky top-8 flex flex-col gap-6">
+                  <div className="bg-[#1e293b]/60 border border-blue-500/20 rounded-3xl p-6 shadow-2xl backdrop-blur-xl">
+                    <h3 className="text-lg font-black text-white mb-4 tracking-tight flex items-center justify-center gap-2">
+                       Preview da Projeção
                     </h3>
-                    <p className="text-[10px] text-white/20 uppercase tracking-[0.2em] font-bold">Resolução: 1080p</p>
-                  </div>
-
-                  <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border border-white/5 mb-6 group relative shadow-2xl flex items-center justify-center p-4">
-                    <img
-                      src={songBackground.startsWith('/backgrounds/') ? songBackground : convertFileSrc(songBackground)}
-                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 absolute inset-0"
-                      alt="Song Background Preview"
-                    />
-                    <div className="relative z-10 text-center pointer-events-none">
-                      <h1 style={{ 
-                        color: songTitleColor,
-                        fontFamily: songTitleFont ? `'${songTitleFont}', sans-serif` : undefined,
-                        fontSize: '1.2rem',
-                        fontWeight: songTitleWeight,
-                        textShadow: '0 2px 4px rgba(0,0,0,0.5)'
-                      }}>
-                        GRANDES COISAS
-                      </h1>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={async () => {
-                      const path = await open({
-                        multiple: false,
-                        filters: [{ name: 'Imagens', extensions: ['jpg', 'png', 'jpeg', 'webp'] }],
-                      });
-                      if (path) {
-                        setSongBackground(path as string);
-                        setSuccessMessage("Fundo de título atualizado!");
-                        setShowSuccessToast(true);
-                        setTimeout(() => setShowSuccessToast(false), 3000);
-                      }
-                    }}
-                    className="w-full py-4 rounded-xl bg-white/[0.03] hover:bg-blue-500/10 text-white font-bold text-[13px] tracking-wide transition-all border border-white/5 hover:border-blue-500/20 shadow-sm active:scale-[0.98] flex items-center justify-center gap-2 mb-3"
-                  >
-                    <ImageIcon className="w-4 h-4" />
-                    Alterar Imagem
-                  </button>
-
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center justify-between p-3 rounded-xl bg-black/20 border border-white/5">
-                      <span className="text-xs font-semibold text-white/60">Cor do Título</span>
-                      <input
-                        type="color"
-                        value={songTitleColor}
-                        onChange={(e) => setSongTitleColor(e.target.value)}
-                        className="w-8 h-8 rounded-lg overflow-hidden border-none cursor-pointer bg-transparent"
-                      />
-                    </div>
                     
-                    <div className="space-y-2 p-3 rounded-xl bg-black/10 border border-white/5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">Fonte</span>
-                        <select 
-                          value={songTitleFont}
-                          onChange={(e) => setSongTitleFont(e.target.value)}
-                          className="bg-slate-900 text-white text-[11px] rounded px-2 py-1 outline-none border border-white/10"
-                        >
-                          {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato', 'Serif', 'Sans-Serif'].map(f => (
-                            <option key={f} value={f}>{f}</option>
-                          ))}
-                        </select>
-                      </div>
+                    {/* Tabs de Seleção do Preview */}
+                    <div className="flex gap-2 mb-6 p-1.5 bg-black/30 rounded-xl border border-white/5">
+                      <button 
+                        onClick={() => setSettingsPreviewTab('title')} 
+                        className={`flex-1 py-2.5 rounded-lg text-[11px] font-bold tracking-wider transition-all ${settingsPreviewTab === 'title' ? 'bg-blue-600 text-white shadow-lg scale-[1.02]' : 'text-white/40 hover:text-white/80 hover:bg-white/5'}`}
+                      >
+                        TÍTULO
+                      </button>
+                      <button 
+                        onClick={() => setSettingsPreviewTab('lyrics')} 
+                        className={`flex-1 py-2.5 rounded-lg text-[11px] font-bold tracking-wider transition-all ${settingsPreviewTab === 'lyrics' ? 'bg-blue-600 text-white shadow-lg scale-[1.02]' : 'text-white/40 hover:text-white/80 hover:bg-white/5'}`}
+                      >
+                        LOUVOR
+                      </button>
+                      <button 
+                        onClick={() => setSettingsPreviewTab('bible')} 
+                        className={`flex-1 py-2.5 rounded-lg text-[11px] font-bold tracking-wider transition-all ${settingsPreviewTab === 'bible' ? 'bg-blue-600 text-white shadow-lg scale-[1.02]' : 'text-white/40 hover:text-white/80 hover:bg-white/5'}`}
+                      >
+                        BÍBLIA
+                      </button>
+                    </div>
+
+                    {/* Janela de Preview */}
+                    <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/60 shadow-inner relative border border-white/10 flex items-center justify-center p-4">
                       
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">Tamanho</span>
-                        <div className="flex items-center gap-2">
-                          <input 
-                            type="number"
-                            value={songTitleSize}
-                            onChange={(e) => setSongTitleSize(Number(e.target.value))}
-                            className="w-12 bg-slate-900 text-white text-[11px] rounded px-2 py-1 outline-none border border-white/10 text-center"
-                          />
-                          <span className="text-[9px] text-white/20">px</span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">Peso</span>
-                        <select 
-                          value={songTitleWeight}
-                          onChange={(e) => setSongTitleWeight(e.target.value)}
-                          className="bg-slate-900 text-white text-[11px] rounded px-2 py-1 outline-none border border-white/10"
-                        >
-                          {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (
-                            <option key={w} value={w}>{w}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl hover:border-blue-500/20 transition-all group">
-                  <div className="mb-6">
-                    <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">
-                      Fundo de Louvor
-                    </h3>
-                    <p className="text-[10px] text-white/20 uppercase tracking-[0.2em] font-bold">Resolução: 1080p</p>
-                  </div>
-
-                  <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border border-white/5 mb-6 group relative shadow-2xl flex items-center justify-center p-4">
-                    <img
-                      src={songBodyBackground.startsWith('/backgrounds/') ? songBodyBackground : convertFileSrc(songBodyBackground)}
-                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 absolute inset-0"
-                      alt="Song Body Background Preview"
-                    />
-                    <div className="relative z-10 text-center pointer-events-none w-full">
-                      <div style={{ 
-                        color: songLyricsColor,
-                        fontFamily: songLyricsFont ? `'${songLyricsFont}', sans-serif` : undefined,
-                        fontSize: '0.8rem',
-                        fontWeight: songLyricsWeight,
-                        whiteSpace: 'pre-line',
-                        lineHeight: '1.4',
-                        textShadow: '0 2px 4px rgba(0,0,0,0.5)'
-                      }}>
-                        {"Porque Ele vive,\nposso crer no amanhã."}
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={async () => {
-                      const path = await open({
-                        multiple: false,
-                        filters: [{ name: 'Imagens', extensions: ['jpg', 'png', 'jpeg', 'webp'] }],
-                      });
-                      if (path) {
-                        setSongBodyBackground(path as string);
-                        setSuccessMessage("Fundo de louvor atualizado!");
-                        setShowSuccessToast(true);
-                        setTimeout(() => setShowSuccessToast(false), 3000);
-                      }
-                    }}
-                    className="w-full py-4 rounded-xl bg-white/[0.03] hover:bg-blue-500/10 text-white font-bold text-[13px] tracking-wide transition-all border border-white/5 hover:border-blue-500/20 shadow-sm active:scale-[0.98] flex items-center justify-center gap-2 mb-3"
-                  >
-                    <ImageIcon className="w-4 h-4" />
-                    Alterar Imagem
-                  </button>
-
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center justify-between p-3 rounded-xl bg-black/20 border border-white/5">
-                      <span className="text-xs font-semibold text-white/60">Cor da Letra</span>
-                      <input
-                        type="color"
-                        value={songLyricsColor}
-                        onChange={(e) => setSongLyricsColor(e.target.value)}
-                        className="w-8 h-8 rounded-lg overflow-hidden border-none cursor-pointer bg-transparent"
+                      {/* Background Específico */}
+                      <img
+                        src={
+                          settingsPreviewTab === 'title' ? (songBackground.startsWith('/backgrounds/') ? songBackground : convertFileSrc(songBackground)) :
+                          settingsPreviewTab === 'lyrics' ? (songBodyBackground.startsWith('/backgrounds/') ? songBodyBackground : convertFileSrc(songBodyBackground)) :
+                          (bibleBackground.startsWith('/backgrounds/') ? bibleBackground : convertFileSrc(bibleBackground))
+                        }
+                        className="w-full h-full object-cover transition-transform duration-1000 absolute inset-0 opacity-90"
+                        alt="Preview Background"
                       />
-                    </div>
 
-                    <div className="space-y-2 p-3 rounded-xl bg-black/10 border border-white/5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">Fonte</span>
-                        <select 
-                          value={songLyricsFont}
-                          onChange={(e) => setSongLyricsFont(e.target.value)}
-                          className="bg-slate-900 text-white text-[11px] rounded px-2 py-1 outline-none border border-white/10"
-                        >
-                          {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato', 'Serif', 'Sans-Serif'].map(f => (
-                            <option key={f} value={f}>{f}</option>
-                          ))}
-                        </select>
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">Tamanho</span>
-                        <div className="flex items-center gap-2">
-                          <input 
-                            type="number"
-                            value={songLyricsSize}
-                            onChange={(e) => setSongLyricsSize(Number(e.target.value))}
-                            className="w-12 bg-slate-900 text-white text-[11px] rounded px-2 py-1 outline-none border border-white/10 text-center"
-                          />
-                          <span className="text-[9px] text-white/20">px</span>
+                      {/* Overlays de Texto */}
+                      {settingsPreviewTab === 'title' && (
+                        <div className="relative z-10 text-center pointer-events-none w-full animate-fade-in">
+                          <h1 style={{ 
+                            color: songTitleColor, fontFamily: songTitleFont ? `'${songTitleFont}', sans-serif` : undefined,
+                            fontSize: '1.4rem', fontWeight: songTitleWeight, textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+                          }}>
+                            GRANDES COISAS
+                          </h1>
                         </div>
-                      </div>
+                      )}
 
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">Peso</span>
-                        <select 
-                          value={songLyricsWeight}
-                          onChange={(e) => setSongLyricsWeight(e.target.value)}
-                          className="bg-slate-900 text-white text-[11px] rounded px-2 py-1 outline-none border border-white/10"
-                        >
-                          {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (
-                            <option key={w} value={w}>{w}</option>
-                          ))}
-                        </select>
-                      </div>
+                      {settingsPreviewTab === 'lyrics' && (
+                        <div className="relative z-10 text-center pointer-events-none w-full animate-fade-in">
+                          <div style={{ 
+                            color: songLyricsColor, fontFamily: songLyricsFont ? `'${songLyricsFont}', sans-serif` : undefined,
+                            fontSize: '1rem', fontWeight: songLyricsWeight, whiteSpace: 'pre-line', lineHeight: '1.4', textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+                          }}>
+                            {"Porque Ele vive,\nposso crer no amanhã."}
+                          </div>
+                        </div>
+                      )}
+
+                      {settingsPreviewTab === 'bible' && (
+                        <div className="relative z-10 pointer-events-none w-full flex flex-col items-center gap-2 animate-fade-in text-center">
+                          <h1 style={{ 
+                            color: bibleTitleColor, fontFamily: bibleTitleFont ? `'${bibleTitleFont}', sans-serif` : undefined,
+                            fontSize: '0.8rem', fontWeight: bibleTitleWeight, textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                            backgroundColor: 'rgba(0,0,0,0.3)', padding: '2px 8px', borderRadius: '4px'
+                          }}>
+                            JOÃO 3:16
+                          </h1>
+                          <div style={{ 
+                            color: bibleLyricsColor, fontFamily: bibleLyricsFont ? `'${bibleLyricsFont}', sans-serif` : undefined,
+                            fontSize: '0.9rem', fontWeight: bibleLyricsWeight, whiteSpace: 'pre-line', lineHeight: '1.3', textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+                          }}>
+                            {"Porque Deus amou o mundo\nde tal maneira..."}
+                          </div>
+                        </div>
+                      )}
+
                     </div>
+                    <p className="text-[10px] text-center text-white/30 mt-4 uppercase tracking-[0.2em]">Preview Simulado</p>
                   </div>
+
+                  {/* Updater Card fica abaixo do preview se houver espaço, ou a direita */}
                 </div>
 
-                <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl hover:border-blue-500/20 transition-all group">
-                  <div className="mb-6">
-                    <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">
-                      Fundo de Bíblia
-                    </h3>
-                    <p className="text-[10px] text-white/20 uppercase tracking-[0.2em] font-bold">Resolução: 1080p</p>
-                  </div>
-
-                  <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border border-white/5 mb-6 group relative shadow-2xl flex flex-col items-center justify-center p-4 text-center">
-                    <img
-                      src={bibleBackground.startsWith('/backgrounds/') ? bibleBackground : convertFileSrc(bibleBackground)}
-                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 absolute inset-0"
-                      alt="Bible Background Preview"
-                    />
-                    <div className="relative z-10 pointer-events-none w-full flex flex-col items-center gap-1.5">
-                      <h1 style={{ 
-                        color: bibleTitleColor,
-                        fontFamily: bibleTitleFont ? `'${bibleTitleFont}', sans-serif` : undefined,
-                        fontSize: '0.7rem',
-                        fontWeight: bibleTitleWeight,
-                        textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                        backgroundColor: 'rgba(0,0,0,0.3)',
-                        padding: '2px 8px',
-                        borderRadius: '4px'
-                      }}>
-                        JOÃO 3:16
-                      </h1>
-                      <div style={{ 
-                        color: bibleLyricsColor,
-                        fontFamily: bibleLyricsFont ? `'${bibleLyricsFont}', sans-serif` : undefined,
-                        fontSize: '0.8rem',
-                        fontWeight: bibleLyricsWeight,
-                        whiteSpace: 'pre-line',
-                        lineHeight: '1.3',
-                        textShadow: '0 2px 4px rgba(0,0,0,0.5)'
-                      }}>
-                        {"Porque Deus amou o mundo\nde tal maneira..."}
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={async () => {
-                      const path = await open({
-                        multiple: false,
-                        filters: [{ name: 'Imagens', extensions: ['jpg', 'png', 'jpeg', 'webp'] }],
-                      });
-                      if (path) {
-                        setBibleBackground(path as string);
-                        setSuccessMessage("Fundo de bíblia atualizado!");
-                        setShowSuccessToast(true);
-                        setTimeout(() => setShowSuccessToast(false), 3000);
-                      }
-                    }}
-                    className="w-full py-4 rounded-xl bg-white/[0.03] hover:bg-blue-500/10 text-white font-bold text-[13px] tracking-wide transition-all border border-white/5 hover:border-blue-500/20 shadow-sm active:scale-[0.98] flex items-center justify-center gap-2 mb-3"
-                  >
-                    <ImageIcon className="w-4 h-4" />
-                    Alterar Imagem
-                  </button>
-
-                  <div className="flex flex-col gap-2">
-                    <div className="p-3 rounded-xl bg-black/10 border border-white/5 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-white/60">Título</span>
-                        <input
-                          type="color"
-                          value={bibleTitleColor}
-                          onChange={(e) => setBibleTitleColor(e.target.value)}
-                          className="w-6 h-6 rounded overflow-hidden border-none cursor-pointer bg-transparent"
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <select 
-                          value={bibleTitleFont}
-                          onChange={(e) => setBibleTitleFont(e.target.value)}
-                          className="bg-slate-900 text-white text-[10px] rounded px-1 py-1 outline-none border border-white/10"
-                        >
-                          {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato'].map(f => (
-                            <option key={f} value={f}>{f}</option>
-                          ))}
-                        </select>
-                        <input 
-                          type="number"
-                          value={bibleTitleSize}
-                          onChange={(e) => setBibleTitleSize(Number(e.target.value))}
-                          className="bg-slate-900 text-white text-[10px] rounded px-1 py-1 outline-none border border-white/10 text-center"
-                        />
-                      </div>
-                      <select 
-                        value={bibleTitleWeight}
-                        onChange={(e) => setBibleTitleWeight(e.target.value)}
-                        className="w-full bg-slate-900 text-white text-[10px] rounded px-1 py-1 outline-none border border-white/10"
-                      >
-                        {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (
-                          <option key={w} value={w}>{w}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-black/10 border border-white/5 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-white/60">Versículo</span>
-                        <input
-                          type="color"
-                          value={bibleLyricsColor}
-                          onChange={(e) => setBibleLyricsColor(e.target.value)}
-                          className="w-6 h-6 rounded overflow-hidden border-none cursor-pointer bg-transparent"
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <select 
-                          value={bibleLyricsFont}
-                          onChange={(e) => setBibleLyricsFont(e.target.value)}
-                          className="bg-slate-900 text-white text-[10px] rounded px-1 py-1 outline-none border border-white/10"
-                        >
-                          {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato'].map(f => (
-                            <option key={f} value={f}>{f}</option>
-                          ))}
-                        </select>
-                        <input 
-                          type="number"
-                          value={bibleLyricsSize}
-                          onChange={(e) => setBibleLyricsSize(Number(e.target.value))}
-                          className="bg-slate-900 text-white text-[10px] rounded px-1 py-1 outline-none border border-white/10 text-center"
-                        />
-                      </div>
-                      <select 
-                        value={bibleLyricsWeight}
-                        onChange={(e) => setBibleLyricsWeight(e.target.value)}
-                        className="w-full bg-slate-900 text-white text-[10px] rounded px-1 py-1 outline-none border border-white/10"
-                      >
-                        {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (
-                          <option key={w} value={w}>{w}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
+                {/* Updater Card Original (Colocado numa div full-width abaixo do container flex) */}
+              </div>
+              
+              <div className="mt-8">
                 {/* Updater Card */}
-                <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl hover:border-blue-500/20 transition-all group col-span-1 md:col-span-2 lg:col-span-3">
+                <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl hover:border-blue-500/20 transition-all group w-full">
                   <div className="mb-6">
                     <h3 className="text-xl font-black text-white mb-1.5 tracking-tight flex items-center gap-2">
                       <DownloadCloud className="w-5 h-5 text-blue-400" /> Atualizações do Sistema
