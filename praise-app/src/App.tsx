@@ -1154,10 +1154,7 @@ function App() {
                         </button>
                       ))}
                     </div>
-                    <div className="flex items-center gap-2 px-4 py-2 bg-brand-500/10 rounded-full border border-brand-500/20">
-                      <MonitorDot className="w-4 h-4 text-brand-400" />
-                      <span className="text-[10px] font-black text-brand-400 tracking-widest uppercase">Escala Proporcional 1080p</span>
-                    </div>
+
                   </div>
 
                   {/* Container da TV / Telão em Escala Real */}
@@ -1266,23 +1263,6 @@ function App() {
                     </div>
                   </div>
 
-                  {/* Informação Técnica de Noção Real */}
-                  <div className="mt-12 flex items-center gap-10 opacity-30 group-hover:opacity-70 transition-opacity">
-                    <div className="flex flex-col items-center gap-2">
-                       <span className="text-[9px] font-black tracking-[0.2em] text-white">LARGURA RENDER</span>
-                       <span className="text-xl font-mono text-brand-400">{Math.round(previewWidth)}px</span>
-                    </div>
-                    <div className="w-px h-8 bg-white/20" />
-                    <div className="flex flex-col items-center gap-2">
-                       <span className="text-[9px] font-black tracking-[0.2em] text-white">ALVO PROJEÇÃO</span>
-                       <span className="text-xl font-mono text-brand-400">1920px</span>
-                    </div>
-                    <div className="w-px h-8 bg-white/20" />
-                    <div className="flex flex-col items-center gap-2">
-                       <span className="text-[9px] font-black tracking-[0.2em] text-white">FIDELIDADE</span>
-                       <span className="text-xl font-mono text-brand-400">100% REAL</span>
-                    </div>
-                  </div>
                 </div>
 
               </div>

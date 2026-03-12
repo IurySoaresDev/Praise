@@ -105,14 +105,14 @@ function Projection() {
         />
       )}
 
-      {/* Overlay escuro para melhorar contraste */}
+      {/* Overlay escuro*/}
       <div className="absolute inset-0 z-[1] bg-black/30" />
 
       {/* Título do louvor/versículo no topo (na faixa da imagem) */}
       {data.title && data.item_type !== 'empty' && (
         <div className={`absolute left-0 right-0 z-20 w-full flex items-center justify-center ${
           data.item_type === 'bible' 
-            ? 'top-[5.5%]' // Posição para a faixa da Bíblia (Sincronizado com Louvor)
+            ? 'top-[5.5%]' // Posição para a faixa da Bíblia - Sincronizado com Louvor
             : 'top-[5.5%]' // Posição para a faixa do Louvor
         }`}>
           <h1 
