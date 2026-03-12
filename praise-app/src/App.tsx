@@ -702,7 +702,7 @@ function App() {
                                   ? 'text-white border-brand-500/40 shadow-md'
                                   : 'text-white/50 border-white/5 hover:text-white/80 hover:border-white/10 hover:bg-white/[0.03]'
                                 }`}
-                              style={editorCollection === col ? { background: 'linear-gradient(135deg, rgba(100,116,139,0.3), rgba(71,85,105,0.2))' } : { backgroundColor: 'rgba(255,255,255,0.02)' }}
+                              style={editorCollection === col ? { background: 'linear-gradient(135deg, #3b82f6, #2563eb)' } : { backgroundColor: 'rgba(255,255,255,0.02)' }}
                             >
                               {col.replace(" 2018", "")}
                             </button>
@@ -772,7 +772,7 @@ function App() {
                         }}
                         disabled={!editorTitle.trim() || !editorContent.trim()}
                         className="flex-[2] py-3.5 rounded-xl text-[14px] font-semibold text-white flex items-center justify-center gap-2 transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-90"
-                        style={{ background: editingSongTitle ? 'linear-gradient(135deg, #3b82f6, #2563eb)' : 'linear-gradient(135deg, #10b981, #059669)' }}
+                        style={{ background: editingSongTitle ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : 'linear-gradient(135deg, #10b981, #059669)' }}
                       >
                         {editingSongTitle ? <FilePenLine className="w-4 h-4" /> : <Send className="w-4 h-4" />}
                         {editingSongTitle ? 'Salvar Alterações' : 'Adicionar Louvor'}
@@ -793,7 +793,7 @@ function App() {
             <header className="px-8 py-6 border-b border-white/5 bg-slate-900/40 flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-black text-white tracking-tighter flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/20">
+                  <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center shadow-lg shadow-brand-500/20">
                     <Settings className="w-5 h-5 text-white" />
                   </div>
                   Painel de Configurações
@@ -828,7 +828,7 @@ function App() {
                     }}
                     className={`w-full group flex items-center gap-4 p-4 rounded-2xl transition-all border ${
                       settingsSubTab === item.id 
-                        ? 'bg-brand-600 border-brand-400/50 shadow-lg shadow-brand-500/20' 
+                        ? 'bg-brand-500 border-brand-400/50 shadow-lg shadow-brand-500/20' 
                         : 'bg-white/[0.02] border-transparent hover:bg-white/[0.05] hover:border-white/5'
                     }`}
                   >
@@ -942,7 +942,7 @@ function App() {
                               });
                               if (path) setSongBodyBackground(path as string);
                             }}
-                             className="p-3 rounded-xl bg-brand-600/10 border border-brand-500/20 text-brand-400 hover:bg-brand-600/20 transition-all group"
+                             className="p-3 rounded-xl bg-brand-500/10 border border-brand-500/20 text-brand-400 hover:bg-brand-500/20 transition-all group"
                            >
                              <Upload className="w-5 h-5 group-hover:scale-110 transition-transform" />
                            </button>
@@ -1074,7 +1074,7 @@ function App() {
                                   <span>{Math.round((downloadProgress.downloaded / downloadProgress.total) * 100)}%</span>
                                 </div>
                                 <div className="h-2 rounded-full overflow-hidden bg-white/5 ring-1 ring-white/5">
-                                  <div className="h-full bg-brand-500 shadow-[0_0_15px_rgba(139,92,246,0.5)] transition-all duration-300" style={{ width: `${(downloadProgress.downloaded / downloadProgress.total) * 100}%` }} />
+                                  <div className="h-full bg-brand-500 shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-300" style={{ width: `${(downloadProgress.downloaded / downloadProgress.total) * 100}%` }} />
                                 </div>
                               </div>
                             ) : (
@@ -1130,7 +1130,7 @@ function App() {
                   {/* Backdrop Aesthetic */}
                   <div className="absolute inset-0 opacity-10 pointer-events-none">
                     <div className="absolute -top-1/4 -right-1/4 w-[600px] h-[600px] bg-brand-500 rounded-full blur-[150px] animate-pulse" />
-                    <div className="absolute -bottom-1/4 -left-1/4 w-[600px] h-[600px] bg-indigo-500 rounded-full blur-[150px] animate-pulse" style={{ animationDelay: '2s' }} />
+                    <div className="absolute -bottom-1/4 -left-1/4 w-[600px] h-[600px] bg-sky-500 rounded-full blur-[150px] animate-pulse" style={{ animationDelay: '2s' }} />
                   </div>
 
                   {/* Header do Preview com Tabs Reais */}
@@ -1146,7 +1146,7 @@ function App() {
                           onClick={() => setSettingsPreviewTab(tab.id as any)}
                           className={`px-6 py-2.5 rounded-xl text-[10px] font-black tracking-[0.2em] transition-all ${
                             settingsPreviewTab === tab.id 
-                              ? 'bg-brand-600 text-white shadow-xl shadow-brand-500/20' 
+                              ? 'bg-brand-500 text-white shadow-xl shadow-brand-500/20' 
                               : 'text-white/30 hover:text-white/60'
                           }`}
                         >
@@ -1334,7 +1334,7 @@ function App() {
                             ? "text-white shadow-md"
                             : "text-white/40 hover:text-white/70 hover:bg-white/5"
                           }`}
-                        style={selectedCategory === cat ? { background: 'linear-gradient(135deg, #64748b, #475569)' } : {}}
+                        style={selectedCategory === cat ? { background: 'linear-gradient(135deg, #3b82f6, #2563eb)' } : {}}
                       >
                         {cat.replace(" 2018", "")}
                       </button>
@@ -1405,7 +1405,7 @@ function App() {
                         key={version}
                         onClick={() => setBibleVersion(version)}
                         className={`whitespace-nowrap px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-all flex-shrink-0 ${bibleVersion === version
-                            ? "text-white shadow-md"
+                            ? "text-white shadow-md bg-brand-500"
                             : "text-white/40 hover:text-white/70 hover:bg-white/5"
                           }`}
                         style={bibleVersion === version ? { background: 'linear-gradient(135deg, #64748b, #475569)' } : {}}
@@ -1580,7 +1580,7 @@ function App() {
                 <span className="text-[13px] font-semibold text-white/70 flex-1">
                   {activeTab === 'songs' ? 'Louvores do Culto' : 'Textos Bíblicos'}
                 </span>
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-md text-brand-300" style={{ backgroundColor: 'rgba(139,92,246,0.2)' }}>
+                <span className="text-[11px] font-bold px-2 py-0.5 rounded-md text-brand-300" style={{ backgroundColor: 'rgba(59,130,246,0.2)' }}>
                   {activeTab === 'songs' ? playlist.length : biblePlaylist.length}
                 </span>
               </div>
@@ -1683,7 +1683,7 @@ function App() {
 
               <div className="flex items-center gap-3">
                 {isProjecting && (
-                  <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-brand-500/20" style={{ backgroundColor: 'rgba(139,92,246,0.08)' }}>
+                  <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-brand-500/20" style={{ backgroundColor: 'rgba(59,130,246,0.1)' }}>
                     <span className="w-2 h-2 bg-brand-400 rounded-full live-dot"></span>
                     <span className="text-brand-400 text-[11px] font-semibold uppercase tracking-wide">Ao Vivo</span>
                   </div>
@@ -1928,7 +1928,7 @@ function App() {
         {/* ═══ TOAST DE SUCESSO ═══ */}
         {showSuccessToast && (
           <div className="fixed bottom-6 right-6 z-50 toast-enter">
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-brand-500/20 shadow-xl" style={{ backgroundColor: 'rgba(2,6,23,0.95)', backdropFilter: 'blur(12px)' }}>
+            <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-brand-500/20 shadow-xl" style={{ backgroundColor: 'rgba(5,11,24,0.95)', backdropFilter: 'blur(12px)' }}>
               <CheckCircle2 className="w-5 h-5 text-brand-400 shrink-0" />
               <span className="text-[13px] font-medium text-brand-100">{successMessage}</span>
             </div>
