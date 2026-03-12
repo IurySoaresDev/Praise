@@ -33,6 +33,12 @@ export interface AppState {
   songBackground: string;
   songBodyBackground: string;
   bibleBackground: string;
+  
+  // Custom Colors
+  songTitleColor: string;
+  songLyricsColor: string;
+  bibleTitleColor: string;
+  bibleLyricsColor: string;
 
   setSearchQuery: (query: string) => void;
   setSelectedCategory: (category: string) => void;
@@ -55,6 +61,11 @@ export interface AppState {
   setSongBackground: (path: string) => void;
   setSongBodyBackground: (path: string) => void;
   setBibleBackground: (path: string) => void;
+  
+  setSongTitleColor: (color: string) => void;
+  setSongLyricsColor: (color: string) => void;
+  setBibleTitleColor: (color: string) => void;
+  setBibleLyricsColor: (color: string) => void;
 }
 
 export const ALLOWED_COLLECTIONS = ["Coletânea 2018", "CIA 2018", "Avulsos 2018"];
@@ -103,6 +114,11 @@ export const useStore = create<AppState>((set, get) => ({
   songBackground: '/backgrounds/bg-song.jpg',
   songBodyBackground: '/backgrounds/bg-song-body.jpg',
   bibleBackground: '/backgrounds/bg-bible.jpg',
+  
+  songTitleColor: '#fbbf24', // Amber-400
+  songLyricsColor: '#ffffff', // White
+  bibleTitleColor: '#ffffff', // White
+  bibleLyricsColor: '#ffffff', // White
 
   setSearchQuery: (query) => set({ searchQuery: query }),
   setSelectedCategory: (category) => set({ selectedCategory: category, selectedSong: null }),
@@ -137,6 +153,11 @@ export const useStore = create<AppState>((set, get) => ({
   setSongBackground: (path) => set({ songBackground: path }),
   setSongBodyBackground: (path) => set({ songBodyBackground: path }),
   setBibleBackground: (path) => set({ bibleBackground: path }),
+
+  setSongTitleColor: (color) => set({ songTitleColor: color }),
+  setSongLyricsColor: (color) => set({ songLyricsColor: color }),
+  setBibleTitleColor: (color) => set({ bibleTitleColor: color }),
+  setBibleLyricsColor: (color) => set({ bibleLyricsColor: color }),
 
   addSongToCollection: (title, content, collectionName) => {
     const state = get();

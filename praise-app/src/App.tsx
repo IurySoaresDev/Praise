@@ -39,6 +39,14 @@ function App() {
     setSongBackground,
     setSongBodyBackground,
     setBibleBackground,
+    songTitleColor,
+    songLyricsColor,
+    bibleTitleColor,
+    bibleLyricsColor,
+    setSongTitleColor,
+    setSongLyricsColor,
+    setBibleTitleColor,
+    setBibleLyricsColor,
   } = useStore();
 
   const [monitors, setMonitors] = useState<string[]>([]);
@@ -180,7 +188,7 @@ function App() {
 
   const slides = selectedSong ? formatContent(selectedSong.content, selectedSong.collection) : [];
 
-  const sendSlideToProjection = useCallback(async (content: string, background?: string | null, itemType: string = "song", title: string = "") => {
+  const sendSlideToProjection = useCallback(async (content: string, background?: string | null, itemType: string = "song", title: string = "", titleColor?: string, lyricsColor?: string) => {
     if (isFrozen) return;
     try {
       await invoke("project_slide", {
@@ -188,7 +196,9 @@ function App() {
         title: title,
         content: content,
         background: background || null,
-        itemType: itemType
+        itemType: itemType,
+        titleColor: titleColor,
+        lyricsColor: lyricsColor
       });
     } catch (e) {
       console.error("Erro ao projetar:", e);
@@ -216,10 +226,12 @@ function App() {
         slides[index], 
         isBible ? bibleBackground : (index === 0 ? songBackground : songBodyBackground),
         isBible ? 'bible' : 'song',
-        getSlideTitle(index)
+        getSlideTitle(index),
+        isBible ? bibleTitleColor : songTitleColor,
+        isBible ? bibleLyricsColor : songLyricsColor
       );
     }
-  }, [isProjecting, slides, setActiveSlideIndex, sendSlideToProjection, selectedSong, bibleBackground, songBackground, songBodyBackground, getSlideTitle]);
+  }, [isProjecting, slides, setActiveSlideIndex, sendSlideToProjection, selectedSong, bibleBackground, songBackground, songBodyBackground, getSlideTitle, songTitleColor, songLyricsColor, bibleTitleColor, bibleLyricsColor]);
 
   const handleStartProjection = useCallback(async () => {
     if (!selectedSong || slides.length === 0) return;
@@ -232,10 +244,12 @@ function App() {
         slides[idx], 
         isBible ? bibleBackground : (idx === 0 ? songBackground : songBodyBackground),
         isBible ? 'bible' : 'song',
-        getSlideTitle(idx)
+        getSlideTitle(idx),
+        isBible ? bibleTitleColor : songTitleColor,
+        isBible ? bibleLyricsColor : songLyricsColor
       );
     }
-  }, [selectedSong, slides, activeSlideIndex, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle]);
+  }, [selectedSong, slides, activeSlideIndex, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle, songTitleColor, songLyricsColor, bibleTitleColor, bibleLyricsColor]);
 
   const handleStopProjection = useCallback(async () => {
     setIsProjecting(false);
@@ -711,11 +725,21 @@ function App() {
                        setTimeout(() => setShowSuccessToast(false), 3000);
                      }
                    }}
-                   className="w-full py-4 rounded-xl bg-white/[0.03] hover:bg-emerald-500/10 text-white font-bold text-[13px] tracking-wide transition-all border border-white/5 hover:border-emerald-500/20 shadow-sm active:scale-[0.98] flex items-center justify-center gap-2"
+                   className="w-full py-4 rounded-xl bg-white/[0.03] hover:bg-emerald-500/10 text-white font-bold text-[13px] tracking-wide transition-all border border-white/5 hover:border-emerald-500/20 shadow-sm active:scale-[0.98] flex items-center justify-center gap-2 mb-3"
                 >
                   <ImageIcon className="w-4 h-4" />
                   Alterar Imagem
                 </button>
+
+                <div className="flex items-center justify-between p-3 rounded-xl bg-black/20 border border-white/5">
+                  <span className="text-xs font-semibold text-white/60">Cor do Título</span>
+                  <input 
+                    type="color" 
+                    value={songTitleColor} 
+                    onChange={(e) => setSongTitleColor(e.target.value)}
+                    className="w-8 h-8 rounded-lg overflow-hidden border-none cursor-pointer bg-transparent"
+                  />
+                </div>
               </div>
 
               <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl hover:border-emerald-500/20 transition-all group">
@@ -747,11 +771,21 @@ function App() {
                        setTimeout(() => setShowSuccessToast(false), 3000);
                      }
                    }}
-                   className="w-full py-4 rounded-xl bg-white/[0.03] hover:bg-emerald-500/10 text-white font-bold text-[13px] tracking-wide transition-all border border-white/5 hover:border-emerald-500/20 shadow-sm active:scale-[0.98] flex items-center justify-center gap-2"
+                   className="w-full py-4 rounded-xl bg-white/[0.03] hover:bg-emerald-500/10 text-white font-bold text-[13px] tracking-wide transition-all border border-white/5 hover:border-emerald-500/20 shadow-sm active:scale-[0.98] flex items-center justify-center gap-2 mb-3"
                 >
                   <ImageIcon className="w-4 h-4" />
                   Alterar Imagem
                 </button>
+
+                <div className="flex items-center justify-between p-3 rounded-xl bg-black/20 border border-white/5">
+                  <span className="text-xs font-semibold text-white/60">Cor da Letra</span>
+                  <input 
+                    type="color" 
+                    value={songLyricsColor} 
+                    onChange={(e) => setSongLyricsColor(e.target.value)}
+                    className="w-8 h-8 rounded-lg overflow-hidden border-none cursor-pointer bg-transparent"
+                  />
+                </div>
               </div>
 
               <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl hover:border-blue-500/20 transition-all group">
@@ -783,11 +817,32 @@ function App() {
                        setTimeout(() => setShowSuccessToast(false), 3000);
                      }
                    }}
-                   className="w-full py-4 rounded-xl bg-white/[0.03] hover:bg-blue-500/10 text-white font-bold text-[13px] tracking-wide transition-all border border-white/5 hover:border-blue-500/20 shadow-sm active:scale-[0.98] flex items-center justify-center gap-2"
+                   className="w-full py-4 rounded-xl bg-white/[0.03] hover:bg-blue-500/10 text-white font-bold text-[13px] tracking-wide transition-all border border-white/5 hover:border-blue-500/20 shadow-sm active:scale-[0.98] flex items-center justify-center gap-2 mb-3"
                 >
                   <ImageIcon className="w-4 h-4" />
                   Alterar Imagem
                 </button>
+
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-black/20 border border-white/5">
+                    <span className="text-xs font-semibold text-white/60">Cor do Título</span>
+                    <input 
+                      type="color" 
+                      value={bibleTitleColor} 
+                      onChange={(e) => setBibleTitleColor(e.target.value)}
+                      className="w-8 h-8 rounded-lg overflow-hidden border-none cursor-pointer bg-transparent"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-black/20 border border-white/5">
+                    <span className="text-xs font-semibold text-white/60">Cor do Versículo</span>
+                    <input 
+                      type="color" 
+                      value={bibleLyricsColor} 
+                      onChange={(e) => setBibleLyricsColor(e.target.value)}
+                      className="w-8 h-8 rounded-lg overflow-hidden border-none cursor-pointer bg-transparent"
+                    />
+                  </div>
+                </div>
               </div>
               
               {/* Updater Card */}
@@ -1426,9 +1481,13 @@ function App() {
                         <div className={`absolute left-0 right-0 w-full flex items-center justify-center ${
                           selectedSong?.collection === 'Bíblia' ? 'top-[21%]' : 'top-[5.5%]'
                         }`}>
-                          <h4 className={`font-bold uppercase tracking-widest text-center drop-shadow-2xl projection-shadow truncate w-full px-2 ${
-                            selectedSong?.collection === 'Bíblia' ? 'text-white' : 'text-amber-400'
-                          }`} style={{ fontSize: '0.4rem' }}>
+                          <h4 
+                            className={`font-bold uppercase tracking-widest text-center drop-shadow-2xl projection-shadow truncate w-full px-2`} 
+                            style={{ 
+                              fontSize: '0.4rem',
+                              color: selectedSong?.collection === 'Bíblia' ? bibleTitleColor : songTitleColor
+                            }}
+                          >
                             {getSlideTitle(activeSlideIndex)}
                           </h4>
                         </div>
@@ -1437,11 +1496,14 @@ function App() {
                       {/* Letra ou Versículo */}
                       <div className="absolute inset-x-2 bottom-2 top-[35%] flex items-center justify-center">
                         <div 
-                          className={`text-white font-bold w-full leading-snug tracking-wide projection-shadow ${
+                          className={`font-bold w-full leading-snug tracking-wide projection-shadow ${
                             selectedSong?.collection === 'Bíblia'
                               ? 'text-[0.6rem] italic font-medium text-center'
                               : 'text-[0.6rem] uppercase text-left'
                           }`}
+                          style={{
+                            color: selectedSong?.collection === 'Bíblia' ? bibleLyricsColor : songLyricsColor
+                          }}
                           dangerouslySetInnerHTML={{ __html: slides[activeSlideIndex] }} 
                         />
                       </div>

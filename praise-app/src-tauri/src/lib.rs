@@ -9,6 +9,10 @@ struct ProjectionPayload {
     content: String,
     background: Option<String>,
     item_type: String, // "song" | "bible" | "empty"
+    #[serde(rename = "titleColor")]
+    title_color: Option<String>,
+    #[serde(rename = "lyricsColor")]
+    lyrics_color: Option<String>,
 }
 
 struct CurrentSlideState(Mutex<Option<ProjectionPayload>>);
@@ -33,13 +37,19 @@ fn project_slide(
     title: String,
     content: String, 
     background: Option<String>,
-    item_type: String
+    item_type: String,
+    #[serde(rename = "titleColor")]
+    title_color: Option<String>,
+    #[serde(rename = "lyricsColor")]
+    lyrics_color: Option<String>,
 ) -> Result<(), String> {
     let payload = ProjectionPayload { 
         title: title.clone(),
         content: content.clone(),
         background: background.clone(),
         item_type: item_type.clone(),
+        title_color: title_color,
+        lyrics_color: lyrics_color,
     };
 
     // Save payload to state

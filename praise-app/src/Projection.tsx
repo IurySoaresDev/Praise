@@ -4,7 +4,14 @@ import { invoke, convertFileSrc } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
 function Projection() {
-  const [data, setData] = useState<{ title: string; content: string; background: string | null; item_type: string }>({
+  const [data, setData] = useState<{ 
+    title: string; 
+    content: string; 
+    background: string | null; 
+    item_type: string;
+    title_color?: string;
+    lyrics_color?: string;
+  }>({
     title: "",
     content: "",
     background: null,
@@ -13,7 +20,14 @@ function Projection() {
 
   useEffect(() => {
     // Busca o slide atual do estado do Rust assim que a janela montar
-    invoke<{ title: string; content: string; background: string | null; item_type: string } | null>("get_current_slide")
+    invoke<{ 
+      title: string; 
+      content: string; 
+      background: string | null; 
+      item_type: string;
+      title_color?: string;
+      lyrics_color?: string;
+    } | null>("get_current_slide")
       .then(slide => {
         if (slide) {
           console.log("Slide inicial carregado:", slide);
@@ -24,7 +38,14 @@ function Projection() {
 
     console.log("Projetor montado, aguardando eventos...");
     
-    const unlisten = listen<{ title: string; content: string; background: string | null; item_type: string }>("update_projection", (event) => {
+    const unlisten = listen<{ 
+      title: string; 
+      content: string; 
+      background: string | null; 
+      item_type: string;
+      title_color?: string;
+      lyrics_color?: string;
+    }>("update_projection", (event) => {
       console.log("Evento recebido no projetor:", event.payload);
       setData(event.payload);
     });
@@ -76,11 +97,14 @@ function Projection() {
             ? 'top-[21%]' // Posição para a faixa da Bíblia (mais para baixo)
             : 'top-[5.5%]' // Posição para a faixa do Louvor
         }`}>
-          <h1 className={`font-bold uppercase tracking-widest text-center drop-shadow-2xl projection-shadow truncate px-12 ${
-            data.item_type === 'bible'
-              ? 'text-white text-3xl md:text-4xl lg:text-5xl' // Título da Bíblia branco e um pouco maior
-              : 'text-amber-400 text-2xl md:text-3xl lg:text-4xl' // Título do louvor amarelo
-          }`}>
+          <h1 
+            className={`font-bold uppercase tracking-widest text-center drop-shadow-2xl projection-shadow truncate px-12 ${
+              data.item_type === 'bible'
+                ? 'text-3xl md:text-4xl lg:text-5xl' 
+                : 'text-2xl md:text-3xl lg:text-4xl' 
+            }`}
+            style={{ color: data.title_color }}
+          >
             {data.title}
           </h1>
         </div>
@@ -90,11 +114,12 @@ function Projection() {
       <div className="relative z-10 flex-1 w-full flex items-center justify-center px-12 pb-8 pt-32 lg:px-20 lg:pt-40">
         <div className="flex items-center justify-center w-full">
           <div 
-            className={`text-white font-bold leading-snug tracking-wide projection-shadow drop-shadow-2xl inline-block ${
+            className={`font-bold leading-snug tracking-wide projection-shadow drop-shadow-2xl inline-block ${
               data.item_type === 'bible' 
                 ? 'text-4xl md:text-6xl lg:text-7xl italic font-medium text-center' 
                 : 'text-4xl md:text-6xl lg:text-[4.8rem] uppercase text-left'
             }`}
+            style={{ color: data.lyrics_color }}
             dangerouslySetInnerHTML={{ __html: data.content }} 
           />
         </div>
