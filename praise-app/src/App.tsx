@@ -789,12 +789,23 @@ function App() {
                     <p className="text-[10px] text-white/20 uppercase tracking-[0.2em] font-bold">Resolução: 1080p</p>
                   </div>
 
-                  <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border border-white/5 mb-6 group relative shadow-2xl">
+                  <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border border-white/5 mb-6 group relative shadow-2xl flex items-center justify-center p-4">
                     <img
                       src={songBackground.startsWith('/backgrounds/') ? songBackground : convertFileSrc(songBackground)}
-                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 absolute inset-0"
                       alt="Song Background Preview"
                     />
+                    <div className="relative z-10 text-center pointer-events-none">
+                      <h1 style={{ 
+                        color: songTitleColor,
+                        fontFamily: songTitleFont ? `'${songTitleFont}', sans-serif` : undefined,
+                        fontSize: '1.2rem',
+                        fontWeight: songTitleWeight,
+                        textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+                      }}>
+                        GRANDES COISAS
+                      </h1>
+                    </div>
                   </div>
 
                   <button
@@ -878,12 +889,25 @@ function App() {
                     <p className="text-[10px] text-white/20 uppercase tracking-[0.2em] font-bold">Resolução: 1080p</p>
                   </div>
 
-                  <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border border-white/5 mb-6 group relative shadow-2xl">
+                  <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border border-white/5 mb-6 group relative shadow-2xl flex items-center justify-center p-4">
                     <img
                       src={songBodyBackground.startsWith('/backgrounds/') ? songBodyBackground : convertFileSrc(songBodyBackground)}
-                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 absolute inset-0"
                       alt="Song Body Background Preview"
                     />
+                    <div className="relative z-10 text-center pointer-events-none w-full">
+                      <div style={{ 
+                        color: songLyricsColor,
+                        fontFamily: songLyricsFont ? `'${songLyricsFont}', sans-serif` : undefined,
+                        fontSize: '0.8rem',
+                        fontWeight: songLyricsWeight,
+                        whiteSpace: 'pre-line',
+                        lineHeight: '1.4',
+                        textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+                      }}>
+                        {"Porque Ele vive,\nposso crer no amanhã."}
+                      </div>
+                    </div>
                   </div>
 
                   <button
@@ -967,12 +991,37 @@ function App() {
                     <p className="text-[10px] text-white/20 uppercase tracking-[0.2em] font-bold">Resolução: 1080p</p>
                   </div>
 
-                  <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border border-white/5 mb-6 group relative shadow-2xl">
+                  <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border border-white/5 mb-6 group relative shadow-2xl flex flex-col items-center justify-center p-4 text-center">
                     <img
                       src={bibleBackground.startsWith('/backgrounds/') ? bibleBackground : convertFileSrc(bibleBackground)}
-                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 absolute inset-0"
                       alt="Bible Background Preview"
                     />
+                    <div className="relative z-10 pointer-events-none w-full flex flex-col items-center gap-1.5">
+                      <h1 style={{ 
+                        color: bibleTitleColor,
+                        fontFamily: bibleTitleFont ? `'${bibleTitleFont}', sans-serif` : undefined,
+                        fontSize: '0.7rem',
+                        fontWeight: bibleTitleWeight,
+                        textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                        backgroundColor: 'rgba(0,0,0,0.3)',
+                        padding: '2px 8px',
+                        borderRadius: '4px'
+                      }}>
+                        JOÃO 3:16
+                      </h1>
+                      <div style={{ 
+                        color: bibleLyricsColor,
+                        fontFamily: bibleLyricsFont ? `'${bibleLyricsFont}', sans-serif` : undefined,
+                        fontSize: '0.8rem',
+                        fontWeight: bibleLyricsWeight,
+                        whiteSpace: 'pre-line',
+                        lineHeight: '1.3',
+                        textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+                      }}>
+                        {"Porque Deus amou o mundo\nde tal maneira..."}
+                      </div>
+                    </div>
                   </div>
 
                   <button
