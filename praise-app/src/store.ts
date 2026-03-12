@@ -39,6 +39,20 @@ export interface AppState {
   songLyricsColor: string;
   bibleTitleColor: string;
   bibleLyricsColor: string;
+  
+  // Font Customization
+  songTitleFont: string;
+  songTitleSize: number;
+  songTitleWeight: string;
+  songLyricsFont: string;
+  songLyricsSize: number;
+  songLyricsWeight: string;
+  bibleTitleFont: string;
+  bibleTitleSize: number;
+  bibleTitleWeight: string;
+  bibleLyricsFont: string;
+  bibleLyricsSize: number;
+  bibleLyricsWeight: string;
 
   setSearchQuery: (query: string) => void;
   setSelectedCategory: (category: string) => void;
@@ -66,6 +80,19 @@ export interface AppState {
   setSongLyricsColor: (color: string) => void;
   setBibleTitleColor: (color: string) => void;
   setBibleLyricsColor: (color: string) => void;
+
+  setSongTitleFont: (font: string) => void;
+  setSongTitleSize: (size: number) => void;
+  setSongTitleWeight: (weight: string) => void;
+  setSongLyricsFont: (font: string) => void;
+  setSongLyricsSize: (size: number) => void;
+  setSongLyricsWeight: (weight: string) => void;
+  setBibleTitleFont: (font: string) => void;
+  setBibleTitleSize: (size: number) => void;
+  setBibleTitleWeight: (weight: string) => void;
+  setBibleLyricsFont: (font: string) => void;
+  setBibleLyricsSize: (size: number) => void;
+  setBibleLyricsWeight: (weight: string) => void;
 }
 
 export const ALLOWED_COLLECTIONS = ["Coletânea 2018", "CIA 2018", "Avulsos 2018"];
@@ -115,10 +142,23 @@ export const useStore = create<AppState>((set, get) => ({
   songBodyBackground: '/backgrounds/bg-song-body.jpg',
   bibleBackground: '/backgrounds/bg-bible.jpg',
   
+  bibleLyricsColor: '#ffffff', // White
   songTitleColor: '#ffffff', // White (Premium)
   songLyricsColor: '#ffffff', // White
   bibleTitleColor: '#ffffff', // White
-  bibleLyricsColor: '#ffffff', // White
+  
+  songTitleFont: 'Inter',
+  songTitleSize: 32,
+  songTitleWeight: 'bold',
+  songLyricsFont: 'Inter',
+  songLyricsSize: 72,
+  songLyricsWeight: 'bold',
+  bibleTitleFont: 'Inter',
+  bibleTitleSize: 40,
+  bibleTitleWeight: 'bold',
+  bibleLyricsFont: 'Inter',
+  bibleLyricsSize: 64,
+  bibleLyricsWeight: 'medium',
 
   setSearchQuery: (query) => set({ searchQuery: query }),
   setSelectedCategory: (category) => set({ selectedCategory: category, selectedSong: null }),
@@ -154,10 +194,23 @@ export const useStore = create<AppState>((set, get) => ({
   setSongBodyBackground: (path) => set({ songBodyBackground: path }),
   setBibleBackground: (path) => set({ bibleBackground: path }),
 
+  setBibleLyricsColor: (color) => set({ bibleLyricsColor: color }),
   setSongTitleColor: (color) => set({ songTitleColor: color }),
   setSongLyricsColor: (color) => set({ songLyricsColor: color }),
   setBibleTitleColor: (color) => set({ bibleTitleColor: color }),
-  setBibleLyricsColor: (color) => set({ bibleLyricsColor: color }),
+
+  setSongTitleFont: (font) => set({ songTitleFont: font }),
+  setSongTitleSize: (size) => set({ songTitleSize: size }),
+  setSongTitleWeight: (weight) => set({ songTitleWeight: weight }),
+  setSongLyricsFont: (font) => set({ songLyricsFont: font }),
+  setSongLyricsSize: (size) => set({ songLyricsSize: size }),
+  setSongLyricsWeight: (weight) => set({ songLyricsWeight: weight }),
+  setBibleTitleFont: (font) => set({ bibleTitleFont: font }),
+  setBibleTitleSize: (size) => set({ bibleTitleSize: size }),
+  setBibleTitleWeight: (weight) => set({ bibleTitleWeight: weight }),
+  setBibleLyricsFont: (font) => set({ bibleLyricsFont: font }),
+  setBibleLyricsSize: (size) => set({ bibleLyricsSize: size }),
+  setBibleLyricsWeight: (weight) => set({ bibleLyricsWeight: weight }),
 
   addSongToCollection: (title, content, collectionName) => {
     const state = get();

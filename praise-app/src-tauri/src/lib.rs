@@ -11,6 +11,12 @@ struct ProjectionPayload {
     item_type: String, // "song" | "bible" | "empty"
     title_color: Option<String>,
     lyrics_color: Option<String>,
+    title_font: Option<String>,
+    title_size: Option<f64>,
+    title_weight: Option<String>,
+    lyrics_font: Option<String>,
+    lyrics_size: Option<f64>,
+    lyrics_weight: Option<String>,
 }
 
 struct CurrentSlideState(Mutex<Option<ProjectionPayload>>);
@@ -38,14 +44,26 @@ fn project_slide(
     item_type: String,
     title_color: Option<String>,
     lyrics_color: Option<String>,
+    title_font: Option<String>,
+    title_size: Option<f64>,
+    title_weight: Option<String>,
+    lyrics_font: Option<String>,
+    lyrics_size: Option<f64>,
+    lyrics_weight: Option<String>,
 ) -> Result<(), String> {
     let payload = ProjectionPayload { 
         title: title.clone(),
         content: content.clone(),
         background: background.clone(),
         item_type: item_type.clone(),
-        title_color: title_color,
-        lyrics_color: lyrics_color,
+        title_color,
+        lyrics_color,
+        title_font,
+        title_size,
+        title_weight,
+        lyrics_font,
+        lyrics_size,
+        lyrics_weight,
     };
 
     // Save payload to state

@@ -11,6 +11,12 @@ function Projection() {
     item_type: string;
     title_color?: string;
     lyrics_color?: string;
+    title_font?: string;
+    title_size?: number;
+    title_weight?: string;
+    lyrics_font?: string;
+    lyrics_size?: number;
+    lyrics_weight?: string;
   }>({
     title: "",
     content: "",
@@ -27,6 +33,12 @@ function Projection() {
       item_type: string;
       title_color?: string;
       lyrics_color?: string;
+      title_font?: string;
+      title_size?: number;
+      title_weight?: string;
+      lyrics_font?: string;
+      lyrics_size?: number;
+      lyrics_weight?: string;
     } | null>("get_current_slide")
       .then(slide => {
         if (slide) {
@@ -45,6 +57,12 @@ function Projection() {
       item_type: string;
       title_color?: string;
       lyrics_color?: string;
+      title_font?: string;
+      title_size?: number;
+      title_weight?: string;
+      lyrics_font?: string;
+      lyrics_size?: number;
+      lyrics_weight?: string;
     }>("update_projection", (event) => {
       console.log("Evento recebido no projetor:", event.payload);
       setData(event.payload);
@@ -103,7 +121,12 @@ function Projection() {
                 ? 'text-3xl md:text-4xl lg:text-5xl' 
                 : 'text-2xl md:text-3xl lg:text-4xl' 
             }`}
-            style={{ color: data.title_color }}
+            style={{ 
+              color: data.title_color,
+              fontFamily: data.title_font ? `'${data.title_font}', sans-serif` : undefined,
+              fontSize: data.title_size ? `${data.title_size}px` : undefined,
+              fontWeight: data.title_weight
+            }}
           >
             {data.title}
           </h1>
@@ -119,7 +142,12 @@ function Projection() {
                 ? 'text-4xl md:text-6xl lg:text-7xl italic font-medium text-center' 
                 : 'text-4xl md:text-6xl lg:text-[4.8rem] uppercase text-left'
             }`}
-            style={{ color: data.lyrics_color }}
+            style={{ 
+              color: data.lyrics_color,
+              fontFamily: data.lyrics_font ? `'${data.lyrics_font}', sans-serif` : undefined,
+              fontSize: data.lyrics_size ? `${data.lyrics_size}px` : undefined,
+              fontWeight: data.lyrics_weight
+            }}
             dangerouslySetInnerHTML={{ __html: data.content }} 
           />
         </div>

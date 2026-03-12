@@ -47,6 +47,30 @@ function App() {
     setSongLyricsColor,
     setBibleTitleColor,
     setBibleLyricsColor,
+    songTitleFont,
+    songTitleSize,
+    songTitleWeight,
+    songLyricsFont,
+    songLyricsSize,
+    songLyricsWeight,
+    bibleTitleFont,
+    bibleTitleSize,
+    bibleTitleWeight,
+    bibleLyricsFont,
+    bibleLyricsSize,
+    bibleLyricsWeight,
+    setSongTitleFont,
+    setSongTitleSize,
+    setSongTitleWeight,
+    setSongLyricsFont,
+    setSongLyricsSize,
+    setSongLyricsWeight,
+    setBibleTitleFont,
+    setBibleTitleSize,
+    setBibleTitleWeight,
+    setBibleLyricsFont,
+    setBibleLyricsSize,
+    setBibleLyricsWeight,
   } = useStore();
 
   const [monitors, setMonitors] = useState<string[]>([]);
@@ -188,7 +212,20 @@ function App() {
 
   const slides = selectedSong ? formatContent(selectedSong.content, selectedSong.collection) : [];
 
-  const sendSlideToProjection = useCallback(async (content: string, background?: string | null, itemType: string = "song", title: string = "", titleColor?: string, lyricsColor?: string) => {
+  const sendSlideToProjection = useCallback(async (
+    content: string, 
+    background?: string | null, 
+    itemType: string = "song", 
+    title: string = "", 
+    titleColor?: string,
+    lyricsColor?: string,
+    titleFont?: string,
+    titleSize?: number,
+    titleWeight?: string,
+    lyricsFont?: string,
+    lyricsSize?: number,
+    lyricsWeight?: string
+  ) => {
     if (isFrozen) return;
     try {
       await invoke("project_slide", {
@@ -198,7 +235,13 @@ function App() {
         background: background || null,
         itemType: itemType,
         titleColor: titleColor,
-        lyricsColor: lyricsColor
+        lyricsColor: lyricsColor,
+        titleFont: titleFont,
+        titleSize: titleSize,
+        titleWeight: titleWeight,
+        lyricsFont: lyricsFont,
+        lyricsSize: lyricsSize,
+        lyricsWeight: lyricsWeight
       });
     } catch (e) {
       console.error("Erro ao projetar:", e);
@@ -228,7 +271,13 @@ function App() {
         isBible ? 'bible' : 'song',
         getSlideTitle(index),
         isBible ? bibleTitleColor : songTitleColor,
-        isBible ? bibleLyricsColor : songLyricsColor
+        isBible ? bibleLyricsColor : songLyricsColor,
+        isBible ? bibleTitleFont : songTitleFont,
+        isBible ? bibleTitleSize : songTitleSize,
+        isBible ? bibleTitleWeight : songTitleWeight,
+        isBible ? bibleLyricsFont : songLyricsFont,
+        isBible ? bibleLyricsSize : songLyricsSize,
+        isBible ? bibleLyricsWeight : songLyricsWeight
       );
     }
   }, [isProjecting, slides, setActiveSlideIndex, sendSlideToProjection, selectedSong, bibleBackground, songBackground, songBodyBackground, getSlideTitle, songTitleColor, songLyricsColor, bibleTitleColor, bibleLyricsColor]);
@@ -246,7 +295,13 @@ function App() {
         isBible ? 'bible' : 'song',
         getSlideTitle(idx),
         isBible ? bibleTitleColor : songTitleColor,
-        isBible ? bibleLyricsColor : songLyricsColor
+        isBible ? bibleLyricsColor : songLyricsColor,
+        isBible ? bibleTitleFont : songTitleFont,
+        isBible ? bibleTitleSize : songTitleSize,
+        isBible ? bibleTitleWeight : songTitleWeight,
+        isBible ? bibleLyricsFont : songLyricsFont,
+        isBible ? bibleLyricsSize : songLyricsSize,
+        isBible ? bibleLyricsWeight : songLyricsWeight
       );
     }
   }, [selectedSong, slides, activeSlideIndex, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle, songTitleColor, songLyricsColor, bibleTitleColor, bibleLyricsColor]);
@@ -276,7 +331,13 @@ function App() {
             isBible ? 'bible' : 'song',
             getSlideTitle(newIdx),
             isBible ? bibleTitleColor : songTitleColor,
-            isBible ? bibleLyricsColor : songLyricsColor
+            isBible ? bibleLyricsColor : songLyricsColor,
+            isBible ? bibleTitleFont : songTitleFont,
+            isBible ? bibleTitleSize : songTitleSize,
+            isBible ? bibleTitleWeight : songTitleWeight,
+            isBible ? bibleLyricsFont : songLyricsFont,
+            isBible ? bibleLyricsSize : songLyricsSize,
+            isBible ? bibleLyricsWeight : songLyricsWeight
           );
         }
       } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
@@ -290,7 +351,13 @@ function App() {
             isBible ? 'bible' : 'song',
             getSlideTitle(newIdx),
             isBible ? bibleTitleColor : songTitleColor,
-            isBible ? bibleLyricsColor : songLyricsColor
+            isBible ? bibleLyricsColor : songLyricsColor,
+            isBible ? bibleTitleFont : songTitleFont,
+            isBible ? bibleTitleSize : songTitleSize,
+            isBible ? bibleTitleWeight : songTitleWeight,
+            isBible ? bibleLyricsFont : songLyricsFont,
+            isBible ? bibleLyricsSize : songLyricsSize,
+            isBible ? bibleLyricsWeight : songLyricsWeight
           );
         }
       }
@@ -298,7 +365,7 @@ function App() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeSlideIndex, slides, selectedSong, isProjecting, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle, songTitleColor, songLyricsColor, bibleTitleColor, bibleLyricsColor]);
+  }, [activeSlideIndex, slides, selectedSong, isProjecting, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle, songTitleColor, songLyricsColor, bibleTitleColor, bibleLyricsColor, songTitleFont, songTitleSize, songTitleWeight, songLyricsFont, songLyricsSize, songLyricsWeight, bibleTitleFont, bibleTitleSize, bibleTitleWeight, bibleLyricsFont, bibleLyricsSize, bibleLyricsWeight]);
 
   // Sincroniza cores em tempo real se o usuário mudar enquanto projeta
   useEffect(() => {
@@ -310,10 +377,16 @@ function App() {
         isBible ? 'bible' : 'song',
         getSlideTitle(activeSlideIndex),
         isBible ? bibleTitleColor : songTitleColor,
-        isBible ? bibleLyricsColor : songLyricsColor
+        isBible ? bibleLyricsColor : songLyricsColor,
+        isBible ? bibleTitleFont : songTitleFont,
+        isBible ? bibleTitleSize : songTitleSize,
+        isBible ? bibleTitleWeight : songTitleWeight,
+        isBible ? bibleLyricsFont : songLyricsFont,
+        isBible ? bibleLyricsSize : songLyricsSize,
+        isBible ? bibleLyricsWeight : songLyricsWeight
       );
     }
-  }, [songTitleColor, songLyricsColor, bibleTitleColor, bibleLyricsColor, isProjecting, activeSlideIndex, slides, selectedSong, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle]);
+  }, [songTitleColor, songLyricsColor, bibleTitleColor, bibleLyricsColor, songTitleFont, songTitleSize, songTitleWeight, songLyricsFont, songLyricsSize, songLyricsWeight, bibleTitleFont, bibleTitleSize, bibleTitleWeight, bibleLyricsFont, bibleLyricsSize, bibleLyricsWeight, isProjecting, activeSlideIndex, slides, selectedSong, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle]);
 
   const appWindow = useMemo(() => getCurrentWindow(), []);
 
@@ -743,14 +816,57 @@ function App() {
                     Alterar Imagem
                   </button>
 
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-black/20 border border-white/5">
-                    <span className="text-xs font-semibold text-white/60">Cor do Título</span>
-                    <input
-                      type="color"
-                      value={songTitleColor}
-                      onChange={(e) => setSongTitleColor(e.target.value)}
-                      className="w-8 h-8 rounded-lg overflow-hidden border-none cursor-pointer bg-transparent"
-                    />
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between p-3 rounded-xl bg-black/20 border border-white/5">
+                      <span className="text-xs font-semibold text-white/60">Cor do Título</span>
+                      <input
+                        type="color"
+                        value={songTitleColor}
+                        onChange={(e) => setSongTitleColor(e.target.value)}
+                        className="w-8 h-8 rounded-lg overflow-hidden border-none cursor-pointer bg-transparent"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2 p-3 rounded-xl bg-black/10 border border-white/5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">Fonte</span>
+                        <select 
+                          value={songTitleFont}
+                          onChange={(e) => setSongTitleFont(e.target.value)}
+                          className="bg-slate-900 text-white text-[11px] rounded px-2 py-1 outline-none border border-white/10"
+                        >
+                          {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato', 'Serif', 'Sans-Serif'].map(f => (
+                            <option key={f} value={f}>{f}</option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">Tamanho</span>
+                        <div className="flex items-center gap-2">
+                          <input 
+                            type="number"
+                            value={songTitleSize}
+                            onChange={(e) => setSongTitleSize(Number(e.target.value))}
+                            className="w-12 bg-slate-900 text-white text-[11px] rounded px-2 py-1 outline-none border border-white/10 text-center"
+                          />
+                          <span className="text-[9px] text-white/20">px</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">Peso</span>
+                        <select 
+                          value={songTitleWeight}
+                          onChange={(e) => setSongTitleWeight(e.target.value)}
+                          className="bg-slate-900 text-white text-[11px] rounded px-2 py-1 outline-none border border-white/10"
+                        >
+                          {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (
+                            <option key={w} value={w}>{w}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -789,14 +905,57 @@ function App() {
                     Alterar Imagem
                   </button>
 
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-black/20 border border-white/5">
-                    <span className="text-xs font-semibold text-white/60">Cor da Letra</span>
-                    <input
-                      type="color"
-                      value={songLyricsColor}
-                      onChange={(e) => setSongLyricsColor(e.target.value)}
-                      className="w-8 h-8 rounded-lg overflow-hidden border-none cursor-pointer bg-transparent"
-                    />
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between p-3 rounded-xl bg-black/20 border border-white/5">
+                      <span className="text-xs font-semibold text-white/60">Cor da Letra</span>
+                      <input
+                        type="color"
+                        value={songLyricsColor}
+                        onChange={(e) => setSongLyricsColor(e.target.value)}
+                        className="w-8 h-8 rounded-lg overflow-hidden border-none cursor-pointer bg-transparent"
+                      />
+                    </div>
+
+                    <div className="space-y-2 p-3 rounded-xl bg-black/10 border border-white/5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">Fonte</span>
+                        <select 
+                          value={songLyricsFont}
+                          onChange={(e) => setSongLyricsFont(e.target.value)}
+                          className="bg-slate-900 text-white text-[11px] rounded px-2 py-1 outline-none border border-white/10"
+                        >
+                          {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato', 'Serif', 'Sans-Serif'].map(f => (
+                            <option key={f} value={f}>{f}</option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">Tamanho</span>
+                        <div className="flex items-center gap-2">
+                          <input 
+                            type="number"
+                            value={songLyricsSize}
+                            onChange={(e) => setSongLyricsSize(Number(e.target.value))}
+                            className="w-12 bg-slate-900 text-white text-[11px] rounded px-2 py-1 outline-none border border-white/10 text-center"
+                          />
+                          <span className="text-[9px] text-white/20">px</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">Peso</span>
+                        <select 
+                          value={songLyricsWeight}
+                          onChange={(e) => setSongLyricsWeight(e.target.value)}
+                          className="bg-slate-900 text-white text-[11px] rounded px-2 py-1 outline-none border border-white/10"
+                        >
+                          {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (
+                            <option key={w} value={w}>{w}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -836,23 +995,80 @@ function App() {
                   </button>
 
                   <div className="flex flex-col gap-2">
-                    <div className="flex items-center justify-between p-3 rounded-xl bg-black/20 border border-white/5">
-                      <span className="text-xs font-semibold text-white/60">Cor do Título</span>
-                      <input
-                        type="color"
-                        value={bibleTitleColor}
-                        onChange={(e) => setBibleTitleColor(e.target.value)}
-                        className="w-8 h-8 rounded-lg overflow-hidden border-none cursor-pointer bg-transparent"
-                      />
+                    <div className="p-3 rounded-xl bg-black/10 border border-white/5 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-white/60">Título</span>
+                        <input
+                          type="color"
+                          value={bibleTitleColor}
+                          onChange={(e) => setBibleTitleColor(e.target.value)}
+                          className="w-6 h-6 rounded overflow-hidden border-none cursor-pointer bg-transparent"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <select 
+                          value={bibleTitleFont}
+                          onChange={(e) => setBibleTitleFont(e.target.value)}
+                          className="bg-slate-900 text-white text-[10px] rounded px-1 py-1 outline-none border border-white/10"
+                        >
+                          {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato'].map(f => (
+                            <option key={f} value={f}>{f}</option>
+                          ))}
+                        </select>
+                        <input 
+                          type="number"
+                          value={bibleTitleSize}
+                          onChange={(e) => setBibleTitleSize(Number(e.target.value))}
+                          className="bg-slate-900 text-white text-[10px] rounded px-1 py-1 outline-none border border-white/10 text-center"
+                        />
+                      </div>
+                      <select 
+                        value={bibleTitleWeight}
+                        onChange={(e) => setBibleTitleWeight(e.target.value)}
+                        className="w-full bg-slate-900 text-white text-[10px] rounded px-1 py-1 outline-none border border-white/10"
+                      >
+                        {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (
+                          <option key={w} value={w}>{w}</option>
+                        ))}
+                      </select>
                     </div>
-                    <div className="flex items-center justify-between p-3 rounded-xl bg-black/20 border border-white/5">
-                      <span className="text-xs font-semibold text-white/60">Cor do Versículo</span>
-                      <input
-                        type="color"
-                        value={bibleLyricsColor}
-                        onChange={(e) => setBibleLyricsColor(e.target.value)}
-                        className="w-8 h-8 rounded-lg overflow-hidden border-none cursor-pointer bg-transparent"
-                      />
+
+                    <div className="p-3 rounded-xl bg-black/10 border border-white/5 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-white/60">Versículo</span>
+                        <input
+                          type="color"
+                          value={bibleLyricsColor}
+                          onChange={(e) => setBibleLyricsColor(e.target.value)}
+                          className="w-6 h-6 rounded overflow-hidden border-none cursor-pointer bg-transparent"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <select 
+                          value={bibleLyricsFont}
+                          onChange={(e) => setBibleLyricsFont(e.target.value)}
+                          className="bg-slate-900 text-white text-[10px] rounded px-1 py-1 outline-none border border-white/10"
+                        >
+                          {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato'].map(f => (
+                            <option key={f} value={f}>{f}</option>
+                          ))}
+                        </select>
+                        <input 
+                          type="number"
+                          value={bibleLyricsSize}
+                          onChange={(e) => setBibleLyricsSize(Number(e.target.value))}
+                          className="bg-slate-900 text-white text-[10px] rounded px-1 py-1 outline-none border border-white/10 text-center"
+                        />
+                      </div>
+                      <select 
+                        value={bibleLyricsWeight}
+                        onChange={(e) => setBibleLyricsWeight(e.target.value)}
+                        className="w-full bg-slate-900 text-white text-[10px] rounded px-1 py-1 outline-none border border-white/10"
+                      >
+                        {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (
+                          <option key={w} value={w}>{w}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                 </div>
