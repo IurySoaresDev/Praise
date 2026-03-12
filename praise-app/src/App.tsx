@@ -1134,7 +1134,7 @@ function App() {
                   </div>
 
                   {/* Header do Preview com Tabs Reais */}
-                  <div className="absolute top-8 left-10 right-10 flex items-center justify-between z-20">
+                  <div className="absolute top-8 left-10 right-10 flex items-center justify-center z-20">
                     <div className="flex items-center gap-4 p-1.5 bg-black/40 rounded-2xl border border-white/10 backdrop-blur-md">
                       {[
                         { id: 'title', label: 'TÍTULO' },
