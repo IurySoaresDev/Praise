@@ -3,8 +3,10 @@ import { invoke, convertFileSrc } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
+import { check } from '@tauri-apps/plugin-updater';
+import { relaunch } from '@tauri-apps/plugin-process';
 import { useStore, ALLOWED_COLLECTIONS } from "./store";
-import { Search, Monitor, Play, MonitorDot, ChevronRight, ChevronLeft, Plus, Trash2, GripVertical, Square, Music, ListMusic, BookOpen, ArrowLeft, Loader2, FilePenLine, Upload, Send, X, Minus, Snowflake, AlertTriangle, CheckCircle2, Settings, Image as ImageIcon } from "lucide-react";
+import { Play, Square, Settings, RefreshCw, X, Plus, Trash2, Edit2, CheckCircle2, FilePenLine, Copy, GripVertical, AlertTriangle, ListMusic, BookOpen, Layers, Monitor, Type, LayoutTemplate, Send, SlidersHorizontal, Image as ImageIcon, Search, ArrowLeft, Loader2, MonitorDot, Snowflake, RotateCw, DownloadCloud, Minus, Music, Upload, ChevronLeft, ChevronRight } from 'lucide-react';
 import "./App.css";
 
 function App() {
@@ -45,6 +47,8 @@ function App() {
   const [overIdx, setOverIdx] = useState<number | null>(null);
   const [isProjecting, setIsProjecting] = useState(false);
   const [isFrozen, setIsFrozen] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState<{ downloaded: number, total: number } | null>(null);
+  const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
 
   // Bible State
   // REMOVIDO: const [activeTab, setActiveTab] = useState<'songs' | 'bible' | 'editor'>('songs');
@@ -784,6 +788,88 @@ function App() {
                   <ImageIcon className="w-4 h-4" />
                   Alterar Imagem
                 </button>
+              </div>
+              
+              {/* Updater Card */}
+              <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl hover:border-slate-500/20 transition-all group col-span-1 md:col-span-2 lg:col-span-3">
+                <div className="mb-6">
+                    <h3 className="text-xl font-black text-white mb-1.5 tracking-tight flex items-center gap-2">
+                       <DownloadCloud className="w-5 h-5 text-emerald-400" /> Atualizações do Sistema
+                    </h3>
+                    <p className="text-sm text-slate-400 font-medium">Verifique e instale novas versões do Praise automaticamente.</p>
+                </div>
+                
+                <div className="bg-black/20 rounded-2xl p-6 border border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
+                  <div className="flex-1 w-full">
+                    {downloadProgress ? (
+                      <div>
+                        <div className="flex justify-between text-xs text-white/60 mb-2 font-medium">
+                          <span>Baixando atualização...</span>
+                          <span>{Math.round((downloadProgress.downloaded / downloadProgress.total) * 100)}%</span>
+                        </div>
+                        <div className="h-2 rounded-full overflow-hidden bg-white/5">
+                          <div 
+                            className="h-full bg-emerald-500 transition-all duration-300" 
+                            style={{ width: `${(downloadProgress.downloaded / downloadProgress.total) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-[13px] text-white/50 leading-relaxed">
+                        Mantenha seu aplicativo sempre na versão mais recente para receber novos recursos e correções de estabilidade.
+                      </p>
+                    )}
+                  </div>
+                  
+                  <button 
+                    onClick={async () => {
+                      try {
+                        setIsCheckingUpdate(true);
+                        const update = await check();
+                        if (update) {
+                           let downloaded = 0;
+                           let contentLength = 0;
+                           await update.downloadAndInstall((event) => {
+                             switch (event.event) {
+                               case 'Started':
+                                 contentLength = event.data.contentLength || 0;
+                                 setDownloadProgress({ downloaded: 0, total: contentLength });
+                                 break;
+                               case 'Progress':
+                                 downloaded += event.data.chunkLength;
+                                 setDownloadProgress({ downloaded, total: contentLength });
+                                 break;
+                               case 'Finished':
+                                 setDownloadProgress(null);
+                                 break;
+                             }
+                           });
+                           setSuccessMessage("Atualização instalada. Reiniciando...");
+                           setShowSuccessToast(true);
+                           setTimeout(async () => {
+                             await relaunch();
+                           }, 2000);
+                        } else {
+                           setSuccessMessage("O Praise já está na versão mais recente!");
+                           setShowSuccessToast(true);
+                           setTimeout(() => setShowSuccessToast(false), 3000);
+                        }
+                      } catch (e) {
+                        console.error("Erro ao atualizar", e);
+                        setSuccessMessage("Erro ao buscar atualizações.");
+                        setShowSuccessToast(true);
+                        setTimeout(() => setShowSuccessToast(false), 3000);
+                      } finally {
+                        setIsCheckingUpdate(false);
+                      }
+                    }}
+                    disabled={isCheckingUpdate || downloadProgress !== null}
+                    className="w-full md:w-auto px-6 py-3 rounded-xl bg-white/[0.05] hover:bg-emerald-500/10 text-white font-bold text-[13px] tracking-wide transition-all border border-white/5 hover:border-emerald-500/20 shadow-sm active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                  >
+                    {isCheckingUpdate ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCw className="w-4 h-4" />}
+                    {isCheckingUpdate ? 'Verificando...' : downloadProgress ? 'Baixando...' : 'Verificar Atualização'}
+                  </button>
+                </div>
               </div>
             </div>
 
