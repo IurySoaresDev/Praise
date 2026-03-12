@@ -112,7 +112,7 @@ function Projection() {
       {data.title && data.item_type !== 'empty' && (
         <div className={`absolute left-0 right-0 z-20 w-full flex items-center justify-center ${
           data.item_type === 'bible' 
-            ? 'top-[21%]' // Posição para a faixa da Bíblia (mais para baixo)
+            ? 'top-[5.5%]' // Posição para a faixa da Bíblia (Sincronizado com Louvor)
             : 'top-[5.5%]' // Posição para a faixa do Louvor
         }`}>
           <h1 

@@ -1202,7 +1202,7 @@ function App() {
                       )}
 
                       {settingsPreviewTab === 'bible' && (
-                        <div className="absolute left-0 right-0 top-[21%] flex items-center justify-center px-[5%]">
+                        <div className="absolute left-0 right-0 top-[5.5%] flex items-center justify-center px-[5%]">
                           <div style={{
                             backgroundColor: 'rgba(0,0,0,0.4)',
                             padding: '1% 2.5%',
@@ -1217,7 +1217,7 @@ function App() {
                               fontWeight: bibleTitleWeight,
                               textShadow: '0 2px 8px rgba(0,0,0,0.5)',
                             }}>
-                              SÃO JOÃO 8:32
+                              JOÃO 8:32
                             </h2>
                           </div>
                         </div>
@@ -1225,7 +1225,7 @@ function App() {
 
                       {/* Conteúdo Central */}
                       <div className={`absolute inset-0 flex items-center justify-center px-[8%] ${
-                        settingsPreviewTab === 'bible' ? 'pt-[18%] pb-[5%]' : 'pt-[12%] pb-[8%]'
+                        settingsPreviewTab === 'bible' ? 'pt-[12%] pb-[5%]' : 'pt-[12%] pb-[8%]'
                       }`}>
                         {settingsPreviewTab === 'lyrics' && (
                           <div className="w-full">
