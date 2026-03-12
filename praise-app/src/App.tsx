@@ -459,7 +459,7 @@ function App() {
             <button
               onClick={() => setActiveTab('songs')}
               className={`w-full aspect-square rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all ${activeTab === 'songs'
-                  ? 'bg-blue-500/30 text-white shadow-inner scale-95 border-blue-500/20 glow-brand'
+                  ? 'bg-brand-500/30 text-white shadow-inner scale-95 border-brand-500/20 glow-brand'
                   : 'text-white/40 hover:text-white/70 hover:bg-white/5'
                 }`}
             >
@@ -470,7 +470,7 @@ function App() {
             <button
               onClick={() => setActiveTab('bible')}
               className={`w-full aspect-square rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all ${activeTab === 'bible'
-                  ? 'bg-blue-500/30 text-white shadow-inner scale-95 glow-brand'
+                  ? 'bg-brand-500/30 text-white shadow-inner scale-95 glow-brand'
                   : 'text-white/40 hover:text-white/70 hover:bg-white/5'
                 }`}
             >
@@ -481,7 +481,7 @@ function App() {
             <button
               onClick={() => setActiveTab('editor')}
               className={`w-full aspect-square rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all ${activeTab === 'editor'
-                  ? 'bg-blue-500/30 text-white shadow-inner scale-95 glow-brand'
+                  ? 'bg-brand-500/30 text-white shadow-inner scale-95 glow-brand'
                   : 'text-white/40 hover:text-white/70 hover:bg-white/5'
                 }`}
             >
@@ -492,7 +492,7 @@ function App() {
             <button
               onClick={() => setActiveTab('settings')}
               className={`w-full aspect-square rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all ${activeTab === 'settings'
-                  ? 'bg-blue-500/30 text-white shadow-inner scale-95 glow-brand'
+                  ? 'bg-brand-500/30 text-white shadow-inner scale-95 glow-brand'
                   : 'text-white/40 hover:text-white/70 hover:bg-white/5'
                 }`}
             >
@@ -521,7 +521,7 @@ function App() {
                     <input
                       type="text"
                       placeholder="Buscar para editar..."
-                      className="w-full pl-9 pr-4 py-2 rounded-xl text-xs outline-none border border-white/5 transition-all focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/10 placeholder:text-white/20 bg-white/5"
+                      className="w-full pl-9 pr-4 py-2 rounded-xl text-xs outline-none border border-white/5 transition-all focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/10 placeholder:text-white/20 bg-white/5"
                       autoComplete="off"
                       autoCorrect="off"
                       spellCheck={false}
@@ -536,10 +536,10 @@ function App() {
                       <button
                         key={cat}
                         onClick={() => setSelectedEditCategory(cat)}
-                        className={`whitespace-nowrap px-2 py-1 text-[10px] font-bold rounded-lg transition-all flex-shrink-0 border ${selectedEditCategory === cat
-                            ? "text-white border-blue-500/30 bg-blue-500/20 shadow-sm"
-                            : "text-white/30 border-transparent hover:text-white/60 hover:bg-white/5"
-                          }`}
+                         className={`whitespace-nowrap px-2 py-1 text-[10px] font-bold rounded-lg transition-all flex-shrink-0 border ${selectedEditCategory === cat
+                             ? "text-white border-brand-500/30 bg-brand-500/20 shadow-sm"
+                             : "text-white/30 border-transparent hover:text-white/60 hover:bg-white/5"
+                           }`}
                       >
                         {cat.replace(" 2018", "")}
                       </button>
@@ -571,7 +571,7 @@ function App() {
                           setEditorCollection(song.collection);
                         }}
                         className={`w-full text-left p-2.5 rounded-lg text-xs transition-all flex flex-col gap-0.5 border ${editingSongTitle === song.title
-                            ? 'bg-blue-500/20 border-blue-500/30 text-white shadow-sm'
+                            ? 'bg-brand-500/20 border-brand-500/30 text-white shadow-sm'
                             : 'border-transparent text-white/40 hover:bg-white/5 hover:text-white/60'
                           }`}
                       >
@@ -685,7 +685,7 @@ function App() {
                         <input
                           type="text"
                           placeholder="Ex: O Sangue de Jesus Tem Poder"
-                          className="w-full px-4 py-3 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 placeholder:text-white/20 bg-white/5 text-white"
+                          className="w-full px-4 py-3 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/20 placeholder:text-white/20 bg-white/5 text-white"
                           value={editorTitle}
                           onChange={(e) => setEditorTitle(e.target.value)}
                         />
@@ -699,7 +699,7 @@ function App() {
                               key={col}
                               onClick={() => setEditorCollection(col)}
                               className={`flex-1 text-center px-1 py-1 rounded-xl text-[11px] font-medium border transition-all ${editorCollection === col
-                                  ? 'text-white border-blue-500/40 shadow-md'
+                                  ? 'text-white border-brand-500/40 shadow-md'
                                   : 'text-white/50 border-white/5 hover:text-white/80 hover:border-white/10 hover:bg-white/[0.03]'
                                 }`}
                               style={editorCollection === col ? { background: 'linear-gradient(135deg, rgba(100,116,139,0.3), rgba(71,85,105,0.2))' } : { backgroundColor: 'rgba(255,255,255,0.02)' }}
@@ -715,7 +715,7 @@ function App() {
                       <label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2 block">Letra do Louvor</label>
                       <textarea
                         placeholder={"Cole a letra aqui...\n\nSepare estrofes com uma linha em branco.\nCada bloco separado será uma cena na projeção."}
-                        className="w-full px-4 py-4 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 placeholder:text-white/15 resize-none leading-relaxed text-white"
+                        className="w-full px-4 py-4 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/20 placeholder:text-white/15 resize-none leading-relaxed text-white"
                         style={{ backgroundColor: 'rgba(255,255,255,0.05)', minHeight: '400px' }}
                         value={editorContent}
                         onChange={(e) => setEditorContent(e.target.value)}
@@ -793,7 +793,7 @@ function App() {
             <header className="px-8 py-6 border-b border-white/5 bg-slate-900/40 flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-black text-white tracking-tighter flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                  <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/20">
                     <Settings className="w-5 h-5 text-white" />
                   </div>
                   Painel de Configurações
@@ -801,7 +801,7 @@ function App() {
                 <p className="text-slate-400 text-xs font-medium mt-1">Gerencie a identidade visual da sua projeção em tempo real.</p>
               </div>
               <div className="flex items-center gap-3">
-                <span className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold text-blue-400 uppercase tracking-widest animate-pulse">
+                <span className="px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-[10px] font-bold text-brand-400 uppercase tracking-widest animate-pulse">
                   Modo Edição Ativo
                 </span>
               </div>
@@ -828,14 +828,14 @@ function App() {
                     }}
                     className={`w-full group flex items-center gap-4 p-4 rounded-2xl transition-all border ${
                       settingsSubTab === item.id 
-                        ? 'bg-blue-600 border-blue-400/50 shadow-lg shadow-blue-500/20' 
+                        ? 'bg-brand-600 border-brand-400/50 shadow-lg shadow-brand-500/20' 
                         : 'bg-white/[0.02] border-transparent hover:bg-white/[0.05] hover:border-white/5'
                     }`}
                   >
                     <item.icon className={`w-5 h-5 transition-colors ${settingsSubTab === item.id ? 'text-white' : 'text-slate-400 group-hover:text-white'}`} />
                     <div className="hidden lg:flex flex-col items-start text-left">
                       <span className={`text-[13px] font-bold ${settingsSubTab === item.id ? 'text-white' : 'text-slate-300'}`}>{item.label}</span>
-                      <span className={`text-[10px] ${settingsSubTab === item.id ? 'text-blue-100/60' : 'text-slate-500'}`}>{item.desc}</span>
+                      <span className={`text-[10px] ${settingsSubTab === item.id ? 'text-brand-100/60' : 'text-slate-500'}`}>{item.desc}</span>
                     </div>
                   </button>
                 ))}
@@ -863,7 +863,7 @@ function App() {
                               });
                               if (path) setSongBackground(path as string);
                             }}
-                            className="p-3 rounded-xl bg-blue-600/10 border border-blue-500/20 text-blue-400 hover:bg-blue-600/20 transition-all group"
+                            className="p-3 rounded-xl bg-brand-600/10 border border-brand-500/20 text-brand-400 hover:bg-brand-600/20 transition-all group"
                             title="Trocar imagem"
                           >
                             <Upload className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -887,7 +887,7 @@ function App() {
 
                           <div className="p-5 rounded-2xl bg-black/10 border border-white/5 space-y-6">
                             <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-4">
-                              <Type className="w-3 h-3 text-blue-400" />
+                              <Type className="w-3 h-3 text-brand-400" />
                               Tipografia do Título
                             </label>
                             <div className="grid grid-cols-1 gap-5">
@@ -896,7 +896,7 @@ function App() {
                                   <Type className="w-3 h-3" />
                                   Família da Fonte
                                 </span>
-                                <select value={songTitleFont} onChange={(e) => setSongTitleFont(e.target.value)} className="w-full bg-slate-900 border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-blue-500/50 transition-all">
+                                <select value={songTitleFont} onChange={(e) => setSongTitleFont(e.target.value)} className="w-full bg-slate-900 border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50 transition-all">
                                   {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato', 'Serif', 'Sans-Serif'].map(f => (<option key={f} value={f}>{f}</option>))}
                                 </select>
                               </div>
@@ -906,14 +906,14 @@ function App() {
                                     <Maximize2 className="w-3 h-3" />
                                     Tamanho (PX)
                                   </span>
-                                  <input type="number" value={songTitleSize} onChange={(e) => setSongTitleSize(Number(e.target.value))} className="w-full bg-slate-900 border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-blue-500/50 text-center" />
+                                  <input type="number" value={songTitleSize} onChange={(e) => setSongTitleSize(Number(e.target.value))} className="w-full bg-slate-900 border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50 text-center" />
                                 </div>
                                 <div className="space-y-2">
                                   <span className="text-[11px] font-bold text-white/30 ml-1 flex items-center gap-1.5">
                                     <Bold className="w-3 h-3" />
                                     Peso Visual
                                   </span>
-                                  <select value={songTitleWeight} onChange={(e) => setSongTitleWeight(e.target.value)} className="w-full bg-slate-900 border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-blue-500/50">
+                                  <select value={songTitleWeight} onChange={(e) => setSongTitleWeight(e.target.value)} className="w-full bg-slate-900 border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50">
                                     {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
                                   </select>
                                 </div>
@@ -942,10 +942,10 @@ function App() {
                               });
                               if (path) setSongBodyBackground(path as string);
                             }}
-                            className="p-3 rounded-xl bg-blue-600/10 border border-blue-500/20 text-blue-400 hover:bg-blue-600/20 transition-all group"
-                          >
-                            <Upload className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                          </button>
+                             className="p-3 rounded-xl bg-brand-600/10 border border-brand-500/20 text-brand-400 hover:bg-brand-600/20 transition-all group"
+                           >
+                             <Upload className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                           </button>
                         </div>
 
                         <div className="space-y-6">
@@ -964,18 +964,18 @@ function App() {
                             <div className="grid grid-cols-1 gap-5">
                               <div className="space-y-2">
                                 <span className="text-[11px] font-bold text-white/30 ml-1">Família da Fonte</span>
-                                <select value={songLyricsFont} onChange={(e) => setSongLyricsFont(e.target.value)} className="w-full bg-slate-900 border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-blue-500/50">
+                                <select value={songLyricsFont} onChange={(e) => setSongLyricsFont(e.target.value)} className="w-full bg-slate-900 border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50">
                                   {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato', 'Serif', 'Sans-Serif'].map(f => (<option key={f} value={f}>{f}</option>))}
                                 </select>
                               </div>
                               <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                   <span className="text-[11px] font-bold text-white/30 ml-1">Tamanho (PX)</span>
-                                  <input type="number" value={songLyricsSize} onChange={(e) => setSongLyricsSize(Number(e.target.value))} className="w-full bg-slate-900 border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-blue-500/50 text-center" />
+                                  <input type="number" value={songLyricsSize} onChange={(e) => setSongLyricsSize(Number(e.target.value))} className="w-full bg-slate-900 border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50 text-center" />
                                 </div>
                                 <div className="space-y-2">
                                   <span className="text-[11px] font-bold text-white/30 ml-1">Peso Visual</span>
-                                  <select value={songLyricsWeight} onChange={(e) => setSongLyricsWeight(e.target.value)} className="w-full bg-slate-900 border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-blue-500/50">
+                                  <select value={songLyricsWeight} onChange={(e) => setSongLyricsWeight(e.target.value)} className="w-full bg-slate-900 border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50">
                                     {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
                                   </select>
                                 </div>
@@ -1004,7 +1004,7 @@ function App() {
                               });
                               if (path) setBibleBackground(path as string);
                             }}
-                            className="p-3 rounded-xl bg-blue-600/10 border border-blue-500/20 text-blue-400 hover:bg-blue-600/20 transition-all group"
+                            className="p-3 rounded-xl bg-brand-600/10 border border-brand-500/20 text-brand-400 hover:bg-brand-600/20 transition-all group"
                           >
                             <Upload className="w-5 h-5 group-hover:scale-110 transition-transform" />
                           </button>
@@ -1014,7 +1014,7 @@ function App() {
                            {/* Configurações do Título (Referência) */}
                            <div className="p-6 rounded-2xl bg-black/20 border border-white/5 space-y-6">
                              <div className="flex items-center gap-2 mb-2">
-                               <div className="w-2 h-2 rounded-full bg-blue-500" />
+                               <div className="w-2 h-2 rounded-full bg-brand-500" />
                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Referência (Livro/Capítulo)</span>
                              </div>
                              <div className="flex items-center gap-4">
@@ -1034,7 +1034,7 @@ function App() {
                            {/* Configurações do Texto (Versículo) */}
                            <div className="p-6 rounded-2xl bg-black/20 border border-white/5 space-y-6">
                              <div className="flex items-center gap-2 mb-2">
-                               <div className="w-2 h-2 rounded-full bg-blue-500" />
+                               <div className="w-2 h-2 rounded-full bg-brand-500" />
                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Texto do Versículo</span>
                              </div>
                              <div className="flex items-center gap-4">
@@ -1063,7 +1063,7 @@ function App() {
                             <h3 className="text-xl font-black text-white mb-1.5 tracking-tight flex items-center gap-2">
                               Atualizações do Praise
                             </h3>
-                            <p className="text-sm text-blue-400 font-medium">Mantenha seu sistema na versão mais recente.</p>
+                            <p className="text-sm text-brand-400 font-medium">Mantenha seu sistema na versão mais recente.</p>
                           </div>
 
                           <div className="bg-black/20 rounded-2xl p-6 border border-white/5 space-y-6">
@@ -1074,7 +1074,7 @@ function App() {
                                   <span>{Math.round((downloadProgress.downloaded / downloadProgress.total) * 100)}%</span>
                                 </div>
                                 <div className="h-2 rounded-full overflow-hidden bg-white/5 ring-1 ring-white/5">
-                                  <div className="h-full bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-300" style={{ width: `${(downloadProgress.downloaded / downloadProgress.total) * 100}%` }} />
+                                  <div className="h-full bg-brand-500 shadow-[0_0_15px_rgba(139,92,246,0.5)] transition-all duration-300" style={{ width: `${(downloadProgress.downloaded / downloadProgress.total) * 100}%` }} />
                                 </div>
                               </div>
                             ) : (
@@ -1113,7 +1113,7 @@ function App() {
                                 }
                               }}
                               disabled={isCheckingUpdate || downloadProgress !== null}
-                              className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-white/[0.03] hover:bg-blue-600/10 border border-white/5 hover:border-blue-500/30 text-white font-black text-xs uppercase tracking-[0.2em] transition-all disabled:opacity-50"
+                              className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-white/[0.03] hover:bg-brand-600/10 border border-white/5 hover:border-brand-500/30 text-white font-black text-xs uppercase tracking-[0.2em] transition-all disabled:opacity-50"
                             >
                               {isCheckingUpdate ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCw className="w-4 h-4" />}
                               Verificar Agora
@@ -1129,7 +1129,7 @@ function App() {
                   
                   {/* Backdrop Aesthetic */}
                   <div className="absolute inset-0 opacity-10 pointer-events-none">
-                    <div className="absolute -top-1/4 -right-1/4 w-[600px] h-[600px] bg-blue-500 rounded-full blur-[150px] animate-pulse" />
+                    <div className="absolute -top-1/4 -right-1/4 w-[600px] h-[600px] bg-brand-500 rounded-full blur-[150px] animate-pulse" />
                     <div className="absolute -bottom-1/4 -left-1/4 w-[600px] h-[600px] bg-indigo-500 rounded-full blur-[150px] animate-pulse" style={{ animationDelay: '2s' }} />
                   </div>
 
@@ -1146,7 +1146,7 @@ function App() {
                           onClick={() => setSettingsPreviewTab(tab.id as any)}
                           className={`px-6 py-2.5 rounded-xl text-[10px] font-black tracking-[0.2em] transition-all ${
                             settingsPreviewTab === tab.id 
-                              ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20' 
+                              ? 'bg-brand-600 text-white shadow-xl shadow-brand-500/20' 
                               : 'text-white/30 hover:text-white/60'
                           }`}
                         >
@@ -1154,9 +1154,9 @@ function App() {
                         </button>
                       ))}
                     </div>
-                    <div className="flex items-center gap-2 px-4 py-2 bg-blue-500/10 rounded-full border border-blue-500/20">
-                      <MonitorDot className="w-4 h-4 text-blue-400" />
-                      <span className="text-[10px] font-black text-blue-400 tracking-widest uppercase">Escala Proporcional 1080p</span>
+                    <div className="flex items-center gap-2 px-4 py-2 bg-brand-500/10 rounded-full border border-brand-500/20">
+                      <MonitorDot className="w-4 h-4 text-brand-400" />
+                      <span className="text-[10px] font-black text-brand-400 tracking-widest uppercase">Escala Proporcional 1080p</span>
                     </div>
                   </div>
 
@@ -1270,17 +1270,17 @@ function App() {
                   <div className="mt-12 flex items-center gap-10 opacity-30 group-hover:opacity-70 transition-opacity">
                     <div className="flex flex-col items-center gap-2">
                        <span className="text-[9px] font-black tracking-[0.2em] text-white">LARGURA RENDER</span>
-                       <span className="text-xl font-mono text-blue-400">{Math.round(previewWidth)}px</span>
+                       <span className="text-xl font-mono text-brand-400">{Math.round(previewWidth)}px</span>
                     </div>
                     <div className="w-px h-8 bg-white/20" />
                     <div className="flex flex-col items-center gap-2">
                        <span className="text-[9px] font-black tracking-[0.2em] text-white">ALVO PROJEÇÃO</span>
-                       <span className="text-xl font-mono text-blue-400">1920px</span>
+                       <span className="text-xl font-mono text-brand-400">1920px</span>
                     </div>
                     <div className="w-px h-8 bg-white/20" />
                     <div className="flex flex-col items-center gap-2">
                        <span className="text-[9px] font-black tracking-[0.2em] text-white">FIDELIDADE</span>
-                       <span className="text-xl font-mono text-blue-400">100% REAL</span>
+                       <span className="text-xl font-mono text-brand-400">100% REAL</span>
                     </div>
                   </div>
                 </div>
@@ -1318,7 +1318,7 @@ function App() {
                     <input
                       type="text"
                       placeholder="Buscar louvor..."
-                      className="w-full pl-9 pr-4 py-2 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 placeholder:text-white/25"
+                      className="w-full pl-9 pr-4 py-2 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/20 placeholder:text-white/25"
                       style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
@@ -1356,7 +1356,7 @@ function App() {
                       </span>
                       <button
                         onClick={(e) => { e.stopPropagation(); addToPlaylist(song); }}
-                        className="p-1 rounded-md text-white/20 hover:text-blue-300 hover:bg-blue-500/20 opacity-0 group-hover:opacity-100 transition-all flex-shrink-0"
+                        className="p-1 rounded-md text-white/20 hover:text-accent-300 hover:bg-accent-500/20 opacity-0 group-hover:opacity-100 transition-all flex-shrink-0"
                         title="Adicionar ao Culto"
                       >
                         <Plus className="w-3.5 h-3.5" />
@@ -1432,7 +1432,7 @@ function App() {
                             <input
                               type="text"
                               placeholder="Buscar livro..."
-                              className="w-full pl-9 pr-4 py-2 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 placeholder:text-white/25"
+                              className="w-full pl-9 pr-4 py-2 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/20 placeholder:text-white/25"
                               style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
                               value={searchBibleQuery}
                               onChange={(e) => setSearchBibleQuery(e.target.value)}
@@ -1469,7 +1469,7 @@ function App() {
                             <input
                               type="text"
                               placeholder={`Buscar no livro de ${selectedBook.name}...`}
-                              className="w-full pl-9 pr-4 py-2 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 placeholder:text-white/25"
+                              className="w-full pl-9 pr-4 py-2 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/20 placeholder:text-white/25"
                               style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
                               value={searchChapterQuery}
                               onChange={(e) => setSearchChapterQuery(e.target.value)}
@@ -1502,8 +1502,8 @@ function App() {
                                     });
                                     setActiveSlideIndex(0);
                                   }}
-                                  className={`aspect-square flex items-center justify-center rounded-lg text-[13px] font-medium text-white/70 hover:text-white hover:bg-blue-500/20 hover:border-blue-500/30 border border-transparent transition-all ${
-                                    selectedChapter === chapNumber ? "bg-blue-500/20 text-blue-400 border-blue-500/30 glow-brand shadow-inner" : ""
+                                  className={`aspect-square flex items-center justify-center rounded-lg text-[13px] font-medium text-white/70 hover:text-white hover:bg-brand-500/20 hover:border-brand-500/30 border border-transparent transition-all ${
+                                    selectedChapter === chapNumber ? "bg-brand-500/20 text-brand-400 border-brand-500/30 glow-brand shadow-inner" : ""
                                   }`}
                                 >
                                   {chapNumber}
@@ -1548,16 +1548,16 @@ function App() {
                                   }
                                   setActiveSlideIndex(index);
                                 }}
-                                className={`w-full text-left p-2 rounded-lg flex gap-2 group cursor-pointer transition-all border ${isVerseActive ? "border-blue-500/40 bg-blue-500/20" : "border-transparent hover:bg-white/5"
+                                className={`w-full text-left p-2 rounded-lg flex gap-2 group cursor-pointer transition-all border ${isVerseActive ? "border-brand-500/40 bg-brand-500/20" : "border-transparent hover:bg-white/5"
                                   }`}
                               >
-                                <span className="text-blue-400 font-bold text-[10px] pt-[3px] shrink-0 w-4 text-right">{verse.number}</span>
+                                <span className="text-brand-400 font-bold text-[10px] pt-[3px] shrink-0 w-4 text-right">{verse.number}</span>
                                 <p className="flex-1 text-[13px] text-white/70 group-hover:text-white/90 leading-relaxed">
                                   {verse.text}
                                 </p>
                                 <button
                                   onClick={(e) => { e.stopPropagation(); addToBiblePlaylist(singleVerseSong); }}
-                                  className="p-1.5 h-7 w-7 flex items-center justify-center rounded-md text-white/20 hover:text-blue-300 hover:bg-blue-500/20 opacity-0 group-hover:opacity-100 transition-all shrink-0"
+                                  className="p-1.5 h-7 w-7 flex items-center justify-center rounded-md text-white/20 hover:text-accent-300 hover:bg-accent-500/20 opacity-0 group-hover:opacity-100 transition-all shrink-0"
                                   title="Adicionar ao único versículo Culto"
                                 >
                                   <Plus className="w-3.5 h-3.5" />
@@ -1576,11 +1576,11 @@ function App() {
             {/* ─── PLAYLIST DO CULTO (Dinâmica por Aba) ─── */}
             <div className="border-t border-white/5 flex flex-col min-h-0" style={{ height: '45%', backgroundColor: '#0f172a' }}>
               <div className="px-4 py-3 flex items-center gap-2 shrink-0 border-b border-white/5">
-                {activeTab === 'songs' ? <ListMusic className="w-4 h-4 text-blue-400" /> : <BookOpen className="w-4 h-4 text-blue-400" />}
+                {activeTab === 'songs' ? <ListMusic className="w-4 h-4 text-brand-400" /> : <BookOpen className="w-4 h-4 text-brand-400" />}
                 <span className="text-[13px] font-semibold text-white/70 flex-1">
                   {activeTab === 'songs' ? 'Louvores do Culto' : 'Textos Bíblicos'}
                 </span>
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-md text-blue-300" style={{ backgroundColor: 'rgba(59,130,246,0.2)' }}>
+                <span className="text-[11px] font-bold px-2 py-0.5 rounded-md text-brand-300" style={{ backgroundColor: 'rgba(139,92,246,0.2)' }}>
                   {activeTab === 'songs' ? playlist.length : biblePlaylist.length}
                 </span>
               </div>
@@ -1588,7 +1588,7 @@ function App() {
               <div className="flex-1 overflow-y-auto p-2">
                 {(activeTab === 'songs' ? playlist : biblePlaylist).length === 0 ? (
                   <div className="p-6 text-center text-white/15 text-xs">
-                    Duplo-clique ou clique no <Plus className="inline w-3 h-3 text-blue-400" /> para adicionar {activeTab === 'songs' ? 'louvores' : 'versículos'}.
+                    Duplo-clique ou clique no <Plus className="inline w-3 h-3 text-brand-400" /> para adicionar {activeTab === 'songs' ? 'louvores' : 'versículos'}.
                   </div>
                 ) : (
                   (activeTab === 'songs' ? playlist : biblePlaylist).map((item, idx) => (
@@ -1620,9 +1620,9 @@ function App() {
                         setSelectedSong(item);
                         setActiveSlideIndex(0);
                       }}
-                      className={`w-full px-1 py-1.5 mb-0.5 rounded-lg transition-all duration-100 text-[13px] flex items-center group cursor-grab active:cursor-grabbing select-none border ${dragIdx === idx ? "opacity-40 border-blue-500/50 bg-blue-500/10 scale-95" :
-                          overIdx === idx && dragIdx !== null && dragIdx !== idx ? "border-blue-400/40 bg-blue-500/10 scale-[1.02]" :
-                            selectedSong?.title === item.title ? "border-blue-500/40 bg-blue-500/20" :
+                      className={`w-full px-1 py-1.5 mb-0.5 rounded-lg transition-all duration-100 text-[13px] flex items-center group cursor-grab active:cursor-grabbing select-none border ${dragIdx === idx ? "opacity-40 border-brand-500/50 bg-brand-500/10 scale-95" :
+                          overIdx === idx && dragIdx !== null && dragIdx !== idx ? "border-brand-400/40 bg-brand-500/10 scale-[1.02]" :
+                            selectedSong?.title === item.title ? "border-brand-500/40 bg-brand-500/20" :
                               "border-transparent hover:bg-white/5"
                         }`}
                     >
@@ -1630,7 +1630,7 @@ function App() {
                         <GripVertical className="w-3.5 h-3.5" />
                       </div>
                       <span className="text-white/25 text-[10px] font-mono w-6 text-right shrink-0">{idx + 1}.</span>
-                      <span className={`flex-1 truncate font-medium ml-2 ${selectedSong?.title === item.title ? "text-blue-200" : "text-white/60"
+                      <span className={`flex-1 truncate font-medium ml-2 ${selectedSong?.title === item.title ? "text-brand-200" : "text-white/60"
                         }`}>
                         {item.title}
                       </span>
@@ -1683,9 +1683,9 @@ function App() {
 
               <div className="flex items-center gap-3">
                 {isProjecting && (
-                  <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/20" style={{ backgroundColor: 'rgba(59,130,246,0.08)' }}>
-                    <span className="w-2 h-2 bg-blue-400 rounded-full live-dot"></span>
-                    <span className="text-blue-400 text-[11px] font-semibold uppercase tracking-wide">Ao Vivo</span>
+                  <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-brand-500/20" style={{ backgroundColor: 'rgba(139,92,246,0.08)' }}>
+                    <span className="w-2 h-2 bg-brand-400 rounded-full live-dot"></span>
+                    <span className="text-brand-400 text-[11px] font-semibold uppercase tracking-wide">Ao Vivo</span>
                   </div>
                 )}
 
@@ -1731,7 +1731,7 @@ function App() {
               <div className="flex-1 flex overflow-hidden">
 
                 {/* Seção de Estrofes */}
-                <div className="flex-1 overflow-y-auto p-6 border-r border-white/5 bg-blue-900/50">
+                <div className="flex-1 overflow-y-auto p-6 border-r border-white/5 bg-slate-900/50">
                   <div className="flex justify-between items-center mb-5">
                     <div>
                       <h2 className="text-lg font-bold text-white/90">{selectedSong.title}</h2>
@@ -1753,8 +1753,8 @@ function App() {
                       group relative p-4 rounded-xl border cursor-pointer transition-all duration-200 
                       ${activeSlideIndex === index
                             ? isProjecting
-                              ? "border-blue-500/30 bg-blue-500/5 glow-brand"
-                              : "border-blue-500/50 bg-blue-500/10 glow-brand"
+                              ? "border-brand-500/30 bg-brand-500/5 glow-brand"
+                              : "border-brand-500/50 bg-brand-500/10 glow-brand"
                             : "border-white/5 hover:border-white/10 hover:bg-white/[0.02]"
                           }
                     `}
@@ -1790,14 +1790,14 @@ function App() {
                   <h3 className="text-[11px] font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
                     <Monitor className="w-3.5 h-3.5" />
                     {isProjecting ? (
-                      <span className="text-blue-400">● AO VIVO</span>
+                      <span className="text-brand-400">● AO VIVO</span>
                     ) : (
                       <span className="text-white/30">Preview</span>
                     )}
                   </h3>
 
                   <div className={`w-full aspect-video rounded-xl border relative overflow-hidden flex flex-col shadow-md shadow-black/20 ${isProjecting
-                      ? "border-blue-500/30 glow-brand"
+                      ? "border-brand-500/30 glow-brand"
                       : "border-white/10"
                     }`} style={{ backgroundColor: '#000' }}>
                     {/* Imagem de Fundo do Preview */}
@@ -1928,9 +1928,9 @@ function App() {
         {/* ═══ TOAST DE SUCESSO ═══ */}
         {showSuccessToast && (
           <div className="fixed bottom-6 right-6 z-50 toast-enter">
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-blue-500/20 shadow-xl" style={{ backgroundColor: 'rgba(23,37,84,0.9)', backdropFilter: 'blur(12px)' }}>
-              <CheckCircle2 className="w-5 h-5 text-blue-400 shrink-0" />
-              <span className="text-[13px] font-medium text-blue-100">{successMessage}</span>
+            <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-brand-500/20 shadow-xl" style={{ backgroundColor: 'rgba(2,6,23,0.95)', backdropFilter: 'blur(12px)' }}>
+              <CheckCircle2 className="w-5 h-5 text-brand-400 shrink-0" />
+              <span className="text-[13px] font-medium text-brand-100">{successMessage}</span>
             </div>
           </div>
         )}
