@@ -115,7 +115,7 @@ export const useStore = create<AppState>((set, get) => ({
   songBodyBackground: '/backgrounds/bg-song-body.jpg',
   bibleBackground: '/backgrounds/bg-bible.jpg',
   
-  songTitleColor: '#fbbf24', // Amber-400
+  songTitleColor: '#ffffff', // White (Premium)
   songLyricsColor: '#ffffff', // White
   bibleTitleColor: '#ffffff', // White
   bibleLyricsColor: '#ffffff', // White
