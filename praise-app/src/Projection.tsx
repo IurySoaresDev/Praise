@@ -86,16 +86,18 @@ function Projection() {
         </div>
       )}
 
-      {/* Camada de Texto - letra da estrofe centralizada */}
+      {/* Camada de Texto - bloco centralizado na tela, texto alinhado à esquerda */}
       <div className="relative z-10 flex-1 w-full flex items-center justify-center px-12 pb-8 pt-32 lg:px-20 lg:pt-40">
-        <div 
-          className={`text-white font-bold text-center w-full leading-snug tracking-wide projection-shadow drop-shadow-2xl ${
-            data.item_type === 'bible' 
-              ? 'text-4xl md:text-6xl lg:text-7xl italic font-medium' 
-              : 'text-4xl md:text-6xl lg:text-[4.8rem] uppercase'
-          }`}
-          dangerouslySetInnerHTML={{ __html: data.content }} 
-        />
+        <div className="flex items-center justify-center w-full">
+          <div 
+            className={`text-white font-bold leading-snug tracking-wide projection-shadow drop-shadow-2xl inline-block ${
+              data.item_type === 'bible' 
+                ? 'text-4xl md:text-6xl lg:text-7xl italic font-medium text-center' 
+                : 'text-4xl md:text-6xl lg:text-[4.8rem] uppercase text-left'
+            }`}
+            dangerouslySetInnerHTML={{ __html: data.content }} 
+          />
+        </div>
       </div>
     </div>
   );

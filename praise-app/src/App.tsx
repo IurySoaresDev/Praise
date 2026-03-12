@@ -1351,10 +1351,10 @@ function App() {
                       {/* Letra ou Versículo */}
                       <div className="absolute inset-x-2 bottom-2 top-[35%] flex items-center justify-center">
                         <div 
-                          className={`text-white font-bold text-center w-full leading-snug tracking-wide projection-shadow ${
+                          className={`text-white font-bold w-full leading-snug tracking-wide projection-shadow ${
                             selectedSong?.collection === 'Bíblia'
-                              ? 'text-[0.6rem] italic font-medium'
-                              : 'text-[0.6rem] uppercase'
+                              ? 'text-[0.6rem] italic font-medium text-center'
+                              : 'text-[0.6rem] uppercase text-left'
                           }`}
                           dangerouslySetInnerHTML={{ __html: slides[activeSlideIndex] }} 
                         />
