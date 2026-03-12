@@ -197,8 +197,8 @@ function App() {
         content: content,
         background: background || null,
         itemType: itemType,
-        title_color: titleColor,
-        lyrics_color: lyricsColor
+        titleColor: titleColor,
+        lyricsColor: lyricsColor
       });
     } catch (e) {
       console.error("Erro ao projetar:", e);
