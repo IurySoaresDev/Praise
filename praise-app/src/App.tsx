@@ -274,7 +274,9 @@ function App() {
             slides[newIdx], 
             isBible ? bibleBackground : (newIdx === 0 ? songBackground : songBodyBackground),
             isBible ? 'bible' : 'song',
-            getSlideTitle(newIdx)
+            getSlideTitle(newIdx),
+            isBible ? bibleTitleColor : songTitleColor,
+            isBible ? bibleLyricsColor : songLyricsColor
           );
         }
       } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
@@ -286,7 +288,9 @@ function App() {
             slides[newIdx], 
             isBible ? bibleBackground : (newIdx === 0 ? songBackground : songBodyBackground),
             isBible ? 'bible' : 'song',
-            getSlideTitle(newIdx)
+            getSlideTitle(newIdx),
+            isBible ? bibleTitleColor : songTitleColor,
+            isBible ? bibleLyricsColor : songLyricsColor
           );
         }
       }
@@ -294,7 +298,22 @@ function App() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeSlideIndex, slides, selectedSong, isProjecting, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle]);
+  }, [activeSlideIndex, slides, selectedSong, isProjecting, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle, songTitleColor, songLyricsColor, bibleTitleColor, bibleLyricsColor]);
+
+  // Sincroniza cores em tempo real se o usuário mudar enquanto projeta
+  useEffect(() => {
+    if (isProjecting && activeSlideIndex >= 0 && slides[activeSlideIndex]) {
+      const isBible = selectedSong?.collection === 'Bíblia';
+      sendSlideToProjection(
+        slides[activeSlideIndex],
+        isBible ? bibleBackground : (activeSlideIndex === 0 ? songBackground : songBodyBackground),
+        isBible ? 'bible' : 'song',
+        getSlideTitle(activeSlideIndex),
+        isBible ? bibleTitleColor : songTitleColor,
+        isBible ? bibleLyricsColor : songLyricsColor
+      );
+    }
+  }, [songTitleColor, songLyricsColor, bibleTitleColor, bibleLyricsColor, isProjecting, activeSlideIndex, slides, selectedSong, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle]);
 
   const appWindow = useMemo(() => getCurrentWindow(), []);
 
