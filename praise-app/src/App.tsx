@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { invoke, convertFileSrc } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/plugin-dialog";
@@ -6,7 +6,7 @@ import { readTextFile } from "@tauri-apps/plugin-fs";
 import { check } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
 import { useStore, ALLOWED_COLLECTIONS } from "./store";
-import { Play, Square, Settings, X, Plus, Trash2, CheckCircle2, FilePenLine, GripVertical, AlertTriangle, ListMusic, BookOpen, Monitor, Send, Search, ArrowLeft, Loader2, MonitorDot, Snowflake, RotateCw, DownloadCloud, Minus, Music, Upload, ChevronLeft, ChevronRight, Palette, Type, Maximize2, Bold } from 'lucide-react';
+import { Play, Square, Settings, X, Plus, Trash2, CheckCircle2, FilePenLine, GripVertical, AlertTriangle, ListMusic, BookOpen, Monitor, Send, Search, ArrowLeft, Loader2, MonitorDot, Snowflake, RotateCw, DownloadCloud, Minus, Music, Upload, ChevronLeft, ChevronRight, Palette, Type, Maximize2, Bold, Image as ImageIcon } from 'lucide-react';
 import "./App.css";
 
 function App() {
@@ -82,6 +82,21 @@ function App() {
   const [downloadProgress, setDownloadProgress] = useState<{ downloaded: number, total: number } | null>(null);
   const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
   const [settingsPreviewTab, setSettingsPreviewTab] = useState<'title' | 'lyrics' | 'bible'>('title');
+  const [settingsSubTab, setSettingsSubTab] = useState<'titles' | 'lyrics' | 'bible' | 'system'>('titles');
+  const [previewWidth, setPreviewWidth] = useState(0);
+  const previewContainerRef = useRef<HTMLDivElement>(null);
+
+  // Efeito para observar o redimensionamento do preview e calcular a escala real
+  useEffect(() => {
+    if (!previewContainerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        setPreviewWidth(entry.contentRect.width);
+      }
+    });
+    observer.observe(previewContainerRef.current);
+    return () => observer.disconnect();
+  }, [activeTab]);
 
   // Bible State
   // REMOVIDO: const [activeTab, setActiveTab] = useState<'songs' | 'bible' | 'editor'>('songs');
@@ -770,450 +785,487 @@ function App() {
           </div>
         )}
 
-        {/* ═══ SETTINGS TAB ═══ */}
+        {/* ═══ SETTINGS DASHBOARD (Widescreen Redesign) ═══ */}
         {activeTab === 'settings' && (
-          <div className="flex-1 flex flex-col h-full overflow-hidden bg-slate-950/20">
-            <div className="p-8 max-w-4xl mx-auto w-full overflow-y-auto">
-              <header className="mb-12 animate-fade-in text-center md:text-left">
-                <h2 className="text-4xl font-black text-white tracking-tight">
-                  Configurações
+          <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#0f172a]/40 backdrop-blur-3xl">
+            
+            {/* ═══ HEADER DO DASHBOARD ═══ */}
+            <header className="px-8 py-6 border-b border-white/5 bg-slate-900/40 flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-black text-white tracking-tighter flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                    <Settings className="w-5 h-5 text-white" />
+                  </div>
+                  Painel de Configurações
                 </h2>
-                <p className="text-slate-500 mt-2 text-lg font-medium">Personalize os fundos da sua projeção.</p>
-              </header>
+                <p className="text-slate-400 text-xs font-medium mt-1">Gerencie a identidade visual da sua projeção em tempo real.</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold text-blue-400 uppercase tracking-widest animate-pulse">
+                  Modo Edição Ativo
+                </span>
+              </div>
+            </header>
 
-              <div className="flex flex-col lg:flex-row gap-8 items-start relative">
+            <div className="flex-1 flex overflow-hidden">
+              
+              {/* ═══ 1. SIDEBAR DE NAVEGAÇÃO INTERNA ═══ */}
+              <aside className="w-20 lg:w-64 border-r border-white/5 bg-slate-900/20 flex flex-col p-4 gap-2 overflow-y-auto">
+                {[
+                  { id: 'titles', label: 'Títulos', icon: ImageIcon, desc: 'Abertura de músicas' },
+                  { id: 'lyrics', label: 'Louvores', icon: Music, desc: 'Letras e refrãos' },
+                  { id: 'bible', label: 'Bíblia', icon: BookOpen, desc: 'Escrituras sagradas' },
+                  { id: 'system', label: 'Sistema', icon: RotateCw, desc: 'Atualizações e core' },
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      setSettingsSubTab(item.id as any);
+                      // Sincroniza a aba do preview se for relevante
+                      if (item.id === 'titles') setSettingsPreviewTab('title');
+                      if (item.id === 'lyrics') setSettingsPreviewTab('lyrics');
+                      if (item.id === 'bible') setSettingsPreviewTab('bible');
+                    }}
+                    className={`w-full group flex items-center gap-4 p-4 rounded-2xl transition-all border ${
+                      settingsSubTab === item.id 
+                        ? 'bg-blue-600 border-blue-400/50 shadow-lg shadow-blue-500/20' 
+                        : 'bg-white/[0.02] border-transparent hover:bg-white/[0.05] hover:border-white/5'
+                    }`}
+                  >
+                    <item.icon className={`w-5 h-5 transition-colors ${settingsSubTab === item.id ? 'text-white' : 'text-slate-400 group-hover:text-white'}`} />
+                    <div className="hidden lg:flex flex-col items-start text-left">
+                      <span className={`text-[13px] font-bold ${settingsSubTab === item.id ? 'text-white' : 'text-slate-300'}`}>{item.label}</span>
+                      <span className={`text-[10px] ${settingsSubTab === item.id ? 'text-blue-100/60' : 'text-slate-500'}`}>{item.desc}</span>
+                    </div>
+                  </button>
+                ))}
+              </aside>
+
+              <div className="flex-1 flex overflow-hidden relative">
                 
-                {/* ═══ COLUNA ESQUERDA: CONTROLES ═══ */}
-                <div className="w-full lg:w-7/12 flex flex-col gap-8">
+                {/* ═══ 2. PAINEL DE CONTROLES (CENTRO) ═══ */}
+                <main className="w-full lg:w-5/12 overflow-y-auto p-8 flex flex-col gap-8 custom-scrollbar">
                   
-                  {/* --- CARD: FUNDO DE TÍTULO --- */}
-                  <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl hover:border-blue-500/20 transition-all group">
-                    <div className="mb-6 flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">Fundo de Título</h3>
-                        <p className="text-[10px] text-white/20 uppercase tracking-[0.2em] font-bold">Projeção Inicial</p>
-                        
-                        {/* Mini Thumbnail */}
-                        <div className="mt-4 aspect-video w-32 rounded-lg overflow-hidden border border-white/10 bg-black/40 shadow-inner group-hover:border-blue-500/30 transition-all relative">
-                          <img
-                            src={songBackground.startsWith('/backgrounds/') ? songBackground : convertFileSrc(songBackground)}
-                            className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity"
-                            alt="Background atual"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                        </div>
-                      </div>
-                      <button
-                        onClick={async () => {
-                          const path = await open({
-                            multiple: false,
-                            filters: [{ name: 'Imagens', extensions: ['jpg', 'png', 'jpeg', 'webp'] }],
-                          });
-                          if (path) {
-                            setSongBackground(path as string);
-                            setSuccessMessage("Fundo de título atualizado!");
-                            setShowSuccessToast(true);
-                            setTimeout(() => setShowSuccessToast(false), 3000);
-                          }
-                        }}
-                        className="px-4 py-2 rounded-xl bg-white/[0.03] hover:bg-blue-500/10 text-white font-bold text-[12px] tracking-wide transition-all border border-white/5 hover:border-blue-500/20 shadow-sm flex items-center gap-2 whitespace-nowrap"
-                      >
-                        <Upload className="w-3.5 h-3.5" /> Mudar Imagem
-                      </button>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-4">
-                      {/* Cor */}
-                      <div className="flex items-center justify-between p-4 rounded-2xl bg-black/20 border border-white/5">
-                        <div className="flex items-center gap-3">
-                          <Palette className="w-4 h-4 text-blue-400" />
-                          <span className="text-xs font-bold text-white/70 uppercase tracking-widest">Cor do Título</span>
-                        </div>
-                        <input type="color" value={songTitleColor} onChange={(e) => setSongTitleColor(e.target.value)} className="w-10 h-10 rounded-xl overflow-hidden border-none cursor-pointer bg-transparent ring-2 ring-white/10 hover:ring-blue-500/50 transition-all" />
-                      </div>
-
-                      {/* Tipografia */}
-                      <div className="p-4 rounded-2xl bg-black/10 border border-white/5 flex flex-col gap-4">
-                        <div className="flex items-center gap-3 mb-1">
-                          <Type className="w-4 h-4 text-blue-400" />
-                          <span className="text-xs font-bold text-white/70 uppercase tracking-widest">Tipografia</span>
-                        </div>
-                        
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="space-y-1.5">
-                            <label className="text-[9px] font-bold text-white/30 uppercase tracking-wider ml-1">Fonte</label>
-                            <select value={songTitleFont} onChange={(e) => setSongTitleFont(e.target.value)} className="w-full bg-slate-900/80 text-white text-[11px] font-medium rounded-xl px-3 py-2 outline-none border border-white/5 focus:border-blue-500/50 transition-all">
-                              {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato', 'Serif', 'Sans-Serif'].map(f => (<option key={f} value={f}>{f}</option>))}
-                            </select>
+                  {/* --- SUBTAB: TÍTULOS --- */}
+                  {settingsSubTab === 'titles' && (
+                    <div className="animate-in fade-in slide-in-from-left-4 duration-500 space-y-8">
+                      <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
+                        <div className="mb-8 flex items-start justify-between">
+                          <div>
+                            <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">Fundo de Título</h3>
+                            <p className="text-[10px] text-white/20 uppercase tracking-[0.2em] font-bold italic">Configuração do Slide Inicial</p>
                           </div>
-                          
-                          <div className="space-y-1.5">
-                            <label className="text-[9px] font-bold text-white/30 uppercase tracking-wider ml-1">Tamanho</label>
-                            <div className="flex items-center gap-2 bg-slate-900/80 rounded-xl border border-white/5 px-3 py-2 focus-within:border-blue-500/50 transition-all">
-                              <Maximize2 className="w-3 h-3 text-white/20" />
-                              <input type="number" value={songTitleSize} onChange={(e) => setSongTitleSize(Number(e.target.value))} className="w-full bg-transparent text-white text-[11px] font-medium outline-none text-center" />
-                              <span className="text-[9px] text-white/20 font-bold">PX</span>
+                          <button
+                            onClick={async () => {
+                              const path = await open({
+                                multiple: false,
+                                filters: [{ name: 'Imagens', extensions: ['jpg', 'png', 'jpeg', 'webp'] }],
+                              });
+                              if (path) setSongBackground(path as string);
+                            }}
+                            className="p-3 rounded-xl bg-blue-600/10 border border-blue-500/20 text-blue-400 hover:bg-blue-600/20 transition-all group"
+                            title="Trocar imagem"
+                          >
+                            <Upload className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                          </button>
+                        </div>
+
+                        {/* Controles de Estilo */}
+                        <div className="space-y-6">
+                          <div className="p-5 rounded-2xl bg-black/20 border border-white/5">
+                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                              <Palette className="w-3 h-3 text-pink-400" />
+                              Cor do Texto
+                            </label>
+                            <div className="flex items-center gap-4">
+                              <input type="color" value={songTitleColor} onChange={(e) => setSongTitleColor(e.target.value)} className="w-14 h-14 rounded-2xl overflow-hidden cursor-pointer ring-4 ring-white/5 border-none" />
+                              <div className="flex-1">
+                                <span className="text-xs font-mono text-slate-400">{songTitleColor.toUpperCase()}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="p-5 rounded-2xl bg-black/10 border border-white/5 space-y-6">
+                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-4">
+                              <Type className="w-3 h-3 text-blue-400" />
+                              Tipografia do Título
+                            </label>
+                            <div className="grid grid-cols-1 gap-5">
+                              <div className="space-y-2">
+                                <span className="text-[11px] font-bold text-white/30 ml-1 flex items-center gap-1.5">
+                                  <Type className="w-3 h-3" />
+                                  Família da Fonte
+                                </span>
+                                <select value={songTitleFont} onChange={(e) => setSongTitleFont(e.target.value)} className="w-full bg-slate-900 border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-blue-500/50 transition-all">
+                                  {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato', 'Serif', 'Sans-Serif'].map(f => (<option key={f} value={f}>{f}</option>))}
+                                </select>
+                              </div>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <span className="text-[11px] font-bold text-white/30 ml-1 flex items-center gap-1.5">
+                                    <Maximize2 className="w-3 h-3" />
+                                    Tamanho (PX)
+                                  </span>
+                                  <input type="number" value={songTitleSize} onChange={(e) => setSongTitleSize(Number(e.target.value))} className="w-full bg-slate-900 border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-blue-500/50 text-center" />
+                                </div>
+                                <div className="space-y-2">
+                                  <span className="text-[11px] font-bold text-white/30 ml-1 flex items-center gap-1.5">
+                                    <Bold className="w-3 h-3" />
+                                    Peso Visual
+                                  </span>
+                                  <select value={songTitleWeight} onChange={(e) => setSongTitleWeight(e.target.value)} className="w-full bg-slate-900 border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-blue-500/50">
+                                    {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
+                                  </select>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
-
-                        <div className="space-y-1.5">
-                          <label className="text-[9px] font-bold text-white/30 uppercase tracking-wider ml-1">Peso da Fonte</label>
-                          <div className="flex items-center gap-3 bg-slate-900/80 rounded-xl border border-white/5 px-3 py-2 focus-within:border-blue-500/50 transition-all">
-                            <Bold className="w-3.5 h-3.5 text-white/20" />
-                            <select value={songTitleWeight} onChange={(e) => setSongTitleWeight(e.target.value)} className="w-full bg-transparent text-white text-[11px] font-medium outline-none">
-                              {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
-                            </select>
-                          </div>
-                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
 
-                  {/* --- CARD: FUNDO DE LOUVOR --- */}
-                  <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl hover:border-blue-500/20 transition-all group">
-                    <div className="mb-6 flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">Fundo de Louvor</h3>
-                        <p className="text-[10px] text-white/20 uppercase tracking-[0.2em] font-bold">Estrofas e Refrãos</p>
-                        
-                        {/* Mini Thumbnail */}
-                        <div className="mt-4 aspect-video w-32 rounded-lg overflow-hidden border border-white/10 bg-black/40 shadow-inner group-hover:border-blue-500/30 transition-all relative">
-                          <img
-                            src={songBodyBackground.startsWith('/backgrounds/') ? songBodyBackground : convertFileSrc(songBodyBackground)}
-                            className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity"
-                            alt="Background atual"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                        </div>
-                      </div>
-                      <button
-                        onClick={async () => {
-                          const path = await open({
-                            multiple: false,
-                            filters: [{ name: 'Imagens', extensions: ['jpg', 'png', 'jpeg', 'webp'] }],
-                          });
-                          if (path) {
-                            setSongBodyBackground(path as string);
-                            setSuccessMessage("Fundo de louvor atualizado!");
-                            setShowSuccessToast(true);
-                            setTimeout(() => setShowSuccessToast(false), 3000);
-                          }
-                        }}
-                        className="px-4 py-2 rounded-xl bg-white/[0.03] hover:bg-blue-500/10 text-white font-bold text-[12px] tracking-wide transition-all border border-white/5 hover:border-blue-500/20 shadow-sm flex items-center gap-2 whitespace-nowrap"
-                      >
-                        <Upload className="w-3.5 h-3.5" /> Mudar Imagem
-                      </button>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-4">
-                      {/* Cor */}
-                      <div className="flex items-center justify-between p-4 rounded-2xl bg-black/20 border border-white/5">
-                        <div className="flex items-center gap-3">
-                          <Palette className="w-4 h-4 text-blue-400" />
-                          <span className="text-xs font-bold text-white/70 uppercase tracking-widest">Cor da Letra</span>
-                        </div>
-                        <input type="color" value={songLyricsColor} onChange={(e) => setSongLyricsColor(e.target.value)} className="w-10 h-10 rounded-xl overflow-hidden border-none cursor-pointer bg-transparent ring-2 ring-white/10 hover:ring-blue-500/50 transition-all" />
-                      </div>
-
-                      {/* Tipografia */}
-                      <div className="p-4 rounded-2xl bg-black/10 border border-white/5 flex flex-col gap-4">
-                        <div className="flex items-center gap-3 mb-1">
-                          <Type className="w-4 h-4 text-blue-400" />
-                          <span className="text-xs font-bold text-white/70 uppercase tracking-widest">Tipografia</span>
-                        </div>
-                        
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="space-y-1.5">
-                            <label className="text-[9px] font-bold text-white/30 uppercase tracking-wider ml-1">Fonte</label>
-                            <select value={songLyricsFont} onChange={(e) => setSongLyricsFont(e.target.value)} className="w-full bg-slate-900/80 text-white text-[11px] font-medium rounded-xl px-3 py-2 outline-none border border-white/5 focus:border-blue-500/50 transition-all">
-                              {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato', 'Serif', 'Sans-Serif'].map(f => (<option key={f} value={f}>{f}</option>))}
-                            </select>
+                  {/* --- SUBTAB: LOUVORES --- */}
+                  {settingsSubTab === 'lyrics' && (
+                    <div className="animate-in fade-in slide-in-from-left-4 duration-500 space-y-8">
+                      <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
+                        <div className="mb-8 flex items-start justify-between">
+                          <div>
+                            <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">Fundo de Louvor</h3>
+                            <p className="text-[10px] text-white/20 uppercase tracking-[0.2em] font-bold italic">Letras e Refrãos das Músicas</p>
                           </div>
-                          
-                          <div className="space-y-1.5">
-                            <label className="text-[9px] font-bold text-white/30 uppercase tracking-wider ml-1">Tamanho</label>
-                            <div className="flex items-center gap-2 bg-slate-900/80 rounded-xl border border-white/5 px-3 py-2 focus-within:border-blue-500/50 transition-all">
-                              <Maximize2 className="w-3 h-3 text-white/20" />
-                              <input type="number" value={songLyricsSize} onChange={(e) => setSongLyricsSize(Number(e.target.value))} className="w-full bg-transparent text-white text-[11px] font-medium outline-none text-center" />
-                              <span className="text-[9px] text-white/20 font-bold">PX</span>
+                          <button
+                            onClick={async () => {
+                              const path = await open({
+                                multiple: false,
+                                filters: [{ name: 'Imagens', extensions: ['jpg', 'png', 'jpeg', 'webp'] }],
+                              });
+                              if (path) setSongBodyBackground(path as string);
+                            }}
+                            className="p-3 rounded-xl bg-blue-600/10 border border-blue-500/20 text-blue-400 hover:bg-blue-600/20 transition-all group"
+                          >
+                            <Upload className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                          </button>
+                        </div>
+
+                        <div className="space-y-6">
+                          <div className="p-5 rounded-2xl bg-black/20 border border-white/5">
+                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 block">Cor das Letras</label>
+                            <div className="flex items-center gap-4">
+                              <input type="color" value={songLyricsColor} onChange={(e) => setSongLyricsColor(e.target.value)} className="w-14 h-14 rounded-2xl overflow-hidden cursor-pointer ring-4 ring-white/5 border-none" />
+                              <div className="flex-1">
+                                <span className="text-xs font-mono text-slate-400">{songLyricsColor.toUpperCase()}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="p-5 rounded-2xl bg-black/10 border border-white/5 space-y-6">
+                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">Tipografia do Louvor</label>
+                            <div className="grid grid-cols-1 gap-5">
+                              <div className="space-y-2">
+                                <span className="text-[11px] font-bold text-white/30 ml-1">Família da Fonte</span>
+                                <select value={songLyricsFont} onChange={(e) => setSongLyricsFont(e.target.value)} className="w-full bg-slate-900 border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-blue-500/50">
+                                  {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato', 'Serif', 'Sans-Serif'].map(f => (<option key={f} value={f}>{f}</option>))}
+                                </select>
+                              </div>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <span className="text-[11px] font-bold text-white/30 ml-1">Tamanho (PX)</span>
+                                  <input type="number" value={songLyricsSize} onChange={(e) => setSongLyricsSize(Number(e.target.value))} className="w-full bg-slate-900 border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-blue-500/50 text-center" />
+                                </div>
+                                <div className="space-y-2">
+                                  <span className="text-[11px] font-bold text-white/30 ml-1">Peso Visual</span>
+                                  <select value={songLyricsWeight} onChange={(e) => setSongLyricsWeight(e.target.value)} className="w-full bg-slate-900 border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-blue-500/50">
+                                    {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
+                                  </select>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
+                      </div>
+                    </div>
+                  )}
 
-                        <div className="space-y-1.5">
-                          <label className="text-[9px] font-bold text-white/30 uppercase tracking-wider ml-1">Peso da Fonte</label>
-                          <div className="flex items-center gap-3 bg-slate-900/80 rounded-xl border border-white/5 px-3 py-2 focus-within:border-blue-500/50 transition-all">
-                            <Bold className="w-3.5 h-3.5 text-white/20" />
-                            <select value={songLyricsWeight} onChange={(e) => setSongLyricsWeight(e.target.value)} className="w-full bg-transparent text-white text-[11px] font-medium outline-none">
-                              {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
-                            </select>
+                  {/* --- SUBTAB: BÍBLIA --- */}
+                  {settingsSubTab === 'bible' && (
+                    <div className="animate-in fade-in slide-in-from-left-4 duration-500 space-y-8">
+                      <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
+                        <div className="mb-8 flex items-start justify-between">
+                          <div>
+                            <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">Fundo da Bíblia</h3>
+                            <p className="text-[10px] text-white/20 uppercase tracking-[0.2em] font-bold italic">Escrituras e Versículos</p>
                           </div>
+                          <button
+                            onClick={async () => {
+                              const path = await open({
+                                multiple: false,
+                                filters: [{ name: 'Imagens', extensions: ['jpg', 'png', 'jpeg', 'webp'] }],
+                              });
+                              if (path) setBibleBackground(path as string);
+                            }}
+                            className="p-3 rounded-xl bg-blue-600/10 border border-blue-500/20 text-blue-400 hover:bg-blue-600/20 transition-all group"
+                          >
+                            <Upload className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                          </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-6">
+                           {/* Configurações do Título (Referência) */}
+                           <div className="p-6 rounded-2xl bg-black/20 border border-white/5 space-y-6">
+                             <div className="flex items-center gap-2 mb-2">
+                               <div className="w-2 h-2 rounded-full bg-blue-500" />
+                               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Referência (Livro/Capítulo)</span>
+                             </div>
+                             <div className="flex items-center gap-4">
+                               <input type="color" value={bibleTitleColor} onChange={(e) => setBibleTitleColor(e.target.value)} className="w-12 h-12 rounded-xl overflow-hidden cursor-pointer ring-2 ring-white/5" />
+                               <div className="grid grid-cols-2 gap-3 flex-1">
+                                 <select value={bibleTitleFont} onChange={(e) => setBibleTitleFont(e.target.value)} className="bg-slate-900 border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none">
+                                   {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato'].map(f => (<option key={f} value={f}>{f}</option>))}
+                                 </select>
+                                 <input type="number" value={bibleTitleSize} onChange={(e) => setBibleTitleSize(Number(e.target.value))} className="bg-slate-900 border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none text-center" />
+                               </div>
+                             </div>
+                             <select value={bibleTitleWeight} onChange={(e) => setBibleTitleWeight(e.target.value)} className="w-full bg-slate-900 border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none">
+                               {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
+                             </select>
+                           </div>
+
+                           {/* Configurações do Texto (Versículo) */}
+                           <div className="p-6 rounded-2xl bg-black/20 border border-white/5 space-y-6">
+                             <div className="flex items-center gap-2 mb-2">
+                               <div className="w-2 h-2 rounded-full bg-blue-500" />
+                               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Texto do Versículo</span>
+                             </div>
+                             <div className="flex items-center gap-4">
+                               <input type="color" value={bibleLyricsColor} onChange={(e) => setBibleLyricsColor(e.target.value)} className="w-12 h-12 rounded-xl overflow-hidden cursor-pointer ring-2 ring-white/5" />
+                               <div className="grid grid-cols-2 gap-3 flex-1">
+                                 <select value={bibleLyricsFont} onChange={(e) => setBibleLyricsFont(e.target.value)} className="bg-slate-900 border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none">
+                                   {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato'].map(f => (<option key={f} value={f}>{f}</option>))}
+                                 </select>
+                                 <input type="number" value={bibleLyricsSize} onChange={(e) => setBibleLyricsSize(Number(e.target.value))} className="bg-slate-900 border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none text-center" />
+                               </div>
+                             </div>
+                             <select value={bibleLyricsWeight} onChange={(e) => setBibleLyricsWeight(e.target.value)} className="w-full bg-slate-900 border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none">
+                               {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
+                             </select>
+                           </div>
                         </div>
                       </div>
+                    </div>
+                  )}
+
+                  {/* --- SUBTAB: SISTEMA --- */}
+                  {settingsSubTab === 'system' && (
+                    <div className="animate-in fade-in slide-in-from-left-4 duration-500 space-y-8">
+                       <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
+                          <div className="mb-6">
+                            <h3 className="text-xl font-black text-white mb-1.5 tracking-tight flex items-center gap-2">
+                              Atualizações do Praise
+                            </h3>
+                            <p className="text-sm text-blue-400 font-medium">Mantenha seu sistema na versão mais recente.</p>
+                          </div>
+
+                          <div className="bg-black/20 rounded-2xl p-6 border border-white/5 space-y-6">
+                            {downloadProgress ? (
+                              <div>
+                                <div className="flex justify-between text-[11px] text-white/50 mb-2 font-black uppercase tracking-widest">
+                                  <span>Progresso do Download</span>
+                                  <span>{Math.round((downloadProgress.downloaded / downloadProgress.total) * 100)}%</span>
+                                </div>
+                                <div className="h-2 rounded-full overflow-hidden bg-white/5 ring-1 ring-white/5">
+                                  <div className="h-full bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-300" style={{ width: `${(downloadProgress.downloaded / downloadProgress.total) * 100}%` }} />
+                                </div>
+                              </div>
+                            ) : (
+                              <p className="text-[13px] text-white/40 leading-relaxed font-medium">Clique no botão abaixo para verificar se existem novas funcionalidades ou correções de estabilidade disponíveis.</p>
+                            )}
+
+                            <button
+                              onClick={async () => {
+                                try {
+                                  setIsCheckingUpdate(true);
+                                  const update = await check();
+                                  if (update) {
+                                    let downloaded = 0;
+                                    let contentLength = 0;
+                                    await update.downloadAndInstall((event) => {
+                                      switch (event.event) {
+                                        case 'Started': contentLength = event.data.contentLength || 0; setDownloadProgress({ downloaded: 0, total: contentLength }); break;
+                                        case 'Progress': downloaded += event.data.chunkLength; setDownloadProgress({ downloaded, total: contentLength }); break;
+                                        case 'Finished': setDownloadProgress(null); break;
+                                      }
+                                    });
+                                    setSuccessMessage("Atualização instalada. Reiniciando...");
+                                    setShowSuccessToast(true);
+                                    setTimeout(async () => { await relaunch(); }, 2000);
+                                  } else {
+                                    setSuccessMessage("Versão atualizada!");
+                                    setShowSuccessToast(true);
+                                    setTimeout(() => setShowSuccessToast(false), 3000);
+                                  }
+                                } catch (e) {
+                                  setSuccessMessage("Erro ao buscar atualizações.");
+                                  setShowSuccessToast(true);
+                                  setTimeout(() => setShowSuccessToast(false), 3000);
+                                } finally {
+                                  setIsCheckingUpdate(false);
+                                }
+                              }}
+                              disabled={isCheckingUpdate || downloadProgress !== null}
+                              className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-white/[0.03] hover:bg-blue-600/10 border border-white/5 hover:border-blue-500/30 text-white font-black text-xs uppercase tracking-[0.2em] transition-all disabled:opacity-50"
+                            >
+                              {isCheckingUpdate ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCw className="w-4 h-4" />}
+                              Verificar Agora
+                            </button>
+                          </div>
+                       </div>
+                    </div>
+                  )}
+                </main>
+
+                {/* ═══ 3. PREVIEW AMPLIADO (DIREITA) ═══ */}
+                <div className="hidden lg:flex flex-1 bg-slate-950/40 border-l border-white/5 p-10 flex-col items-center justify-center relative overflow-hidden group">
+                  
+                  {/* Backdrop Aesthetic */}
+                  <div className="absolute inset-0 opacity-10 pointer-events-none">
+                    <div className="absolute -top-1/4 -right-1/4 w-[600px] h-[600px] bg-blue-500 rounded-full blur-[150px] animate-pulse" />
+                    <div className="absolute -bottom-1/4 -left-1/4 w-[600px] h-[600px] bg-indigo-500 rounded-full blur-[150px] animate-pulse" style={{ animationDelay: '2s' }} />
+                  </div>
+
+                  {/* Header do Preview com Tabs Reais */}
+                  <div className="absolute top-8 left-10 right-10 flex items-center justify-between z-20">
+                    <div className="flex items-center gap-4 p-1.5 bg-black/40 rounded-2xl border border-white/10 backdrop-blur-md">
+                      {[
+                        { id: 'title', label: 'TÍTULO' },
+                        { id: 'lyrics', label: 'LOUVOR' },
+                        { id: 'bible', label: 'BÍBLIA' },
+                      ].map((tab) => (
+                        <button
+                          key={tab.id}
+                          onClick={() => setSettingsPreviewTab(tab.id as any)}
+                          className={`px-6 py-2.5 rounded-xl text-[10px] font-black tracking-[0.2em] transition-all ${
+                            settingsPreviewTab === tab.id 
+                              ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20' 
+                              : 'text-white/30 hover:text-white/60'
+                          }`}
+                        >
+                          {tab.label}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2 px-4 py-2 bg-blue-500/10 rounded-full border border-blue-500/20">
+                      <MonitorDot className="w-4 h-4 text-blue-400" />
+                      <span className="text-[10px] font-black text-blue-400 tracking-widest uppercase">Escala Proporcional 1080p</span>
                     </div>
                   </div>
 
-                  {/* --- CARD: FUNDO DE BÍBLIA --- */}
-                  <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl hover:border-blue-500/20 transition-all group">
-                    <div className="mb-6 flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">Fundo de Bíblia</h3>
-                        <p className="text-[10px] text-white/20 uppercase tracking-[0.2em] font-bold">Escrituras Sagradas</p>
-                        
-                        {/* Mini Thumbnail */}
-                        <div className="mt-4 aspect-video w-32 rounded-lg overflow-hidden border border-white/10 bg-black/40 shadow-inner group-hover:border-blue-500/30 transition-all relative">
-                          <img
-                            src={bibleBackground.startsWith('/backgrounds/') ? bibleBackground : convertFileSrc(bibleBackground)}
-                            className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity"
-                            alt="Background atual"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                        </div>
-                      </div>
-                      <button
-                        onClick={async () => {
-                          const path = await open({
-                            multiple: false,
-                            filters: [{ name: 'Imagens', extensions: ['jpg', 'png', 'jpeg', 'webp'] }],
-                          });
-                          if (path) {
-                            setBibleBackground(path as string);
-                            setSuccessMessage("Fundo de bíblia atualizado!");
-                            setShowSuccessToast(true);
-                            setTimeout(() => setShowSuccessToast(false), 3000);
-                          }
-                        }}
-                        className="px-4 py-2 rounded-xl bg-white/[0.03] hover:bg-blue-500/10 text-white font-bold text-[12px] tracking-wide transition-all border border-white/5 hover:border-blue-500/20 shadow-sm flex items-center gap-2 whitespace-nowrap"
-                      >
-                        <Upload className="w-3.5 h-3.5" /> Mudar Imagem
-                      </button>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-6">
-                      {/* Configuração Título Bíblia */}
-                      <div className="p-5 rounded-2xl bg-black/15 border border-white/5 space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Palette className="w-3.5 h-3.5 text-blue-400" />
-                            <span className="text-[10px] font-bold text-white/50 uppercase tracking-widest">Título do Livro</span>
-                          </div>
-                          <input type="color" value={bibleTitleColor} onChange={(e) => setBibleTitleColor(e.target.value)} className="w-7 h-7 rounded-lg cursor-pointer bg-transparent ring-1 ring-white/10" />
-                        </div>
-                        <div className="grid grid-cols-2 gap-3">
-                          <select value={bibleTitleFont} onChange={(e) => setBibleTitleFont(e.target.value)} className="bg-slate-900/80 text-white text-[10px] rounded-lg px-2 py-2 outline-none border border-white/5">
-                            {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato'].map(f => (<option key={f} value={f}>{f}</option>))}
-                          </select>
-                          <input type="number" value={bibleTitleSize} onChange={(e) => setBibleTitleSize(Number(e.target.value))} className="bg-slate-900/80 text-white text-[10px] rounded-lg px-2 py-2 outline-none border border-white/5 text-center" />
-                        </div>
-                        <select value={bibleTitleWeight} onChange={(e) => setBibleTitleWeight(e.target.value)} className="w-full bg-slate-900/80 text-white text-[10px] rounded-lg px-2 py-2 outline-none border border-white/5">
-                          {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
-                        </select>
-                      </div>
-
-                      {/* Configuração Versículo Bíblia */}
-                      <div className="p-5 rounded-2xl bg-black/15 border border-white/5 space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Palette className="w-3.5 h-3.5 text-blue-400" />
-                            <span className="text-[10px] font-bold text-white/50 uppercase tracking-widest">Texto do Versículo</span>
-                          </div>
-                          <input type="color" value={bibleLyricsColor} onChange={(e) => setBibleLyricsColor(e.target.value)} className="w-7 h-7 rounded-lg cursor-pointer bg-transparent ring-1 ring-white/10" />
-                        </div>
-                        <div className="grid grid-cols-2 gap-3">
-                          <select value={bibleLyricsFont} onChange={(e) => setBibleLyricsFont(e.target.value)} className="bg-slate-900/80 text-white text-[10px] rounded-lg px-2 py-2 outline-none border border-white/5">
-                            {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato'].map(f => (<option key={f} value={f}>{f}</option>))}
-                          </select>
-                          <input type="number" value={bibleLyricsSize} onChange={(e) => setBibleLyricsSize(Number(e.target.value))} className="bg-slate-900/80 text-white text-[10px] rounded-lg px-2 py-2 outline-none border border-white/5 text-center" />
-                        </div>
-                        <select value={bibleLyricsWeight} onChange={(e) => setBibleLyricsWeight(e.target.value)} className="w-full bg-slate-900/80 text-white text-[10px] rounded-lg px-2 py-2 outline-none border border-white/5">
-                          {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-
-                {/* ═══ COLUNA DIREITA: PREVIEW (STICKY) ═══ */}
-                <div className="w-full lg:w-5/12 sticky top-8 flex flex-col gap-6">
-                  <div className="bg-[#1e293b]/60 border border-blue-500/20 rounded-3xl p-6 shadow-2xl backdrop-blur-xl">
-                    <h3 className="text-lg font-black text-white mb-4 tracking-tight flex items-center justify-center gap-2">
-                       Preview da Projeção
-                    </h3>
+                  {/* Container da TV / Telão em Escala Real */}
+                  <div 
+                    ref={previewContainerRef}
+                    className="w-full max-w-5xl aspect-video bg-black rounded-3xl overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] border-4 border-slate-800/50 relative transform hover:scale-[1.01] transition-transform duration-700"
+                  >
                     
-                    {/* Tabs de Seleção do Preview */}
-                    <div className="flex gap-2 mb-6 p-1.5 bg-black/30 rounded-xl border border-white/5">
-                      <button 
-                        onClick={() => setSettingsPreviewTab('title')} 
-                        className={`flex-1 py-2.5 rounded-lg text-[11px] font-bold tracking-wider transition-all ${settingsPreviewTab === 'title' ? 'bg-blue-600 text-white shadow-lg scale-[1.02]' : 'text-white/40 hover:text-white/80 hover:bg-white/5'}`}
-                      >
-                        TÍTULO
-                      </button>
-                      <button 
-                        onClick={() => setSettingsPreviewTab('lyrics')} 
-                        className={`flex-1 py-2.5 rounded-lg text-[11px] font-bold tracking-wider transition-all ${settingsPreviewTab === 'lyrics' ? 'bg-blue-600 text-white shadow-lg scale-[1.02]' : 'text-white/40 hover:text-white/80 hover:bg-white/5'}`}
-                      >
-                        LOUVOR
-                      </button>
-                      <button 
-                        onClick={() => setSettingsPreviewTab('bible')} 
-                        className={`flex-1 py-2.5 rounded-lg text-[11px] font-bold tracking-wider transition-all ${settingsPreviewTab === 'bible' ? 'bg-blue-600 text-white shadow-lg scale-[1.02]' : 'text-white/40 hover:text-white/80 hover:bg-white/5'}`}
-                      >
-                        BÍBLIA
-                      </button>
-                    </div>
+                    {/* Background Dinâmico */}
+                    <img
+                      src={
+                        settingsPreviewTab === 'title' ? (songBackground.startsWith('/backgrounds/') ? songBackground : convertFileSrc(songBackground)) :
+                        settingsPreviewTab === 'lyrics' ? (songBodyBackground.startsWith('/backgrounds/') ? songBodyBackground : convertFileSrc(songBodyBackground)) :
+                        (bibleBackground.startsWith('/backgrounds/') ? bibleBackground : convertFileSrc(bibleBackground))
+                      }
+                      className="w-full h-full object-cover absolute inset-0 transition-all duration-1000"
+                      alt="True Preview"
+                    />
 
-                    {/* Janela de Preview */}
-                    <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/60 shadow-inner relative border border-white/10 flex items-center justify-center p-4">
+                    {/* Texto com Cálculo de Escala Real (FontSize * Width / 1920) */}
+                    <div className="absolute inset-0 flex items-center justify-center p-[5%] text-center pointer-events-none select-none">
                       
-                      {/* Background Específico */}
-                      <img
-                        src={
-                          settingsPreviewTab === 'title' ? (songBackground.startsWith('/backgrounds/') ? songBackground : convertFileSrc(songBackground)) :
-                          settingsPreviewTab === 'lyrics' ? (songBodyBackground.startsWith('/backgrounds/') ? songBodyBackground : convertFileSrc(songBodyBackground)) :
-                          (bibleBackground.startsWith('/backgrounds/') ? bibleBackground : convertFileSrc(bibleBackground))
-                        }
-                        className="w-full h-full object-cover transition-transform duration-1000 absolute inset-0 opacity-90"
-                        alt="Preview Background"
-                      />
-
-                      {/* Overlays de Texto */}
                       {settingsPreviewTab === 'title' && (
-                        <div className="relative z-10 text-center pointer-events-none w-full animate-fade-in">
+                        <div className="animate-in zoom-in-95 fade-in duration-500">
                           <h1 style={{ 
-                            color: songTitleColor, fontFamily: songTitleFont ? `'${songTitleFont}', sans-serif` : undefined,
-                            fontSize: '1.4rem', fontWeight: songTitleWeight, textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+                            color: songTitleColor,
+                            fontFamily: songTitleFont ? `'${songTitleFont}', sans-serif` : undefined,
+                            fontSize: `${(songTitleSize * previewWidth) / 1920}px`,
+                            fontWeight: songTitleWeight,
+                            textShadow: '0 4px 12px rgba(0,0,0,0.8)',
+                            lineHeight: '1.2'
                           }}>
-                            GRANDES COISAS
+                            GRANDE É O SENHOR
                           </h1>
                         </div>
                       )}
 
                       {settingsPreviewTab === 'lyrics' && (
-                        <div className="relative z-10 text-center pointer-events-none w-full animate-fade-in">
-                          <div style={{ 
-                            color: songLyricsColor, fontFamily: songLyricsFont ? `'${songLyricsFont}', sans-serif` : undefined,
-                            fontSize: '1rem', fontWeight: songLyricsWeight, whiteSpace: 'pre-line', lineHeight: '1.4', textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+                        <div className="animate-in zoom-in-95 fade-in duration-500">
+                          <p style={{ 
+                            color: songLyricsColor,
+                            fontFamily: songLyricsFont ? `'${songLyricsFont}', sans-serif` : undefined,
+                            fontSize: `${(songLyricsSize * previewWidth) / 1920}px`,
+                            fontWeight: songLyricsWeight,
+                            textShadow: '0 4px 12px rgba(0,0,0,0.8)',
+                            lineHeight: '1.3',
+                            whiteSpace: 'pre-line'
                           }}>
-                            {"Porque Ele vive,\nposso crer no amanhã."}
-                          </div>
+                            {"Vim para adorar-Te\nVim para prostrar-me\nVim para dizer que és\nmeu Deus!"}
+                          </p>
                         </div>
                       )}
 
                       {settingsPreviewTab === 'bible' && (
-                        <div className="relative z-10 pointer-events-none w-full flex flex-col items-center gap-2 animate-fade-in text-center">
-                          <h1 style={{ 
-                            color: bibleTitleColor, fontFamily: bibleTitleFont ? `'${bibleTitleFont}', sans-serif` : undefined,
-                            fontSize: '0.8rem', fontWeight: bibleTitleWeight, textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                            backgroundColor: 'rgba(0,0,0,0.3)', padding: '2px 8px', borderRadius: '4px'
+                        <div className="flex flex-col items-center gap-[4%] animate-in zoom-in-95 fade-in duration-500 w-full">
+                          <div style={{
+                            backgroundColor: 'rgba(0,0,0,0.4)',
+                            padding: '1.5% 3%',
+                            borderRadius: '1rem',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            backdropFilter: 'blur(12px)'
                           }}>
-                            JOÃO 3:16
-                          </h1>
-                          <div style={{ 
-                            color: bibleLyricsColor, fontFamily: bibleLyricsFont ? `'${bibleLyricsFont}', sans-serif` : undefined,
-                            fontSize: '0.9rem', fontWeight: bibleLyricsWeight, whiteSpace: 'pre-line', lineHeight: '1.3', textShadow: '0 2px 4px rgba(0,0,0,0.5)'
-                          }}>
-                            {"Porque Deus amou o mundo\nde tal maneira..."}
+                            <h2 style={{ 
+                              color: bibleTitleColor,
+                              fontFamily: bibleTitleFont ? `'${bibleTitleFont}', sans-serif` : undefined,
+                              fontSize: `${(bibleTitleSize * previewWidth) / 1920}px`,
+                              fontWeight: bibleTitleWeight,
+                              textShadow: '0 2px 8px rgba(0,0,0,0.5)',
+                            }}>
+                              SÃO JOÃO 8:32
+                            </h2>
                           </div>
+                          <p style={{ 
+                            color: bibleLyricsColor,
+                            fontFamily: bibleLyricsFont ? `'${bibleLyricsFont}', sans-serif` : undefined,
+                            fontSize: `${(bibleLyricsSize * previewWidth) / 1920}px`,
+                            fontWeight: bibleLyricsWeight,
+                            textShadow: '0 4px 12px rgba(0,0,0,0.8)',
+                            lineHeight: '1.3',
+                            whiteSpace: 'pre-line'
+                          }}>
+                            {"E conhecereis a verdade,\ne a verdade vos libertará."}
+                          </p>
                         </div>
                       )}
-
                     </div>
-                    <p className="text-[10px] text-center text-white/30 mt-4 uppercase tracking-[0.2em]">Preview Simulado</p>
                   </div>
 
-                  {/* Updater Card fica abaixo do preview se houver espaço, ou a direita */}
+                  {/* Informação Técnica de Noção Real */}
+                  <div className="mt-12 flex items-center gap-10 opacity-30 group-hover:opacity-70 transition-opacity">
+                    <div className="flex flex-col items-center gap-2">
+                       <span className="text-[9px] font-black tracking-[0.2em] text-white">LARGURA RENDER</span>
+                       <span className="text-xl font-mono text-blue-400">{Math.round(previewWidth)}px</span>
+                    </div>
+                    <div className="w-px h-8 bg-white/20" />
+                    <div className="flex flex-col items-center gap-2">
+                       <span className="text-[9px] font-black tracking-[0.2em] text-white">ALVO PROJEÇÃO</span>
+                       <span className="text-xl font-mono text-blue-400">1920px</span>
+                    </div>
+                    <div className="w-px h-8 bg-white/20" />
+                    <div className="flex flex-col items-center gap-2">
+                       <span className="text-[9px] font-black tracking-[0.2em] text-white">FIDELIDADE</span>
+                       <span className="text-xl font-mono text-blue-400">100% REAL</span>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Updater Card Original (Colocado numa div full-width abaixo do container flex) */}
               </div>
-              
-              <div className="mt-8">
-                {/* Updater Card */}
-                <div className="bg-[#1e293b]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl hover:border-blue-500/20 transition-all group w-full">
-                  <div className="mb-6">
-                    <h3 className="text-xl font-black text-white mb-1.5 tracking-tight flex items-center gap-2">
-                      <DownloadCloud className="w-5 h-5 text-blue-400" /> Atualizações do Sistema
-                    </h3>
-                    <p className="text-sm text-blue-400 font-medium">Verifique e instale novas versões do Praise automaticamente.</p>
-                  </div>
-
-                  <div className="bg-black/20 rounded-2xl p-6 border border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div className="flex-1 w-full">
-                      {downloadProgress ? (
-                        <div>
-                          <div className="flex justify-between text-xs text-white/60 mb-2 font-medium">
-                            <span>Baixando atualização...</span>
-                            <span>{Math.round((downloadProgress.downloaded / downloadProgress.total) * 100)}%</span>
-                          </div>
-                          <div className="h-2 rounded-full overflow-hidden bg-white/5">
-                            <div
-                              className="h-full bg-blue-500 transition-all duration-300"
-                              style={{ width: `${(downloadProgress.downloaded / downloadProgress.total) * 100}%` }}
-                            />
-                          </div>
-                        </div>
-                      ) : (
-                        <p className="text-[13px] text-white/50 leading-relaxed">
-                          Mantenha seu aplicativo sempre na versão mais recente para receber novos recursos e correções de estabilidade.
-                        </p>
-                      )}
-                    </div>
-
-                    <button
-                      onClick={async () => {
-                        try {
-                          setIsCheckingUpdate(true);
-                          const update = await check();
-                          if (update) {
-                            let downloaded = 0;
-                            let contentLength = 0;
-                            await update.downloadAndInstall((event) => {
-                              switch (event.event) {
-                                case 'Started':
-                                  contentLength = event.data.contentLength || 0;
-                                  setDownloadProgress({ downloaded: 0, total: contentLength });
-                                  break;
-                                case 'Progress':
-                                  downloaded += event.data.chunkLength;
-                                  setDownloadProgress({ downloaded, total: contentLength });
-                                  break;
-                                case 'Finished':
-                                  setDownloadProgress(null);
-                                  break;
-                              }
-                            });
-                            setSuccessMessage("Atualização instalada. Reiniciando...");
-                            setShowSuccessToast(true);
-                            setTimeout(async () => {
-                              await relaunch();
-                            }, 2000);
-                          } else {
-                            setSuccessMessage("O Praise já está na versão mais recente!");
-                            setShowSuccessToast(true);
-                            setTimeout(() => setShowSuccessToast(false), 3000);
-                          }
-                        } catch (e) {
-                          console.error("Erro ao atualizar", e);
-                          setSuccessMessage("Erro ao buscar atualizações.");
-                          setShowSuccessToast(true);
-                          setTimeout(() => setShowSuccessToast(false), 3000);
-                        } finally {
-                          setIsCheckingUpdate(false);
-                        }
-                      }}
-                      disabled={isCheckingUpdate || downloadProgress !== null}
-                      className="w-full md:w-auto px-6 py-3 rounded-xl bg-white/[0.05] hover:bg-blue-500/10 text-white font-bold text-[13px] tracking-wide transition-all border border-white/5 hover:border-blue-500/20 shadow-sm active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
-                    >
-                      {isCheckingUpdate ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCw className="w-4 h-4" />}
-                      {isCheckingUpdate ? 'Verificando...' : downloadProgress ? 'Baixando...' : 'Verificar Atualização'}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-
             </div>
           </div>
         )}
