@@ -1741,12 +1741,7 @@ function App() {
               </div>
 
               <div className="flex items-center gap-3">
-                {isProjecting && (
-                  <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-brand-500/20" style={{ backgroundColor: 'rgba(59,130,246,0.1)' }}>
-                    <span className="w-2 h-2 bg-brand-400 rounded-full live-dot"></span>
-                    <span className="text-brand-400 text-[11px] font-semibold uppercase tracking-wide">Ao Vivo</span>
-                  </div>
-                )}
+
 
                 {isProjecting && (
                   <button
