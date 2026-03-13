@@ -228,7 +228,54 @@ function App() {
     });
   };
 
-  const slides = selectedSong ? formatContent(selectedSong.content, selectedSong.collection) : [];
+  // Formata o conteúdo para o modo legenda: re-divide TODAS as linhas em grupos de 2
+  const formatContentSubtitle = (content: string, collection?: string) => {
+    const isBible = collection === 'Bíblia';
+    const highlightWords = ['CORO', 'REFRÃO', 'BIS', 'INSTRUMENTAL', 'INTRO', 'PONTE', 'FINAL'];
+
+    // 1. Pega TODAS as linhas do louvor (ignorando a separação por estrofes)
+    const allLines = content.split('\n')
+      .map(line => line.trim())
+      .filter(line => line.length > 0) // Remove linhas vazias
+      .map(line => {
+        // Remove tags HTML
+        let clean = line.replace(/<[^>]+>/g, '');
+        let formatted = isBible ? clean : clean.toUpperCase();
+
+        if (isBible) {
+          if (/^\[(.*?)\]$/.test(formatted)) return '';
+          formatted = formatted.replace(/^(\d+\.)\s/, '');
+        }
+
+        // Destaque de palavras-chave
+        if (!isBible) {
+          highlightWords.forEach(word => {
+            const regex = new RegExp(`\\b${word}\\b`, 'gi');
+            if (regex.test(formatted)) {
+              formatted = formatted.replace(regex, match => `<span class="text-yellow-400 font-bold italic">${match}</span>`);
+            }
+          });
+        }
+
+        return formatted;
+      })
+      .filter(line => line.length > 0);
+
+    // 2. Agrupa de 2 em 2 linhas
+    const subtitleSlides: string[] = [];
+    for (let i = 0; i < allLines.length; i += 2) {
+      const pair = allLines.slice(i, i + 2);
+      subtitleSlides.push(pair.join('<br />'));
+    }
+
+    return subtitleSlides;
+  };
+
+  const slides = selectedSong 
+    ? (projectionMode === 'subtitle' 
+        ? formatContentSubtitle(selectedSong.content, selectedSong.collection)
+        : formatContent(selectedSong.content, selectedSong.collection))
+    : [];
 
   const sendSlideToProjection = useCallback(async (
     content: string, 
