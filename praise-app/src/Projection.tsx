@@ -148,9 +148,9 @@ function Projection() {
       }`}>
         <div className="flex items-center justify-center w-full">
           <div 
-            className={`font-bold leading-snug tracking-wide projection-shadow drop-shadow-2xl inline-block transition-all duration-500 ${
+            className={`font-bold leading-norm tracking-wide projection-shadow drop-shadow-2xl inline-block transition-all duration-500 ${
               data.projection_mode === 'subtitle'
-                ? 'text-2xl md:text-4xl lg:text-5xl text-center max-w-[85%]' // Formatação legenda
+                ? 'text-2xl md:text-4xl lg:text-5xl text-center max-w-[90%] overflow-hidden line-clamp-2' // Limite de 2 linhas
                 : data.item_type === 'bible' 
                   ? 'text-4xl md:text-6xl lg:text-7xl italic font-medium text-center' 
                   : 'text-4xl md:text-6xl lg:text-[4.8rem] uppercase text-left'
@@ -158,8 +158,11 @@ function Projection() {
             style={{ 
               color: data.lyrics_color,
               fontFamily: data.lyrics_font ? `'${data.lyrics_font}', sans-serif` : undefined,
-              fontSize: data.lyrics_size ? `${data.projection_mode === 'subtitle' ? Math.min(data.lyrics_size, 48) : data.lyrics_size}px` : undefined,
-              fontWeight: data.lyrics_weight
+              fontSize: data.lyrics_size ? `${data.projection_mode === 'subtitle' ? Math.min(data.lyrics_size, 44) : data.lyrics_size}px` : undefined,
+              fontWeight: data.lyrics_weight,
+              display: data.projection_mode === 'subtitle' ? '-webkit-box' : 'inline-block',
+              WebkitLineClamp: data.projection_mode === 'subtitle' ? 2 : 'none',
+              WebkitBoxOrient: 'vertical'
             }}
             dangerouslySetInnerHTML={{ __html: data.content }} 
           />

@@ -406,7 +406,7 @@ function App() {
         isBible ? bibleLyricsWeight : songLyricsWeight
       );
     }
-  }, [songTitleColor, songLyricsColor, bibleTitleColor, bibleLyricsColor, songTitleFont, songTitleSize, songTitleWeight, songLyricsFont, songLyricsSize, songLyricsWeight, bibleTitleFont, bibleTitleSize, bibleTitleWeight, bibleLyricsFont, bibleLyricsSize, bibleLyricsWeight, isProjecting, activeSlideIndex, slides, selectedSong, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle]);
+  }, [songTitleColor, songLyricsColor, bibleTitleColor, bibleLyricsColor, songTitleFont, songTitleSize, songTitleWeight, songLyricsFont, songLyricsSize, songLyricsWeight, bibleTitleFont, bibleTitleSize, bibleTitleWeight, bibleLyricsFont, bibleLyricsSize, bibleLyricsWeight, isProjecting, activeSlideIndex, slides, selectedSong, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle, projectionMode]);
 
   const appWindow = useMemo(() => getCurrentWindow(), []);
 
