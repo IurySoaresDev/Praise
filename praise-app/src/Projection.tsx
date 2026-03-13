@@ -93,12 +93,15 @@ function Projection() {
     ? (data.background.startsWith('/backgrounds/') ? data.background : convertFileSrc(data.background))
     : null;
 
+  const isSubtitle = data.projection_mode === 'subtitle';
+
   return (
-    <div className={`w-screen h-screen relative flex flex-col overflow-hidden transition-colors duration-500 ${
-      data.projection_mode === 'subtitle' ? 'bg-transparent' : 'bg-black'
-    }`}>
+    <div 
+      className="w-screen h-screen relative flex flex-col overflow-hidden"
+      style={{ backgroundColor: isSubtitle ? '#00ff00' : '#000000' }}
+    >
       {/* Camada de Fundo - oculta em modo legenda */}
-      {backgroundUrl && data.projection_mode !== 'subtitle' && (
+      {backgroundUrl && !isSubtitle && (
         <div 
           className="absolute inset-0 z-0"
           style={{
@@ -111,18 +114,16 @@ function Projection() {
       )}
 
       {/* Overlay escuro - apenas em modo default */}
-      {data.projection_mode !== 'subtitle' && (
+      {!isSubtitle && (
         <div className="absolute inset-0 z-[1] bg-black/30" />
       )}
 
-      {/* Título do louvor/versículo */}
-      {data.title && data.item_type !== 'empty' && (
-        <div className={`absolute left-0 right-0 z-20 w-full flex items-center justify-center transition-all duration-500 ${
-          data.projection_mode === 'subtitle'
-            ? 'bottom-[22%] scale-75 opacity-70' // Posiciona acima da legenda
-            : data.item_type === 'bible' 
-              ? 'top-[5.5%]' 
-              : 'top-[5.5%]'
+      {/* Título do louvor/versículo - oculto em modo legenda */}
+      {data.title && data.item_type !== 'empty' && !isSubtitle && (
+        <div className={`absolute left-0 right-0 z-20 w-full flex items-center justify-center ${
+          data.item_type === 'bible' 
+            ? 'top-[5.5%]' 
+            : 'top-[5.5%]'
         }`}>
           <h1 
             className={`font-bold uppercase tracking-widest text-center drop-shadow-2xl projection-shadow truncate px-12 ${
@@ -133,7 +134,7 @@ function Projection() {
             style={{ 
               color: data.title_color,
               fontFamily: data.title_font ? `'${data.title_font}', sans-serif` : undefined,
-              fontSize: data.title_size ? `${data.projection_mode === 'subtitle' ? data.title_size * 0.7 : data.title_size}px` : undefined,
+              fontSize: data.title_size ? `${data.title_size}px` : undefined,
               fontWeight: data.title_weight
             }}
           >
@@ -143,35 +144,48 @@ function Projection() {
       )}
 
       {/* Camada de Texto */}
-      <div className={`relative z-10 flex-1 w-full flex items-center justify-center transition-all duration-500 px-12 pb-8 ${
-        data.projection_mode === 'subtitle'
-          ? 'pt-0 items-end pb-[8%]' // Empurra para o rodapé em modo legenda
-          : 'pt-32 lg:px-20 lg:pt-40'
-      }`}>
-        <div className="flex items-center justify-center w-full">
+      {isSubtitle ? (
+        /* MODO LEGENDA: texto fixo no rodapé, max 2 linhas */
+        <div className="absolute bottom-0 left-0 right-0 z-10 flex justify-center pb-[5%] px-8">
           <div 
-            className={`font-bold leading-norm tracking-wide projection-shadow drop-shadow-2xl inline-block transition-all duration-500 ${
-              data.projection_mode === 'subtitle'
-                ? 'text-2xl md:text-4xl lg:text-5xl text-center max-w-[90%] overflow-hidden line-clamp-2' // Reforçado line-clamp
-                : data.item_type === 'bible' 
-                  ? 'text-4xl md:text-6xl lg:text-7xl italic font-medium text-center' 
-                  : 'text-4xl md:text-6xl lg:text-[4.8rem] uppercase text-left'
-            }`}
+            className="text-center font-bold drop-shadow-2xl projection-shadow"
             style={{ 
-              color: data.lyrics_color,
+              color: data.lyrics_color || '#ffffff',
               fontFamily: data.lyrics_font ? `'${data.lyrics_font}', sans-serif` : undefined,
-              fontSize: data.lyrics_size ? `${data.projection_mode === 'subtitle' ? Math.min(data.lyrics_size, 44) : data.lyrics_size}px` : undefined,
-              fontWeight: data.lyrics_weight,
-              display: data.projection_mode === 'subtitle' ? '-webkit-box' : 'inline-block',
-              WebkitLineClamp: data.projection_mode === 'subtitle' ? 2 : 'none',
+              fontSize: '42px',
+              fontWeight: data.lyrics_weight || '700',
+              lineHeight: '1.3',
+              maxWidth: '85%',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical',
-              justifyContent: 'center',
-              textAlign: 'center'
+              overflow: 'hidden',
+              textShadow: '2px 2px 6px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.5)'
             }}
             dangerouslySetInnerHTML={{ __html: data.content }} 
           />
         </div>
-      </div>
+      ) : (
+        /* MODO PADRÃO: texto centralizado */
+        <div className="relative z-10 flex-1 w-full flex items-center justify-center px-12 pb-8 pt-32 lg:px-20 lg:pt-40">
+          <div className="flex items-center justify-center w-full">
+            <div 
+              className={`font-bold leading-snug tracking-wide projection-shadow drop-shadow-2xl inline-block ${
+                data.item_type === 'bible' 
+                  ? 'text-4xl md:text-6xl lg:text-7xl italic font-medium text-center' 
+                  : 'text-4xl md:text-6xl lg:text-[4.8rem] uppercase text-left'
+              }`}
+              style={{ 
+                color: data.lyrics_color,
+                fontFamily: data.lyrics_font ? `'${data.lyrics_font}', sans-serif` : undefined,
+                fontSize: data.lyrics_size ? `${data.lyrics_size}px` : undefined,
+                fontWeight: data.lyrics_weight
+              }}
+              dangerouslySetInnerHTML={{ __html: data.content }} 
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

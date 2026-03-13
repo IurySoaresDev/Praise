@@ -261,7 +261,7 @@ function App() {
         lyricsFont: lyricsFont,
         lyricsSize: lyricsSize,
         lyricsWeight: lyricsWeight,
-        projection_mode: projection_mode || projectionMode
+        projectionMode: projection_mode || projectionMode
       });
     } catch (e) {
       console.error("Erro ao projetar:", e);
