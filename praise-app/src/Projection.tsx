@@ -152,7 +152,7 @@ function Projection() {
             style={{ 
               color: data.lyrics_color || '#ffffff',
               fontFamily: data.lyrics_font ? `'${data.lyrics_font}', sans-serif` : undefined,
-              fontSize: '42px',
+              fontSize: '54px',
               fontWeight: data.lyrics_weight || '700',
               lineHeight: '1.3',
               maxWidth: '85%',
@@ -160,7 +160,7 @@ function Projection() {
               WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
-              textShadow: '2px 2px 6px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.5)'
+              textShadow: '3px 3px 8px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,0.7), 0 0 60px rgba(0,0,0,0.4)'
             }}
             dangerouslySetInnerHTML={{ __html: data.content }} 
           />
