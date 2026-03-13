@@ -27,6 +27,7 @@ export interface AppState {
   selectedMonitor: string | null;
   playlist: Song[];
   biblePlaylist: Song[];
+  projectionMode: 'default' | 'subtitle';
   
   // Settings & Backgrounds
   activeTab: 'songs' | 'bible' | 'editor' | 'settings';
@@ -93,6 +94,7 @@ export interface AppState {
   setBibleLyricsFont: (font: string) => void;
   setBibleLyricsSize: (size: number) => void;
   setBibleLyricsWeight: (weight: string) => void;
+  setProjectionMode: (mode: 'default' | 'subtitle') => void;
 }
 
 export const ALLOWED_COLLECTIONS = ["Coletânea 2018", "CIA 2018", "Avulsos 2018"];
@@ -141,6 +143,7 @@ export const useStore = create<AppState>((set, get) => ({
   songBackground: '/backgrounds/bg-song.jpg',
   songBodyBackground: '/backgrounds/bg-song-body.jpg',
   bibleBackground: '/backgrounds/bg-bible.jpg',
+  projectionMode: 'default',
   
   bibleLyricsColor: '#ffffff', // White
   songTitleColor: '#ffffff', // White (Premium)
@@ -211,6 +214,7 @@ export const useStore = create<AppState>((set, get) => ({
   setBibleLyricsFont: (font) => set({ bibleLyricsFont: font }),
   setBibleLyricsSize: (size) => set({ bibleLyricsSize: size }),
   setBibleLyricsWeight: (weight) => set({ bibleLyricsWeight: weight }),
+  setProjectionMode: (mode) => set({ projectionMode: mode }),
 
   addSongToCollection: (title, content, collectionName) => {
     const state = get();

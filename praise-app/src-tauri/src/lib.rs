@@ -17,6 +17,7 @@ struct ProjectionPayload {
     lyrics_font: Option<String>,
     lyrics_size: Option<f64>,
     lyrics_weight: Option<String>,
+    projection_mode: Option<String>,
 }
 
 struct CurrentSlideState(Mutex<Option<ProjectionPayload>>);
@@ -50,6 +51,7 @@ fn project_slide(
     lyrics_font: Option<String>,
     lyrics_size: Option<f64>,
     lyrics_weight: Option<String>,
+    projection_mode: Option<String>,
 ) -> Result<(), String> {
     let payload = ProjectionPayload { 
         title: title.clone(),
@@ -64,6 +66,7 @@ fn project_slide(
         lyrics_font,
         lyrics_size,
         lyrics_weight,
+        projection_mode,
     };
 
     // Save payload to state

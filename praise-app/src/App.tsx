@@ -71,6 +71,8 @@ function App() {
     setBibleLyricsFont,
     setBibleLyricsSize,
     setBibleLyricsWeight,
+    projectionMode,
+    setProjectionMode,
   } = useStore();
 
   const [monitors, setMonitors] = useState<string[]>([]);
@@ -240,7 +242,8 @@ function App() {
     titleWeight?: string,
     lyricsFont?: string,
     lyricsSize?: number,
-    lyricsWeight?: string
+    lyricsWeight?: string,
+    projection_mode?: string
   ) => {
     if (isFrozen) return;
     try {
@@ -257,12 +260,13 @@ function App() {
         titleWeight: titleWeight,
         lyricsFont: lyricsFont,
         lyricsSize: lyricsSize,
-        lyricsWeight: lyricsWeight
+        lyricsWeight: lyricsWeight,
+        projection_mode: projection_mode || projectionMode
       });
     } catch (e) {
       console.error("Erro ao projetar:", e);
     }
-  }, [selectedMonitor, isFrozen]);
+  }, [selectedMonitor, isFrozen, projectionMode]);
 
   const getSlideTitle = useCallback((index: number) => {
     if (!selectedSong) return '';
@@ -1646,7 +1650,7 @@ function App() {
                   <div className="relative flex items-center pr-1">
                     <select
                       className="appearance-none bg-transparent py-0.5 text-[13px] font-semibold text-white/90 outline-none cursor-pointer w-full min-w-[120px]"
-                      value={selectedMonitor}
+                      value={selectedMonitor || ''}
                       onChange={(e) => setSelectedMonitor(e.target.value)}
                     >
                       {monitors.length > 0 ? (
@@ -1658,6 +1662,29 @@ function App() {
                       )}
                     </select>
                   </div>
+                </div>
+
+                <div className="flex items-center bg-white/[0.03] border border-white/10 rounded-xl p-1 shadow-sm">
+                  <button
+                    onClick={() => setProjectionMode('default')}
+                    className={`px-4 py-1.5 rounded-lg text-[10px] font-black tracking-widest transition-all ${
+                      projectionMode === 'default'
+                        ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20'
+                        : 'text-white/30 hover:text-white/60'
+                    }`}
+                  >
+                    PADRÃO
+                  </button>
+                  <button
+                    onClick={() => setProjectionMode('subtitle')}
+                    className={`px-4 py-1.5 rounded-lg text-[10px] font-black tracking-widest transition-all ${
+                      projectionMode === 'subtitle'
+                        ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20'
+                        : 'text-white/30 hover:text-white/60'
+                    }`}
+                  >
+                    LEGENDA
+                  </button>
                 </div>
               </div>
 
