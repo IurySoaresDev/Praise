@@ -94,7 +94,9 @@ function Projection() {
     : null;
 
   return (
-    <div className="w-screen h-screen bg-black relative flex flex-col overflow-hidden">
+    <div className={`w-screen h-screen relative flex flex-col overflow-hidden transition-colors duration-500 ${
+      data.projection_mode === 'subtitle' ? 'bg-transparent' : 'bg-black'
+    }`}>
       {/* Camada de Fundo - oculta em modo legenda */}
       {backgroundUrl && data.projection_mode !== 'subtitle' && (
         <div 
@@ -150,7 +152,7 @@ function Projection() {
           <div 
             className={`font-bold leading-norm tracking-wide projection-shadow drop-shadow-2xl inline-block transition-all duration-500 ${
               data.projection_mode === 'subtitle'
-                ? 'text-2xl md:text-4xl lg:text-5xl text-center max-w-[90%] overflow-hidden line-clamp-2' // Limite de 2 linhas
+                ? 'text-2xl md:text-4xl lg:text-5xl text-center max-w-[90%] overflow-hidden line-clamp-2' // Reforçado line-clamp
                 : data.item_type === 'bible' 
                   ? 'text-4xl md:text-6xl lg:text-7xl italic font-medium text-center' 
                   : 'text-4xl md:text-6xl lg:text-[4.8rem] uppercase text-left'
@@ -162,7 +164,9 @@ function Projection() {
               fontWeight: data.lyrics_weight,
               display: data.projection_mode === 'subtitle' ? '-webkit-box' : 'inline-block',
               WebkitLineClamp: data.projection_mode === 'subtitle' ? 2 : 'none',
-              WebkitBoxOrient: 'vertical'
+              WebkitBoxOrient: 'vertical',
+              justifyContent: 'center',
+              textAlign: 'center'
             }}
             dangerouslySetInnerHTML={{ __html: data.content }} 
           />

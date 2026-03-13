@@ -96,6 +96,7 @@ fn project_slide(
         .title("Praise Projection")
         .fullscreen(true)
         .always_on_top(true)
+        .transparent(true)
         .decorations(false);
 
         // Tenta achar o monitor escolhido pelo nome

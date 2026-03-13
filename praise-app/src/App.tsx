@@ -297,7 +297,8 @@ function App() {
         isBible ? bibleTitleWeight : songTitleWeight,
         isBible ? bibleLyricsFont : songLyricsFont,
         isBible ? bibleLyricsSize : songLyricsSize,
-        isBible ? bibleLyricsWeight : songLyricsWeight
+        isBible ? bibleLyricsWeight : songLyricsWeight,
+        projectionMode
       );
     }
   }, [isProjecting, slides, setActiveSlideIndex, sendSlideToProjection, selectedSong, bibleBackground, songBackground, songBodyBackground, getSlideTitle, songTitleColor, songLyricsColor, bibleTitleColor, bibleLyricsColor]);
@@ -321,7 +322,8 @@ function App() {
         isBible ? bibleTitleWeight : songTitleWeight,
         isBible ? bibleLyricsFont : songLyricsFont,
         isBible ? bibleLyricsSize : songLyricsSize,
-        isBible ? bibleLyricsWeight : songLyricsWeight
+        isBible ? bibleLyricsWeight : songLyricsWeight,
+        projectionMode
       );
     }
   }, [selectedSong, slides, activeSlideIndex, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle, songTitleColor, songLyricsColor, bibleTitleColor, bibleLyricsColor]);
@@ -357,7 +359,8 @@ function App() {
             isBible ? bibleTitleWeight : songTitleWeight,
             isBible ? bibleLyricsFont : songLyricsFont,
             isBible ? bibleLyricsSize : songLyricsSize,
-            isBible ? bibleLyricsWeight : songLyricsWeight
+            isBible ? bibleLyricsWeight : songLyricsWeight,
+            projectionMode
           );
         }
       } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
@@ -377,7 +380,8 @@ function App() {
             isBible ? bibleTitleWeight : songTitleWeight,
             isBible ? bibleLyricsFont : songLyricsFont,
             isBible ? bibleLyricsSize : songLyricsSize,
-            isBible ? bibleLyricsWeight : songLyricsWeight
+            isBible ? bibleLyricsWeight : songLyricsWeight,
+            projectionMode
           );
         }
       }
@@ -403,7 +407,8 @@ function App() {
         isBible ? bibleTitleWeight : songTitleWeight,
         isBible ? bibleLyricsFont : songLyricsFont,
         isBible ? bibleLyricsSize : songLyricsSize,
-        isBible ? bibleLyricsWeight : songLyricsWeight
+        isBible ? bibleLyricsWeight : songLyricsWeight,
+        projectionMode
       );
     }
   }, [songTitleColor, songLyricsColor, bibleTitleColor, bibleLyricsColor, songTitleFont, songTitleSize, songTitleWeight, songLyricsFont, songLyricsSize, songLyricsWeight, bibleTitleFont, bibleTitleSize, bibleTitleWeight, bibleLyricsFont, bibleLyricsSize, bibleLyricsWeight, isProjecting, activeSlideIndex, slides, selectedSong, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle, projectionMode]);
