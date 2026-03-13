@@ -1853,9 +1853,9 @@ function App() {
                   <div className={`w-full aspect-video rounded-xl border relative overflow-hidden flex flex-col shadow-md shadow-black/20 ${isProjecting
                       ? "border-brand-500/30 glow-brand"
                       : "border-white/10"
-                    }`} style={{ backgroundColor: '#000' }}>
+                    }`} style={{ backgroundColor: projectionMode === 'subtitle' ? '#00ff00' : '#000' }}>
                     {/* Imagem de Fundo do Preview */}
-                    {activeSlideIndex >= 0 && activeSlideIndex < slides.length && (
+                    {activeSlideIndex >= 0 && activeSlideIndex < slides.length && projectionMode !== 'subtitle' && (
                       <div
                         className="absolute inset-0 z-0"
                         style={{
@@ -1874,14 +1874,16 @@ function App() {
                     )}
 
                     {/* Overlay escuro simulando o do projetor */}
-                    <div className="absolute inset-0 z-[1] bg-black/40" />
+                    {projectionMode !== 'subtitle' && (
+                      <div className="absolute inset-0 z-[1] bg-black/40" />
+                    )}
 
                     {/* Camada de Texto do Preview */}
                     <div className="relative z-10 flex flex-col items-center justify-center w-full h-full p-2">
                       {activeSlideIndex >= 0 && activeSlideIndex < slides.length ? (
                         <>
-                          {/* Mostrar título simulado */}
-                          {((selectedSong?.collection !== 'Bíblia' && activeSlideIndex === 0) || (selectedSong?.collection === 'Bíblia')) && (
+                          {/* Mostrar título simulado - oculto em legenda */}
+                          {projectionMode !== 'subtitle' && ((selectedSong?.collection !== 'Bíblia' && activeSlideIndex === 0) || (selectedSong?.collection === 'Bíblia')) && (
                             <div className={`absolute left-0 right-0 w-full flex items-center justify-center ${selectedSong?.collection === 'Bíblia' ? 'top-[21%]' : 'top-[5.5%]'
                               }`}>
                               <h4
@@ -1897,18 +1899,40 @@ function App() {
                           )}
 
                           {/* Letra ou Versículo */}
-                          <div className="absolute inset-x-2 bottom-2 top-[35%] flex items-center justify-center">
-                            <div
-                              className={`font-bold w-full leading-snug tracking-wide projection-shadow ${selectedSong?.collection === 'Bíblia'
-                                  ? 'text-[0.6rem] italic font-medium text-center'
-                                  : 'text-[0.6rem] uppercase text-left'
-                                }`}
-                              style={{
-                                color: selectedSong?.collection === 'Bíblia' ? bibleLyricsColor : songLyricsColor
-                              }}
-                              dangerouslySetInnerHTML={{ __html: slides[activeSlideIndex] }}
-                            />
-                          </div>
+                          {projectionMode === 'subtitle' ? (
+                            /* SIMULAÇÃO MODO LEGENDA */
+                            <div className="absolute bottom-2 left-0 right-0 flex justify-center px-4">
+                              <div
+                                className="text-center font-bold drop-shadow-2xl projection-shadow"
+                                style={{
+                                  color: selectedSong?.collection === 'Bíblia' ? (bibleLyricsColor || '#ffffff') : (songLyricsColor || '#ffffff'),
+                                  fontSize: '0.75rem',
+                                  lineHeight: '1.2',
+                                  maxWidth: '90%',
+                                  display: '-webkit-box',
+                                  WebkitLineClamp: 2,
+                                  WebkitBoxOrient: 'vertical',
+                                  overflow: 'hidden',
+                                  textShadow: '1px 1px 2px rgba(0,0,0,1)'
+                                }}
+                                dangerouslySetInnerHTML={{ __html: slides[activeSlideIndex] }}
+                              />
+                            </div>
+                          ) : (
+                            /* SIMULAÇÃO MODO PADRÃO */
+                            <div className="absolute inset-x-2 bottom-2 top-[35%] flex items-center justify-center">
+                              <div
+                                className={`font-bold w-full leading-snug tracking-wide projection-shadow ${selectedSong?.collection === 'Bíblia'
+                                    ? 'text-[0.6rem] italic font-medium text-center'
+                                    : 'text-[0.6rem] uppercase text-left'
+                                  }`}
+                                style={{
+                                  color: selectedSong?.collection === 'Bíblia' ? bibleLyricsColor : songLyricsColor
+                                }}
+                                dangerouslySetInnerHTML={{ __html: slides[activeSlideIndex] }}
+                              />
+                            </div>
+                          )}
                         </>
                       ) : (
                         <div className="text-white/30 text-[10px] text-center font-medium">Tela Preta</div>
