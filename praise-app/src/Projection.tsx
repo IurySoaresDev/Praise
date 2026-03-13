@@ -93,7 +93,7 @@ function Projection() {
     ? (data.background.startsWith('/backgrounds/') ? data.background : convertFileSrc(data.background))
     : null;
 
-  const isSubtitle = data.projection_mode === 'subtitle';
+  const isSubtitle = data.projection_mode === 'subtitle' && data.item_type !== 'bible';
 
   return (
     <div 

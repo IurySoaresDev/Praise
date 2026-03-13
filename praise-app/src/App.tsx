@@ -1853,9 +1853,9 @@ function App() {
                   <div className={`w-full aspect-video rounded-xl border relative overflow-hidden flex flex-col shadow-md shadow-black/20 ${isProjecting
                       ? "border-brand-500/30 glow-brand"
                       : "border-white/10"
-                    }`} style={{ backgroundColor: projectionMode === 'subtitle' ? '#00ff00' : '#000' }}>
+                    }`} style={{ backgroundColor: (projectionMode === 'subtitle' && selectedSong?.collection !== 'Bíblia') ? '#00ff00' : '#000' }}>
                     {/* Imagem de Fundo do Preview */}
-                    {activeSlideIndex >= 0 && activeSlideIndex < slides.length && projectionMode !== 'subtitle' && (
+                    {activeSlideIndex >= 0 && activeSlideIndex < slides.length && !(projectionMode === 'subtitle' && selectedSong?.collection !== 'Bíblia') && (
                       <div
                         className="absolute inset-0 z-0"
                         style={{
@@ -1874,7 +1874,7 @@ function App() {
                     )}
 
                     {/* Overlay escuro simulando o do projetor */}
-                    {projectionMode !== 'subtitle' && (
+                    {!(projectionMode === 'subtitle' && selectedSong?.collection !== 'Bíblia') && (
                       <div className="absolute inset-0 z-[1] bg-black/40" />
                     )}
 
@@ -1883,7 +1883,7 @@ function App() {
                       {activeSlideIndex >= 0 && activeSlideIndex < slides.length ? (
                         <>
                           {/* Mostrar título simulado - oculto em legenda */}
-                          {projectionMode !== 'subtitle' && ((selectedSong?.collection !== 'Bíblia' && activeSlideIndex === 0) || (selectedSong?.collection === 'Bíblia')) && (
+                          {!(projectionMode === 'subtitle' && selectedSong?.collection !== 'Bíblia') && ((selectedSong?.collection !== 'Bíblia' && activeSlideIndex === 0) || (selectedSong?.collection === 'Bíblia')) && (
                             <div className={`absolute left-0 right-0 w-full flex items-center justify-center ${selectedSong?.collection === 'Bíblia' ? 'top-[21%]' : 'top-[5.5%]'
                               }`}>
                               <h4
@@ -1899,7 +1899,7 @@ function App() {
                           )}
 
                           {/* Letra ou Versículo */}
-                          {projectionMode === 'subtitle' ? (
+                          {(projectionMode === 'subtitle' && selectedSong?.collection !== 'Bíblia') ? (
                             /* SIMULAÇÃO MODO LEGENDA */
                             <div className="absolute bottom-2 left-0 right-0 flex justify-center px-4">
                               <div
