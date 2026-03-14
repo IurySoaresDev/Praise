@@ -79,7 +79,21 @@ fn project_slide(
     let projection_window = app_handle.get_webview_window("projection");
 
     if let Some(window) = projection_window {
-        // Se a janela já existe, apenas emite o evento para atualizar o conteúdo
+        // Se a janela já existe, mover para o monitor correto e atualizar o conteúdo
+        if let Ok(monitors) = app_handle.available_monitors() {
+            for m in monitors {
+                let name = m.name().map(|n| n.to_string()).unwrap_or_default();
+                if name == monitor {
+                    let position = m.position();
+                    let _ = window.set_position(tauri::Position::Physical(tauri::PhysicalPosition {
+                        x: position.x,
+                        y: position.y,
+                    }));
+                    let _ = window.set_fullscreen(true);
+                    break;
+                }
+            }
+        }
         window.emit("update_projection", payload)
         .map_err(|e| {
             println!("Erro ao emitir evento: {}", e);
