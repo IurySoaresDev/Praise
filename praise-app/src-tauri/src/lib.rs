@@ -21,6 +21,7 @@ struct ProjectionPayload {
 }
 
 struct CurrentSlideState(Mutex<Option<ProjectionPayload>>);
+struct CurrentMonitorState(Mutex<String>);
 
 #[tauri::command]
 fn get_monitors(app_handle: tauri::AppHandle) -> Result<Vec<String>, String> {
@@ -78,34 +79,28 @@ fn project_slide(
     // Busca a janela de projeção se ela já existir
     let projection_window = app_handle.get_webview_window("projection");
 
-    if let Some(window) = projection_window {
-        // Se a janela já existe, mover para o monitor correto e atualizar o conteúdo
-        // Primeiro sai do fullscreen para poder mover
-        let _ = window.set_fullscreen(false);
-        
-        if let Ok(monitors) = app_handle.available_monitors() {
-            for m in monitors {
-                let name = m.name().map(|n| n.to_string()).unwrap_or_default();
-                println!("Monitor disponível: '{}', selecionado: '{}'", name, monitor);
-                if name == monitor {
-                    let position = m.position();
-                    let size = m.size();
-                    println!("Movendo projeção para monitor '{}' em ({}, {}), tamanho {}x{}", name, position.x, position.y, size.width, size.height);
-                    let _ = window.set_position(tauri::Position::Physical(tauri::PhysicalPosition {
-                        x: position.x,
-                        y: position.y,
-                    }));
-                    let _ = window.set_size(tauri::Size::Physical(tauri::PhysicalSize {
-                        width: size.width,
-                        height: size.height,
-                    }));
-                    break;
-                }
-            }
+    // Verifica se o monitor mudou - se sim, fecha a janela para recriar no monitor correto
+    let monitor_state: State<'_, CurrentMonitorState> = app_handle.state();
+    let monitor_changed = {
+        let current = monitor_state.0.lock().unwrap();
+        *current != monitor && !current.is_empty()
+    };
+
+    // Se o monitor mudou e a janela existe, fecha ela para recriar no monitor certo
+    if monitor_changed {
+        if let Some(window) = &projection_window {
+            println!("Monitor mudou, fechando janela de projeção para recriar...");
+            let _ = window.close();
+            // Pequeno delay para garantir que a janela foi fechada
+            std::thread::sleep(std::time::Duration::from_millis(200));
         }
-        // Reativa fullscreen no novo monitor
-        let _ = window.set_fullscreen(true);
-        
+    }
+
+    // Verifica novamente se a janela existe (pode ter sido fechada acima)
+    let projection_window = app_handle.get_webview_window("projection");
+
+    if let Some(window) = projection_window {
+        // Janela existe no mesmo monitor, apenas atualiza o conteúdo
         window.emit("update_projection", payload)
         .map_err(|e| {
             println!("Erro ao emitir evento: {}", e);
@@ -113,8 +108,7 @@ fn project_slide(
         })?;
             
     } else if !content.is_empty() {
-        // Se a janela não existe e tem conteúdo pra projetar, nós a criamos.
-        // NÃO usar .fullscreen(true) no builder, pois pode forçar fullscreen no monitor primário
+        // Cria nova janela de projeção no monitor selecionado
         let mut builder = WebviewWindowBuilder::new(
             &app_handle,
             "projection",
@@ -126,31 +120,38 @@ fn project_slide(
         .decorations(false);
 
         // Tenta achar o monitor escolhido pelo nome
-        let mut target_size: Option<(u32, u32)> = None;
+        let mut found_monitor = false;
         if let Ok(monitors) = app_handle.available_monitors() {
             for m in monitors {
                 let name = m.name().map(|n| n.to_string()).unwrap_or_default();
-                println!("Criando projeção - Monitor disponível: '{}', selecionado: '{}'", name, monitor);
+                println!("Monitor disponível: '{}', selecionado: '{}'", name, monitor);
                 if name == monitor {
                     let position = m.position();
                     let size = m.size();
                     println!("Projetando no monitor '{}' em ({}, {}), tamanho {}x{}", name, position.x, position.y, size.width, size.height);
-                    builder = builder.position(position.x.into(), position.y.into());
-                    target_size = Some((size.width, size.height));
+                    builder = builder
+                        .position(position.x.into(), position.y.into())
+                        .inner_size(size.width as f64, size.height as f64);
+                    found_monitor = true;
                     break;
                 }
             }
         }
 
-        // Define o tamanho da janela para cobrir o monitor inteiro
-        if let Some((w, h)) = target_size {
-            builder = builder.inner_size(w as f64, h as f64);
+        if !found_monitor {
+            println!("AVISO: Monitor '{}' não encontrado! Usando monitor padrão.", monitor);
         }
 
         let window = builder.build().map_err(|e| e.to_string())?;
         
         // Ativa fullscreen após a janela ser criada na posição correta
         let _ = window.set_fullscreen(true);
+
+        // Salva qual monitor está sendo usado
+        {
+            let mut current = monitor_state.0.lock().unwrap();
+            *current = monitor.clone();
+        }
         
         std::thread::spawn(move || {
             std::thread::sleep(std::time::Duration::from_millis(500));
@@ -234,6 +235,7 @@ pub fn run() {
             Ok(())
         })
         .manage(CurrentSlideState(Mutex::new(None)))
+        .manage(CurrentMonitorState(Mutex::new(String::new())))
         .invoke_handler(tauri::generate_handler![get_monitors, project_slide, save_songs, close_projection, get_current_slide])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
