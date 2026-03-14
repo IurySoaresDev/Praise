@@ -1915,7 +1915,7 @@ function App() {
                             /* SIMULAÇÃO MODO LEGENDA */
                             <div className="absolute bottom-2 left-0 right-0 flex justify-center px-4">
                               <div
-                                className="text-center font-bold drop-shadow-2xl projection-shadow"
+                                className="text-center font-bold"
                                 style={{
                                   color: selectedSong?.collection === 'Bíblia' ? (bibleLyricsColor || '#ffffff') : (songLyricsColor || '#ffffff'),
                                   fontSize: '0.75rem',
@@ -1925,7 +1925,7 @@ function App() {
                                   WebkitLineClamp: 2,
                                   WebkitBoxOrient: 'vertical',
                                   overflow: 'hidden',
-                                  textShadow: '1px 1px 2px rgba(0,0,0,1)'
+                                  WebkitTextStroke: '0.5px black'
                                 }}
                                 dangerouslySetInnerHTML={{ __html: slides[activeSlideIndex] }}
                               />

@@ -148,7 +148,7 @@ function Projection() {
         /* MODO LEGENDA: texto fixo no rodapé, max 2 linhas */
         <div className="absolute bottom-0 left-0 right-0 z-10 flex justify-center pb-[5%] px-8">
           <div 
-            className="text-center font-bold drop-shadow-2xl projection-shadow"
+            className="text-center font-bold"
             style={{ 
               color: data.lyrics_color || '#ffffff',
               fontFamily: data.lyrics_font ? `'${data.lyrics_font}', sans-serif` : undefined,
@@ -160,7 +160,7 @@ function Projection() {
               WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
-              textShadow: '3px 3px 8px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,0.7), 0 0 60px rgba(0,0,0,0.4)'
+              WebkitTextStroke: '2px black'
             }}
             dangerouslySetInnerHTML={{ __html: data.content }} 
           />
