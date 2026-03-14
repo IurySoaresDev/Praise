@@ -451,18 +451,76 @@ function App() {
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    
-    // Ouve teclas enviadas pela janela de projeção
-    import('@tauri-apps/api/event').then(({ listen }) => {
-      const unlisten = listen<{ key: string }>('projection-key-press', (event) => {
-        // Simula o evento de teclado para a função handleKeyDown
-        handleKeyDown(new KeyboardEvent('keydown', { key: event.payload.key }));
-      });
-      return () => unlisten.then(f => f());
-    }).catch(console.error);
-
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [activeSlideIndex, slides, selectedSong, isProjecting, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle, songTitleColor, songLyricsColor, bibleTitleColor, bibleLyricsColor, songTitleFont, songTitleSize, songTitleWeight, songLyricsFont, songLyricsSize, songLyricsWeight, bibleTitleFont, bibleTitleSize, bibleTitleWeight, bibleLyricsFont, bibleLyricsSize, bibleLyricsWeight, projectionMode]);
+
+  // Hook Ref para segurar sempre a função handleKeyDown mais recente (evita vazar Tauri events)
+  const handleKeyDownRef = useRef<((e: KeyboardEvent) => void) | null>(null);
+  useEffect(() => {
+    handleKeyDownRef.current = (e: KeyboardEvent) => {
+      if (!selectedSong || !isProjecting) return;
+      if (e.target instanceof HTMLInputElement) return;
+
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        if (activeSlideIndex < slides.length - 1) {
+          const newIdx = activeSlideIndex + 1;
+          setActiveSlideIndex(newIdx);
+          const isBible = selectedSong?.collection === 'Bíblia';
+          sendSlideToProjection(
+            slides[newIdx],
+            isBible ? bibleBackground : (newIdx === 0 ? songBackground : songBodyBackground),
+            isBible ? 'bible' : 'song',
+            getSlideTitle(newIdx),
+            isBible ? bibleTitleColor : songTitleColor,
+            isBible ? bibleLyricsColor : songLyricsColor,
+            isBible ? bibleTitleFont : songTitleFont,
+            isBible ? bibleTitleSize : songTitleSize,
+            isBible ? bibleTitleWeight : songTitleWeight,
+            isBible ? bibleLyricsFont : songLyricsFont,
+            isBible ? bibleLyricsSize : songLyricsSize,
+            isBible ? bibleLyricsWeight : songLyricsWeight,
+            projectionMode
+          );
+        } else {
+          handleStopProjection();
+        }
+      } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        if (activeSlideIndex > 0) {
+          const newIdx = activeSlideIndex - 1;
+          setActiveSlideIndex(newIdx);
+          const isBible = selectedSong?.collection === 'Bíblia';
+          sendSlideToProjection(
+            slides[newIdx],
+            isBible ? bibleBackground : (newIdx === 0 ? songBackground : songBodyBackground),
+            isBible ? 'bible' : 'song',
+            getSlideTitle(newIdx),
+            isBible ? bibleTitleColor : songTitleColor,
+            isBible ? bibleLyricsColor : songLyricsColor,
+            isBible ? bibleTitleFont : songTitleFont,
+            isBible ? bibleTitleSize : songTitleSize,
+            isBible ? bibleTitleWeight : songTitleWeight,
+            isBible ? bibleLyricsFont : songLyricsFont,
+            isBible ? bibleLyricsSize : songLyricsSize,
+            isBible ? bibleLyricsWeight : songLyricsWeight,
+            projectionMode
+          );
+        }
+      }
+    };
+  }, [activeSlideIndex, slides, selectedSong, isProjecting, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle, songTitleColor, songLyricsColor, bibleTitleColor, bibleLyricsColor, songTitleFont, songTitleSize, songTitleWeight, songLyricsFont, songLyricsSize, songLyricsWeight, bibleTitleFont, bibleTitleSize, bibleTitleWeight, bibleLyricsFont, bibleLyricsSize, bibleLyricsWeight, projectionMode]);
+
+  // Registra globalmente o evento da Projection window de forma segura (1x apenas)
+  useEffect(() => {
+    let unlistenFn: (() => void) | undefined;
+    import('@tauri-apps/api/event').then(({ listen }) => {
+      listen<{ key: string }>('projection-key-press', (event) => {
+        if (handleKeyDownRef.current) {
+          handleKeyDownRef.current(new KeyboardEvent('keydown', { key: event.payload.key }));
+        }
+      }).then(f => unlistenFn = f);
+    }).catch(console.error);
+    return () => { if (unlistenFn) unlistenFn(); };
+  }, []);
 
   // Sincroniza cores em tempo real se o usuário mudar enquanto projeta
   useEffect(() => {
