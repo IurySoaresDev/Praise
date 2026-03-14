@@ -463,7 +463,7 @@ function App() {
   const appWindow = useMemo(() => getCurrentWindow(), []);
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden font-['Inter',system-ui,sans-serif]" style={{ backgroundColor: '#0a0a0a', color: 'rgba(255,255,255,0.9)' }}>
+    <div className="flex flex-col h-screen overflow-hidden font-['Inter',system-ui,sans-serif]" style={{ backgroundColor: '#09090b', color: 'rgba(255,255,255,0.9)' }}>
 
       {/* ═══ CUSTOM TITLE BAR ═══ */}
       <div
@@ -475,7 +475,7 @@ function App() {
           }
         }}
         className="h-8 flex items-center justify-between px-4 select-none shrink-0 cursor-default"
-        style={{ backgroundColor: '#0a0a0a', borderBottom: '1px solid rgba(255,255,255,0.03)' }}
+        style={{ backgroundColor: '#18181b', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
       >
         <div className="flex items-center gap-2 pointer-events-none">
           <MonitorDot className="w-3.5 h-3.5 text-slate-400" />
@@ -508,7 +508,7 @@ function App() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* ═══ SYSTEM NAV (Thick Left Rail) ═══ */}
-        <div className="w-[72px] flex flex-col items-center py-4 border-r border-white/5 z-20 shrink-0" style={{ backgroundColor: '#0a0a0a' }}>
+        <div className="w-[72px] flex flex-col items-center py-4 border-r border-white/5 z-20 shrink-0" style={{ backgroundColor: '#18181b' }}>
 
 
           <div className="flex flex-col gap-2 w-full px-2">
@@ -563,7 +563,7 @@ function App() {
           <div className="flex-1 flex flex-col h-full overflow-hidden" style={{ backgroundColor: '#0a0a0a' }}>
             <div className="flex-1 flex h-full overflow-hidden min-w-0" style={{ backgroundColor: '#0a0a0a' }}>
               {/* Sidebar de Seleção para Edição */}
-              <div className="w-[300px] flex flex-col border-r border-white/5 bg-[#171717]/30 h-full min-h-0 overflow-hidden">
+              <div className="w-[300px] flex flex-col border-r border-white/5 bg-[#27272a]/30 h-full min-h-0 overflow-hidden">
                 <div className="p-4 border-b border-white/5 bg-neutral-950/20">
                   <h2 className="text-[13px] font-bold text-white/70 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <Music className="w-4 h-4" />
@@ -905,7 +905,7 @@ function App() {
                   {/* --- SUBTAB: TÍTULOS --- */}
                   {settingsSubTab === 'titles' && (
                     <div className="animate-in fade-in slide-in-from-left-4 duration-500 space-y-8">
-                      <div className="bg-[#171717]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
+                      <div className="bg-[#27272a]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
                         <div className="mb-8 flex items-start justify-between">
                           <div>
                             <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">Fundo de Título</h3>
@@ -984,7 +984,7 @@ function App() {
                   {/* --- SUBTAB: LOUVORES --- */}
                   {settingsSubTab === 'lyrics' && (
                     <div className="animate-in fade-in slide-in-from-left-4 duration-500 space-y-8">
-                      <div className="bg-[#171717]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
+                      <div className="bg-[#27272a]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
                         <div className="mb-8 flex items-start justify-between">
                           <div>
                             <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">Fundo de Louvor</h3>
@@ -1046,7 +1046,7 @@ function App() {
                   {/* --- SUBTAB: BÍBLIA --- */}
                   {settingsSubTab === 'bible' && (
                     <div className="animate-in fade-in slide-in-from-left-4 duration-500 space-y-8">
-                      <div className="bg-[#171717]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
+                      <div className="bg-[#27272a]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
                         <div className="mb-8 flex items-start justify-between">
                           <div>
                             <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">Fundo da Bíblia</h3>
@@ -1114,7 +1114,7 @@ function App() {
                   {/* --- SUBTAB: SISTEMA --- */}
                   {settingsSubTab === 'system' && (
                     <div className="animate-in fade-in slide-in-from-left-4 duration-500 space-y-8">
-                       <div className="bg-[#171717]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
+                       <div className="bg-[#27272a]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
                           <div className="mb-6">
                             <h3 className="text-xl font-black text-white mb-1.5 tracking-tight flex items-center gap-2">
                               Atualizações do Praise
@@ -1328,7 +1328,7 @@ function App() {
 
         {/* ═══ SIDEBAR ═══ */}
         {activeTab !== 'editor' && activeTab !== 'settings' && (
-          <div className="w-[340px] flex flex-col border-r border-white/5" style={{ backgroundColor: '#171717' }}>
+          <div className="w-[340px] flex flex-col border-r border-white/5" style={{ backgroundColor: '#27272a' }}>
 
             {/* Header */}
             <div className="flex flex-col shrink-0 gradient-header border-b border-white/5">
@@ -1610,7 +1610,7 @@ function App() {
             )}
 
             {/* ─── PLAYLIST DO CULTO (Dinâmica por Aba) ─── */}
-            <div className="border-t border-white/5 flex flex-col min-h-0" style={{ height: '45%', backgroundColor: '#0a0a0a' }}>
+            <div className="border-t border-white/5 flex flex-col min-h-0" style={{ height: '45%', backgroundColor: '#18181b' }}>
               <div className="px-4 py-3 flex items-center gap-2 shrink-0 border-b border-white/5">
                 {activeTab === 'songs' ? <ListMusic className="w-4 h-4 text-brand-400" /> : <BookOpen className="w-4 h-4 text-brand-400" />}
                 <span className="text-[13px] font-semibold text-white/70 flex-1">
@@ -1690,10 +1690,10 @@ function App() {
 
         {/* ═══ MAIN CONTENT ═══ */}
         {activeTab !== 'editor' && activeTab !== 'settings' && (
-          <div className="flex-1 flex flex-col h-screen" style={{ backgroundColor: '#0a0a0a' }}>
+          <div className="flex-1 flex flex-col h-screen" style={{ backgroundColor: '#09090b' }}>
 
             {/* Top Bar */}
-            <div className="h-14 border-b border-white/5 flex items-center justify-between px-6 shrink-0 glass" style={{ backgroundColor: 'rgba(10,10,10,0.85)' }}>
+            <div className="h-14 border-b border-white/5 flex items-center justify-between px-6 shrink-0 glass" style={{ backgroundColor: 'rgba(24,24,27,0.85)' }}>
               <div className="flex items-center gap-3">
                 <div className="flex items-center bg-white/[0.03] border border-white/10 rounded-xl px-4 py-1.5 transition-all focus-within:border-slate-400/40 hover:bg-white/[0.06] group/monitor shadow-sm">
                   <div className="flex items-center border-r border-white/10 pr-3 mr-2 text-white/40 group-focus-within/monitor:text-slate-400 group-hover/monitor:text-white/60 transition-colors">
@@ -1840,7 +1840,7 @@ function App() {
                 </div>
 
                 {/* Preview */}
-                <div className="w-[340px] flex flex-col p-4 shrink-0" style={{ backgroundColor: '#0a0a0a' }}>
+                <div className="w-[340px] flex flex-col p-4 shrink-0" style={{ backgroundColor: '#18181b' }}>
                   <h3 className="text-[11px] font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
                     <Monitor className="w-3.5 h-3.5" />
                     {isProjecting ? (
@@ -1978,7 +1978,7 @@ function App() {
         {/* ═══ MODAL DE DUPLICATA ═══ */}
         {showDuplicateModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop" onClick={() => setShowDuplicateModal(false)}>
-            <div className="modal-content p-6 rounded-2xl border border-white/10 shadow-2xl max-w-sm w-full mx-4" style={{ backgroundColor: '#171717' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-content p-6 rounded-2xl border border-white/10 shadow-2xl max-w-sm w-full mx-4" style={{ backgroundColor: '#27272a' }} onClick={e => e.stopPropagation()}>
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-500/10 border border-amber-500/20">
                   <AlertTriangle className="w-5 h-5 text-amber-400" />
