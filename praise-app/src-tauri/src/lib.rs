@@ -212,9 +212,11 @@ pub fn run() {
             println!("Icon bytes length: {}", icon_bytes.len());
             match image::load_from_memory(icon_bytes) {
                 Ok(icon) => {
-                    let (width, height) = icon.dimensions();
-                    println!("Icon loaded: {}x{}", width, height);
-                    let rgba = icon.to_rgba8().into_raw();
+                    // Reduz para 128x128 para evitar que o Window Manager (GNOME/Wayland) recuse a imagem e mostre a engrenagem
+                    let resized_icon = icon.resize_exact(128, 128, image::imageops::FilterType::Lanczos3);
+                    let (width, height) = resized_icon.dimensions();
+                    println!("Icon resized for taskbar: {}x{}", width, height);
+                    let rgba = resized_icon.to_rgba8().into_raw();
                     let tauri_icon = tauri::image::Image::new_owned(rgba, width, height);
                     // Define o ícone default do app
                     if let Err(e) = app.default_window_icon().map(|_| ()).ok_or("no default icon") {
@@ -222,7 +224,7 @@ pub fn run() {
                     }
                     // Define o ícone para a janela principal
                     if let Some(window) = app.get_webview_window("main") {
-                        match window.set_icon(tauri_icon) {
+                        match window.set_icon(tauri_icon.clone()) {
                             Ok(_) => println!("Icon set successfully on main window"),
                             Err(e) => println!("Failed to set icon: {}", e),
                         }
