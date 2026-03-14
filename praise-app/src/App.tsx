@@ -261,10 +261,22 @@ function App() {
       })
       .filter(line => line.length > 0);
 
-    // 2. Agrupa de 2 em 2 linhas
+    // 2. Agrupa de 2 em 2 linhas e remove pontuação final (legendas)
     const subtitleSlides: string[] = [];
     for (let i = 0; i < allLines.length; i += 2) {
       const pair = allLines.slice(i, i + 2);
+      // Remove pontuação final da última linha do par (vírgula, ponto, ponto-e-vírgula)
+      if (pair.length > 0) {
+        const lastIdx = pair.length - 1;
+        // Remove tags HTML temporariamente para checar o último caractere real
+        const stripped = pair[lastIdx].replace(/<[^>]+>/g, '');
+        const lastChar = stripped.trimEnd().slice(-1);
+        if ([',', '.', ';'].includes(lastChar)) {
+          // Remove a última ocorrência do caractere de pontuação (antes de possíveis tags de fechamento)
+          const lastPunctuationIdx = pair[lastIdx].lastIndexOf(lastChar);
+          pair[lastIdx] = pair[lastIdx].substring(0, lastPunctuationIdx) + pair[lastIdx].substring(lastPunctuationIdx + 1);
+        }
+      }
       subtitleSlides.push(pair.join('<br />'));
     }
 
