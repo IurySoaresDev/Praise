@@ -422,6 +422,9 @@ function App() {
             isBible ? bibleLyricsWeight : songLyricsWeight,
             projectionMode
           );
+        } else {
+          // Já está no último slide. Se tentar avançar, fecha a projeção
+          handleStopProjection();
         }
       } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
         if (activeSlideIndex > 0) {
