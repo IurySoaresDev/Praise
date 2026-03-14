@@ -476,7 +476,7 @@ function App() {
   const appWindow = useMemo(() => getCurrentWindow(), []);
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden font-['Inter',system-ui,sans-serif]" style={{ backgroundColor: '#050505', color: 'rgba(255,255,255,0.9)' }}>
+    <div className="flex flex-col h-screen overflow-hidden font-['Inter',system-ui,sans-serif]" style={{ backgroundColor: '#08060e', color: 'rgba(255,255,255,0.9)' }}>
 
       {/* ═══ CUSTOM TITLE BAR ═══ */}
       <div
@@ -488,7 +488,7 @@ function App() {
           }
         }}
         className="h-8 flex items-center justify-between px-4 select-none shrink-0 cursor-default"
-        style={{ backgroundColor: '#0a0a0a', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+        style={{ backgroundColor: '#0c0a12', borderBottom: '1px solid rgba(168,85,247,0.1)' }}
       >
         <div className="flex items-center gap-2 pointer-events-none">
           <img src={praiseLogo} alt="Praise" className="h-5" />
@@ -520,7 +520,7 @@ function App() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* ═══ SYSTEM NAV (Thick Left Rail) ═══ */}
-        <div className="w-[72px] flex flex-col items-center py-4 border-r border-white/5 z-20 shrink-0" style={{ backgroundColor: '#0a0a0a' }}>
+        <div className="w-[72px] flex flex-col items-center py-4 border-r border-white/[0.07] z-20 shrink-0" style={{ backgroundColor: '#0c0a12' }}>
 
 
           <div className="flex flex-col gap-2 w-full px-2">
@@ -572,11 +572,11 @@ function App() {
 
         {/* ═══ EDITOR FULL-WIDTH ═══ */}
         {activeTab === 'editor' && (
-          <div className="flex-1 flex flex-col h-full overflow-hidden" style={{ backgroundColor: '#0a0a0a' }}>
-            <div className="flex-1 flex h-full overflow-hidden min-w-0" style={{ backgroundColor: '#0a0a0a' }}>
+          <div className="flex-1 flex flex-col h-full overflow-hidden" style={{ backgroundColor: '#0c0a12' }}>
+            <div className="flex-1 flex h-full overflow-hidden min-w-0" style={{ backgroundColor: '#0c0a12' }}>
               {/* Sidebar de Seleção para Edição */}
-              <div className="w-[300px] flex flex-col border-r border-white/5 bg-[#1a1a1a]/40 h-full min-h-0 overflow-hidden">
-                <div className="p-4 border-b border-white/5 bg-[#121212]/20">
+              <div className="w-[300px] flex flex-col border-r border-white/[0.07] bg-[#1a1726]/40 h-full min-h-0 overflow-hidden">
+                <div className="p-4 border-b border-white/[0.07] bg-[#110f1a]/20">
                   <h2 className="text-[13px] font-bold text-white/70 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <Music className="w-4 h-4" />
                     Editar Louvor
@@ -589,7 +589,7 @@ function App() {
                     <input
                       type="text"
                       placeholder="Buscar para editar..."
-                      className="w-full pl-9 pr-4 py-2 rounded-xl text-xs outline-none border border-white/5 transition-all focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/10 placeholder:text-white/20 bg-white/5"
+                      className="w-full pl-9 pr-4 py-2 rounded-xl text-xs outline-none border border-white/[0.07] transition-all focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/10 placeholder:text-white/20 bg-white/5"
                       autoComplete="off"
                       autoCorrect="off"
                       spellCheck={false}
@@ -651,7 +651,7 @@ function App() {
                 </div>
 
                 {editingSongTitle && (
-                  <div className="p-3 border-t border-white/5 bg-[#121212]/40">
+                  <div className="p-3 border-t border-white/[0.07] bg-[#110f1a]/40">
                     <button
                       onClick={() => {
                         setEditingSongTitle(null);
@@ -697,7 +697,7 @@ function App() {
 
                   {!editingSongTitle && (
                     <>
-                      <div className="p-5 rounded-xl border border-white/5 bg-white/[0.02]">
+                      <div className="p-5 rounded-xl border border-white/[0.07] bg-white/[0.02]">
                         <h3 className="text-[14px] font-semibold text-white/80 flex items-center gap-2 mb-2">
                           <Upload className="w-4 h-4 text-slate-400" />
                           Importar Louvores
@@ -768,7 +768,7 @@ function App() {
                               onClick={() => setEditorCollection(col)}
                               className={`flex-1 text-center px-1 py-1 rounded-xl text-[11px] font-medium border transition-all ${editorCollection === col
                                   ? 'text-white border-brand-500/40 shadow-md'
-                                  : 'text-white/50 border-white/5 hover:text-white/80 hover:border-white/10 hover:bg-white/[0.03]'
+                                  : 'text-white/50 border-white/[0.07] hover:text-white/80 hover:border-white/10 hover:bg-white/[0.03]'
                                 }`}
                               style={editorCollection === col ? { background: 'linear-gradient(135deg, #3b82f6, #2563eb)' } : { backgroundColor: 'rgba(255,255,255,0.02)' }}
                             >
@@ -858,7 +858,7 @@ function App() {
           <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#0a0a0a]/60 backdrop-blur-3xl">
             
             {/* ═══ HEADER DO DASHBOARD ═══ */}
-            <header className="px-8 py-6 border-b border-white/5 bg-[#121212]/40 flex items-center justify-between">
+            <header className="px-8 py-6 border-b border-white/[0.07] bg-[#110f1a]/40 flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-black text-white tracking-tighter flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center shadow-lg shadow-brand-500/20">
@@ -878,7 +878,7 @@ function App() {
             <div className="flex-1 flex overflow-hidden">
               
               {/* ═══ 1. SIDEBAR DE NAVEGAÇÃO INTERNA ═══ */}
-              <aside className="w-20 lg:w-64 border-r border-white/5 bg-[#121212]/20 flex flex-col p-4 gap-2 overflow-y-auto">
+              <aside className="w-20 lg:w-64 border-r border-white/[0.07] bg-[#110f1a]/20 flex flex-col p-4 gap-2 overflow-y-auto">
                 {[
                   { id: 'titles', label: 'Títulos', icon: ImageIcon, desc: 'Abertura de músicas' },
                   { id: 'lyrics', label: 'Louvores', icon: Music, desc: 'Letras e refrãos' },
@@ -897,7 +897,7 @@ function App() {
                     className={`w-full group flex items-center gap-4 p-4 rounded-2xl transition-all border ${
                       settingsSubTab === item.id 
                         ? 'bg-brand-500 border-brand-400/50 shadow-lg shadow-brand-500/20' 
-                        : 'bg-white/[0.02] border-transparent hover:bg-white/[0.05] hover:border-white/5'
+                        : 'bg-white/[0.02] border-transparent hover:bg-white/[0.05] hover:border-white/[0.07]'
                     }`}
                   >
                     <item.icon className={`w-5 h-5 transition-colors ${settingsSubTab === item.id ? 'text-white' : 'text-slate-400 group-hover:text-white'}`} />
@@ -917,7 +917,7 @@ function App() {
                   {/* --- SUBTAB: TÍTULOS --- */}
                   {settingsSubTab === 'titles' && (
                     <div className="animate-in fade-in slide-in-from-left-4 duration-500 space-y-8">
-                      <div className="bg-[#1a1a1a]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
+                      <div className="bg-[#1a1726]/40 border border-white/[0.07] rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
                         <div className="mb-8 flex items-start justify-between">
                           <div>
                             <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">Fundo de Título</h3>
@@ -940,7 +940,7 @@ function App() {
 
                         {/* Controles de Estilo */}
                         <div className="space-y-6">
-                          <div className="p-5 rounded-2xl bg-black/20 border border-white/5">
+                          <div className="p-5 rounded-2xl bg-black/20 border border-white/[0.07]">
                             <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
                               <Palette className="w-3 h-3 text-pink-400" />
                               Cor do Texto
@@ -953,7 +953,7 @@ function App() {
                             </div>
                           </div>
 
-                          <div className="p-5 rounded-2xl bg-black/10 border border-white/5 space-y-6">
+                          <div className="p-5 rounded-2xl bg-black/10 border border-white/[0.07] space-y-6">
                             <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-4">
                               <Type className="w-3 h-3 text-brand-400" />
                               Tipografia do Título
@@ -964,7 +964,7 @@ function App() {
                                   <Type className="w-3 h-3" />
                                   Família da Fonte
                                 </span>
-                                <select value={songTitleFont} onChange={(e) => setSongTitleFont(e.target.value)} className="w-full bg-[#121212] border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50 transition-all">
+                                <select value={songTitleFont} onChange={(e) => setSongTitleFont(e.target.value)} className="w-full bg-[#110f1a] border border-white/[0.07] text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50 transition-all">
                                   {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato', 'Serif', 'Sans-Serif'].map(f => (<option key={f} value={f}>{f}</option>))}
                                 </select>
                               </div>
@@ -974,14 +974,14 @@ function App() {
                                     <Maximize2 className="w-3 h-3" />
                                     Tamanho (PX)
                                   </span>
-                                  <input type="number" value={songTitleSize} onChange={(e) => setSongTitleSize(Number(e.target.value))} className="w-full bg-[#121212] border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50 text-center" />
+                                  <input type="number" value={songTitleSize} onChange={(e) => setSongTitleSize(Number(e.target.value))} className="w-full bg-[#110f1a] border border-white/[0.07] text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50 text-center" />
                                 </div>
                                 <div className="space-y-2">
                                   <span className="text-[11px] font-bold text-white/30 ml-1 flex items-center gap-1.5">
                                     <Bold className="w-3 h-3" />
                                     Peso Visual
                                   </span>
-                                  <select value={songTitleWeight} onChange={(e) => setSongTitleWeight(e.target.value)} className="w-full bg-[#121212] border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50">
+                                  <select value={songTitleWeight} onChange={(e) => setSongTitleWeight(e.target.value)} className="w-full bg-[#110f1a] border border-white/[0.07] text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50">
                                     {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
                                   </select>
                                 </div>
@@ -996,7 +996,7 @@ function App() {
                   {/* --- SUBTAB: LOUVORES --- */}
                   {settingsSubTab === 'lyrics' && (
                     <div className="animate-in fade-in slide-in-from-left-4 duration-500 space-y-8">
-                      <div className="bg-[#1a1a1a]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
+                      <div className="bg-[#1a1726]/40 border border-white/[0.07] rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
                         <div className="mb-8 flex items-start justify-between">
                           <div>
                             <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">Fundo de Louvor</h3>
@@ -1017,7 +1017,7 @@ function App() {
                         </div>
 
                         <div className="space-y-6">
-                          <div className="p-5 rounded-2xl bg-black/20 border border-white/5">
+                          <div className="p-5 rounded-2xl bg-black/20 border border-white/[0.07]">
                             <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 block">Cor das Letras</label>
                             <div className="flex items-center gap-4">
                               <input type="color" value={songLyricsColor} onChange={(e) => setSongLyricsColor(e.target.value)} className="w-14 h-14 rounded-2xl overflow-hidden cursor-pointer ring-4 ring-white/5 border-none" />
@@ -1027,23 +1027,23 @@ function App() {
                             </div>
                           </div>
 
-                          <div className="p-5 rounded-2xl bg-black/10 border border-white/5 space-y-6">
+                          <div className="p-5 rounded-2xl bg-black/10 border border-white/[0.07] space-y-6">
                             <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">Tipografia do Louvor</label>
                             <div className="grid grid-cols-1 gap-5">
                               <div className="space-y-2">
                                 <span className="text-[11px] font-bold text-white/30 ml-1">Família da Fonte</span>
-                                <select value={songLyricsFont} onChange={(e) => setSongLyricsFont(e.target.value)} className="w-full bg-[#121212] border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50">
+                                <select value={songLyricsFont} onChange={(e) => setSongLyricsFont(e.target.value)} className="w-full bg-[#110f1a] border border-white/[0.07] text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50">
                                   {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato', 'Serif', 'Sans-Serif'].map(f => (<option key={f} value={f}>{f}</option>))}
                                 </select>
                               </div>
                               <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                   <span className="text-[11px] font-bold text-white/30 ml-1">Tamanho (PX)</span>
-                                  <input type="number" value={songLyricsSize} onChange={(e) => setSongLyricsSize(Number(e.target.value))} className="w-full bg-[#121212] border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50 text-center" />
+                                  <input type="number" value={songLyricsSize} onChange={(e) => setSongLyricsSize(Number(e.target.value))} className="w-full bg-[#110f1a] border border-white/[0.07] text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50 text-center" />
                                 </div>
                                 <div className="space-y-2">
                                   <span className="text-[11px] font-bold text-white/30 ml-1">Peso Visual</span>
-                                  <select value={songLyricsWeight} onChange={(e) => setSongLyricsWeight(e.target.value)} className="w-full bg-[#121212] border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50">
+                                  <select value={songLyricsWeight} onChange={(e) => setSongLyricsWeight(e.target.value)} className="w-full bg-[#110f1a] border border-white/[0.07] text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50">
                                     {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
                                   </select>
                                 </div>
@@ -1058,7 +1058,7 @@ function App() {
                   {/* --- SUBTAB: BÍBLIA --- */}
                   {settingsSubTab === 'bible' && (
                     <div className="animate-in fade-in slide-in-from-left-4 duration-500 space-y-8">
-                      <div className="bg-[#1a1a1a]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
+                      <div className="bg-[#1a1726]/40 border border-white/[0.07] rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
                         <div className="mb-8 flex items-start justify-between">
                           <div>
                             <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">Fundo da Bíblia</h3>
@@ -1080,7 +1080,7 @@ function App() {
 
                         <div className="grid grid-cols-1 gap-6">
                            {/* Configurações do Título (Referência) */}
-                           <div className="p-6 rounded-2xl bg-black/20 border border-white/5 space-y-6">
+                           <div className="p-6 rounded-2xl bg-black/20 border border-white/[0.07] space-y-6">
                              <div className="flex items-center gap-2 mb-2">
                                <div className="w-2 h-2 rounded-full bg-brand-500" />
                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Referência (Livro/Capítulo)</span>
@@ -1088,19 +1088,19 @@ function App() {
                              <div className="flex items-center gap-4">
                                <input type="color" value={bibleTitleColor} onChange={(e) => setBibleTitleColor(e.target.value)} className="w-12 h-12 rounded-xl overflow-hidden cursor-pointer ring-2 ring-white/5" />
                                <div className="grid grid-cols-2 gap-3 flex-1">
-                                 <select value={bibleTitleFont} onChange={(e) => setBibleTitleFont(e.target.value)} className="bg-[#121212] border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none">
+                                 <select value={bibleTitleFont} onChange={(e) => setBibleTitleFont(e.target.value)} className="bg-[#110f1a] border border-white/[0.07] text-white text-[11px] rounded-lg p-2.5 outline-none">
                                    {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato'].map(f => (<option key={f} value={f}>{f}</option>))}
                                  </select>
-                                 <input type="number" value={bibleTitleSize} onChange={(e) => setBibleTitleSize(Number(e.target.value))} className="bg-[#121212] border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none text-center" />
+                                 <input type="number" value={bibleTitleSize} onChange={(e) => setBibleTitleSize(Number(e.target.value))} className="bg-[#110f1a] border border-white/[0.07] text-white text-[11px] rounded-lg p-2.5 outline-none text-center" />
                                </div>
                              </div>
-                             <select value={bibleTitleWeight} onChange={(e) => setBibleTitleWeight(e.target.value)} className="w-full bg-[#121212] border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none">
+                             <select value={bibleTitleWeight} onChange={(e) => setBibleTitleWeight(e.target.value)} className="w-full bg-[#110f1a] border border-white/[0.07] text-white text-[11px] rounded-lg p-2.5 outline-none">
                                {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
                              </select>
                            </div>
 
                            {/* Configurações do Texto (Versículo) */}
-                           <div className="p-6 rounded-2xl bg-black/20 border border-white/5 space-y-6">
+                           <div className="p-6 rounded-2xl bg-black/20 border border-white/[0.07] space-y-6">
                              <div className="flex items-center gap-2 mb-2">
                                <div className="w-2 h-2 rounded-full bg-brand-500" />
                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Texto do Versículo</span>
@@ -1108,13 +1108,13 @@ function App() {
                              <div className="flex items-center gap-4">
                                <input type="color" value={bibleLyricsColor} onChange={(e) => setBibleLyricsColor(e.target.value)} className="w-12 h-12 rounded-xl overflow-hidden cursor-pointer ring-2 ring-white/5" />
                                <div className="grid grid-cols-2 gap-3 flex-1">
-                                 <select value={bibleLyricsFont} onChange={(e) => setBibleLyricsFont(e.target.value)} className="bg-[#121212] border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none">
+                                 <select value={bibleLyricsFont} onChange={(e) => setBibleLyricsFont(e.target.value)} className="bg-[#110f1a] border border-white/[0.07] text-white text-[11px] rounded-lg p-2.5 outline-none">
                                    {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato'].map(f => (<option key={f} value={f}>{f}</option>))}
                                  </select>
-                                 <input type="number" value={bibleLyricsSize} onChange={(e) => setBibleLyricsSize(Number(e.target.value))} className="bg-[#121212] border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none text-center" />
+                                 <input type="number" value={bibleLyricsSize} onChange={(e) => setBibleLyricsSize(Number(e.target.value))} className="bg-[#110f1a] border border-white/[0.07] text-white text-[11px] rounded-lg p-2.5 outline-none text-center" />
                                </div>
                              </div>
-                             <select value={bibleLyricsWeight} onChange={(e) => setBibleLyricsWeight(e.target.value)} className="w-full bg-[#121212] border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none">
+                             <select value={bibleLyricsWeight} onChange={(e) => setBibleLyricsWeight(e.target.value)} className="w-full bg-[#110f1a] border border-white/[0.07] text-white text-[11px] rounded-lg p-2.5 outline-none">
                                {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
                              </select>
                            </div>
@@ -1126,7 +1126,7 @@ function App() {
                   {/* --- SUBTAB: SISTEMA --- */}
                   {settingsSubTab === 'system' && (
                     <div className="animate-in fade-in slide-in-from-left-4 duration-500 space-y-8">
-                       <div className="bg-[#1a1a1a]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
+                       <div className="bg-[#1a1726]/40 border border-white/[0.07] rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
                           <div className="mb-6">
                             <h3 className="text-xl font-black text-white mb-1.5 tracking-tight flex items-center gap-2">
                               Atualizações do Praise
@@ -1134,7 +1134,7 @@ function App() {
                             <p className="text-sm text-brand-400 font-medium">Mantenha seu sistema na versão mais recente.</p>
                           </div>
 
-                          <div className="bg-black/20 rounded-2xl p-6 border border-white/5 space-y-6">
+                          <div className="bg-black/20 rounded-2xl p-6 border border-white/[0.07] space-y-6">
                             {downloadProgress ? (
                               <div>
                                 <div className="flex justify-between text-[11px] text-white/50 mb-2 font-black uppercase tracking-widest">
@@ -1181,7 +1181,7 @@ function App() {
                                 }
                               }}
                               disabled={isCheckingUpdate || downloadProgress !== null}
-                              className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-white/[0.03] hover:bg-brand-600/10 border border-white/5 hover:border-brand-500/30 text-white font-black text-xs uppercase tracking-[0.2em] transition-all disabled:opacity-50"
+                              className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-white/[0.03] hover:bg-brand-600/10 border border-white/[0.07] hover:border-brand-500/30 text-white font-black text-xs uppercase tracking-[0.2em] transition-all disabled:opacity-50"
                             >
                               {isCheckingUpdate ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCw className="w-4 h-4" />}
                               Verificar Agora
@@ -1193,7 +1193,7 @@ function App() {
                 </main>
 
                 {/* ═══ 3. PREVIEW AMPLIADO (DIREITA) ═══ */}
-                <div className="hidden lg:flex flex-1 bg-slate-950/40 border-l border-white/5 p-10 flex-col items-center justify-center relative overflow-hidden group">
+                <div className="hidden lg:flex flex-1 bg-slate-950/40 border-l border-white/[0.07] p-10 flex-col items-center justify-center relative overflow-hidden group">
                   
                   {/* Backdrop Aesthetic */}
                   <div className="absolute inset-0 opacity-10 pointer-events-none">
@@ -1340,10 +1340,10 @@ function App() {
 
         {/* ═══ SIDEBAR ═══ */}
         {activeTab !== 'editor' && activeTab !== 'settings' && (
-          <div className="w-[340px] flex flex-col border-r border-white/5" style={{ backgroundColor: '#121212' }}>
+          <div className="w-[340px] flex flex-col border-r border-white/[0.07]" style={{ backgroundColor: '#110f1a' }}>
 
             {/* Header */}
-            <div className="flex flex-col shrink-0 gradient-header border-b border-white/5">
+            <div className="flex flex-col shrink-0 gradient-header border-b border-white/[0.07]">
               <div className="p-4 flex items-center gap-2.5">
                 <div>
                   <h1 className="text-base font-bold tracking-tight text-white leading-none">
@@ -1360,7 +1360,7 @@ function App() {
             {activeTab === 'songs' ? (
               <div className="flex flex-col flex-1 min-h-0">
                 {/* Search + Categories */}
-                <div className="p-4 flex flex-col gap-3 shrink-0 border-b border-white/5">
+                <div className="p-4 flex flex-col gap-3 shrink-0 border-b border-white/[0.07]">
                   <div className="relative">
                     <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
                     <input
@@ -1419,9 +1419,9 @@ function App() {
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col flex-1 min-h-0 bg-[#121212]/30">
+              <div className="flex flex-col flex-1 min-h-0 bg-[#110f1a]/30">
                 {/* Nav Header Bible */}
-                <div className="p-3 flex items-center justify-between gap-2 border-b border-white/5 shrink-0 min-h-[53px]">
+                <div className="p-3 flex items-center justify-between gap-2 border-b border-white/[0.07] shrink-0 min-h-[53px]">
                   <div className="flex items-center gap-2 flex-1 min-w-0">
                     {selectedBook && (
                       <button
@@ -1622,8 +1622,8 @@ function App() {
             )}
 
             {/* ─── PLAYLIST DO CULTO (Dinâmica por Aba) ─── */}
-            <div className="border-t border-white/5 flex flex-col min-h-0" style={{ height: '45%', backgroundColor: '#0a0a0a' }}>
-              <div className="px-4 py-3 flex items-center gap-2 shrink-0 border-b border-white/5">
+            <div className="border-t border-white/[0.07] flex flex-col min-h-0" style={{ height: '45%', backgroundColor: '#0c0a12' }}>
+              <div className="px-4 py-3 flex items-center gap-2 shrink-0 border-b border-white/[0.07]">
                 {activeTab === 'songs' ? <ListMusic className="w-4 h-4 text-brand-400" /> : <BookOpen className="w-4 h-4 text-brand-400" />}
                 <span className="text-[13px] font-semibold text-white/70 flex-1">
                   {activeTab === 'songs' ? 'Louvores do Culto' : 'Textos Bíblicos'}
@@ -1702,10 +1702,10 @@ function App() {
 
         {/* ═══ MAIN CONTENT ═══ */}
         {activeTab !== 'editor' && activeTab !== 'settings' && (
-          <div className="flex-1 flex flex-col h-screen" style={{ backgroundColor: '#050505' }}>
+          <div className="flex-1 flex flex-col h-screen" style={{ backgroundColor: '#08060e' }}>
 
             {/* Top Bar */}
-            <div className="h-14 border-b border-white/5 flex items-center justify-between px-6 shrink-0 glass" style={{ backgroundColor: 'rgba(21,26,38,0.85)' }}>
+            <div className="h-14 border-b border-white/[0.07] flex items-center justify-between px-6 shrink-0 glass" style={{ backgroundColor: 'rgba(21,26,38,0.85)' }}>
               <div className="flex items-center gap-3">
                 <div className="flex items-center bg-white/[0.03] border border-white/10 rounded-xl px-4 py-1.5 transition-all focus-within:border-slate-400/40 hover:bg-white/[0.06] group/monitor shadow-sm">
                   <div className="flex items-center border-r border-white/10 pr-3 mr-2 text-white/40 group-focus-within/monitor:text-slate-400 group-hover/monitor:text-white/60 transition-colors">
@@ -1719,10 +1719,10 @@ function App() {
                     >
                       {monitors.length > 0 ? (
                         monitors.map((m, i) => (
-                          <option key={i} value={m} className="bg-[#121212] text-white">{m}</option>
+                          <option key={i} value={m} className="bg-[#110f1a] text-white">{m}</option>
                         ))
                       ) : (
-                        <option value="" className="bg-[#121212] text-white">Carregando...</option>
+                        <option value="" className="bg-[#110f1a] text-white">Carregando...</option>
                       )}
                     </select>
                   </div>
@@ -1797,14 +1797,14 @@ function App() {
               <div className="flex-1 flex overflow-hidden">
 
                 {/* Seção de Estrofes */}
-                <div className="flex-1 overflow-y-auto p-6 border-r border-white/5 bg-[#121212]/50">
+                <div className="flex-1 overflow-y-auto p-6 border-r border-white/[0.07] bg-[#110f1a]/50">
                   <div className="flex justify-between items-center mb-5">
                     <div>
                       <h2 className="text-lg font-bold text-white/90">{selectedSong.title}</h2>
                       <p className="text-[11px] text-white/25 mt-0.5">{slides.length} {activeTab === 'bible' ? 'capítulos' : 'estrofes'}</p>
                     </div>
                     {isProjecting && (
-                      <span className="text-[11px] text-white/30 px-3 py-1.5 rounded-xl border border-white/5 flex items-center gap-2" style={{ backgroundColor: 'rgba(255,255,255,0.03)' }}>
+                      <span className="text-[11px] text-white/30 px-3 py-1.5 rounded-xl border border-white/[0.07] flex items-center gap-2" style={{ backgroundColor: 'rgba(255,255,255,0.03)' }}>
                         Setas <ChevronLeft className="w-3 h-3 text-slate-400" /> <ChevronRight className="w-3 h-3 text-slate-400" /> para navegar
                       </span>
                     )}
@@ -1821,7 +1821,7 @@ function App() {
                             ? isProjecting
                               ? "border-brand-500/30 bg-brand-500/5 glow-brand"
                               : "border-brand-500/50 bg-brand-500/10 glow-brand"
-                            : "border-white/5 hover:border-white/10 hover:bg-white/[0.02]"
+                            : "border-white/[0.07] hover:border-white/10 hover:bg-white/[0.02]"
                           }
                     `}
                         style={activeSlideIndex !== index ? { backgroundColor: 'rgba(255,255,255,0.02)' } : {}}
@@ -1852,7 +1852,7 @@ function App() {
                 </div>
 
                 {/* Preview */}
-                <div className="w-[340px] flex flex-col p-4 shrink-0" style={{ backgroundColor: '#0a0a0a' }}>
+                <div className="w-[340px] flex flex-col p-4 shrink-0" style={{ backgroundColor: '#0c0a12' }}>
                   <h3 className="text-[11px] font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
                     <Monitor className="w-3.5 h-3.5" />
                     {isProjecting ? (
@@ -1990,7 +1990,7 @@ function App() {
         {/* ═══ MODAL DE DUPLICATA ═══ */}
         {showDuplicateModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop" onClick={() => setShowDuplicateModal(false)}>
-            <div className="modal-content p-6 rounded-2xl border border-white/10 shadow-2xl max-w-sm w-full mx-4" style={{ backgroundColor: '#1a1a1a' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-content p-6 rounded-2xl border border-white/10 shadow-2xl max-w-sm w-full mx-4" style={{ backgroundColor: '#1a1726' }} onClick={e => e.stopPropagation()}>
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-500/10 border border-amber-500/20">
                   <AlertTriangle className="w-5 h-5 text-amber-400" />

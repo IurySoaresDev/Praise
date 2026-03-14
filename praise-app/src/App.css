@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-400: #c77dff; /* violeta claro - da logo */
-  --color-brand-500: #B93BEA; /* cor principal da logo PRAISE */
-  --color-brand-600: #9b30c9; /* hover mais escuro */
-  --color-accent-400: #e0aaff; /* destaque leve */
-  --color-accent-500: #c77dff; /* acentos */
-  --color-dark-800: #0a0a0a; /* preto profundo */
-  --color-dark-900: #050505; /* preto total */
-  --color-surface: #121212; /* superfície escura */
-  --color-surface-hover: #1a1a1a; /* hover escuro */
+  --color-brand-400: #d4a0ff; /* violeta claro - textos ativos */
+  --color-brand-500: #a855f7; /* cor principal - destaques */
+  --color-brand-600: #9333ea; /* hover / botões ativos */
+  --color-accent-400: #e9d5ff; /* destaques leves */
+  --color-accent-500: #c084fc; /* acentos */
+  --color-dark-800: #0c0a12; /* preto com matiz roxo */
+  --color-dark-900: #08060e; /* preto profundo com matiz roxo */
+  --color-surface: #110f1a; /* superfícies (sidebars, cards) */
+  --color-surface-hover: #1a1726; /* hover em superfícies */
 }
 
 @utility projection-shadow {
@@ -18,13 +18,14 @@
 }
 
 @utility glow-brand {
-  box-shadow: 0 0 20px rgba(185, 59, 234, 0.15),
-              0 0 40px rgba(185, 59, 234, 0.08);
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.2),
+              0 0 40px rgba(168, 85, 247, 0.08),
+              inset 0 0 1px rgba(168, 85, 247, 0.15);
 }
 
 @utility glow-accent {
-  box-shadow: 0 0 15px rgba(199, 125, 255, 0.12),
-              0 0 30px rgba(199, 125, 255, 0.06);
+  box-shadow: 0 0 15px rgba(192, 132, 252, 0.15),
+              0 0 30px rgba(192, 132, 252, 0.06);
 }
 
 :root {
@@ -33,7 +34,7 @@
   font-weight: 400;
 
   color-scheme: dark;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.92);
   background-color: var(--color-dark-900);
 
   font-synthesis: none;
@@ -44,21 +45,21 @@
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(185, 59, 234, 0.25) transparent;
+  scrollbar-color: rgba(168, 85, 247, 0.3) transparent;
 }
 
 *::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 *::-webkit-scrollbar-track {
   background: transparent;
 }
 *::-webkit-scrollbar-thumb {
-  background: rgba(185, 59, 234, 0.25);
+  background: rgba(168, 85, 247, 0.3);
   border-radius: 999px;
 }
 *::-webkit-scrollbar-thumb:hover {
-  background: rgba(185, 59, 234, 0.4);
+  background: rgba(168, 85, 247, 0.5);
 }
 
 body {
@@ -93,34 +94,34 @@ body {
 }
 
 .gradient-header {
-  background: linear-gradient(135deg, #0a0a0a, #1a0a1f, #0a0a0a);
-  background-size: 200% 200%;
-  animation: gradient-shift 12s ease infinite;
+  background: linear-gradient(135deg, #08060e, #1a1230, #110f1a, #08060e);
+  background-size: 300% 300%;
+  animation: gradient-shift 15s ease infinite;
 }
 
 /* Efeito glass para superfícies */
 .glass {
-  backdrop-filter: blur(12px) saturate(160%);
-  -webkit-backdrop-filter: blur(12px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(18, 18, 18, 0.85);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(168, 85, 247, 0.08);
+  background: rgba(17, 15, 26, 0.88);
 }
 
 /* Transição suave para todos os elementos interativos */
 button, [draggable="true"] {
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Seleção customizada */
 ::selection {
-  background: rgba(185, 59, 234, 0.35);
+  background: rgba(168, 85, 247, 0.4);
   color: white;
 }
 
 /* Modal backdrop + content animations */
 .modal-backdrop {
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
+  background: rgba(8, 6, 14, 0.75);
+  backdrop-filter: blur(8px);
   animation: fade-in 0.2s ease-out;
 }
 
