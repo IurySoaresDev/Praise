@@ -491,7 +491,7 @@ function App() {
         style={{ backgroundColor: '#0a0a0a', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
       >
         <div className="flex items-center gap-2 pointer-events-none">
-          <img src={praiseLogo} alt="Praise" className="h-4 opacity-70" />
+          <img src={praiseLogo} alt="Praise" className="h-5" />
         </div>
 
         <div className="flex items-center h-full">
