@@ -97,15 +97,18 @@ function Projection() {
     };
   }, []);
 
+  const isSubtitle = data.projection_mode === 'subtitle' && data.item_type !== 'bible';
+  
   if (!data.content && data.item_type === 'empty') {
-    return <div className="w-screen h-screen bg-black" />;
+    return <div 
+      className="w-screen h-screen" 
+      style={{ backgroundColor: data.projection_mode === 'subtitle' ? '#00ff00' : '#000000' }} 
+    />;
   }
 
   const backgroundUrl = data.background 
     ? (data.background.startsWith('/backgrounds/') ? data.background : convertFileSrc(data.background))
     : null;
-
-  const isSubtitle = data.projection_mode === 'subtitle' && data.item_type !== 'bible';
 
   return (
     <div 
