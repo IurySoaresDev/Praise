@@ -167,7 +167,7 @@ function Projection() {
             style={{ 
               color: data.lyrics_color || '#ffffff',
               fontFamily: data.lyrics_font ? `'${data.lyrics_font}', sans-serif` : undefined,
-              fontSize: '54px',
+              fontSize: '66px',
               fontWeight: data.lyrics_weight || '700',
               lineHeight: '1.3',
               maxWidth: '85%',

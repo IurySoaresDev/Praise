@@ -1989,7 +1989,7 @@ function App() {
                                 className="text-center font-bold"
                                 style={{
                                   color: selectedSong?.collection === 'Bíblia' ? (bibleLyricsColor || '#ffffff') : (songLyricsColor || '#ffffff'),
-                                  fontSize: '0.75rem',
+                                  fontSize: '0.9rem',
                                   lineHeight: '1.2',
                                   maxWidth: '90%',
                                   display: '-webkit-box',
