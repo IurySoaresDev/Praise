@@ -80,20 +80,32 @@ fn project_slide(
 
     if let Some(window) = projection_window {
         // Se a janela já existe, mover para o monitor correto e atualizar o conteúdo
+        // Primeiro sai do fullscreen para poder mover
+        let _ = window.set_fullscreen(false);
+        
         if let Ok(monitors) = app_handle.available_monitors() {
             for m in monitors {
                 let name = m.name().map(|n| n.to_string()).unwrap_or_default();
+                println!("Monitor disponível: '{}', selecionado: '{}'", name, monitor);
                 if name == monitor {
                     let position = m.position();
+                    let size = m.size();
+                    println!("Movendo projeção para monitor '{}' em ({}, {}), tamanho {}x{}", name, position.x, position.y, size.width, size.height);
                     let _ = window.set_position(tauri::Position::Physical(tauri::PhysicalPosition {
                         x: position.x,
                         y: position.y,
                     }));
-                    let _ = window.set_fullscreen(true);
+                    let _ = window.set_size(tauri::Size::Physical(tauri::PhysicalSize {
+                        width: size.width,
+                        height: size.height,
+                    }));
                     break;
                 }
             }
         }
+        // Reativa fullscreen no novo monitor
+        let _ = window.set_fullscreen(true);
+        
         window.emit("update_projection", payload)
         .map_err(|e| {
             println!("Erro ao emitir evento: {}", e);
@@ -102,33 +114,44 @@ fn project_slide(
             
     } else if !content.is_empty() {
         // Se a janela não existe e tem conteúdo pra projetar, nós a criamos.
+        // NÃO usar .fullscreen(true) no builder, pois pode forçar fullscreen no monitor primário
         let mut builder = WebviewWindowBuilder::new(
             &app_handle,
             "projection",
             WebviewUrl::App("index.html#/projection".into())
         )
         .title("Praise Projection")
-        .fullscreen(true)
         .always_on_top(true)
         .transparent(true)
         .decorations(false);
 
         // Tenta achar o monitor escolhido pelo nome
+        let mut target_size: Option<(u32, u32)> = None;
         if let Ok(monitors) = app_handle.available_monitors() {
             for m in monitors {
                 let name = m.name().map(|n| n.to_string()).unwrap_or_default();
+                println!("Criando projeção - Monitor disponível: '{}', selecionado: '{}'", name, monitor);
                 if name == monitor {
-                    // Move a janela para o monitor específico
                     let position = m.position();
+                    let size = m.size();
+                    println!("Projetando no monitor '{}' em ({}, {}), tamanho {}x{}", name, position.x, position.y, size.width, size.height);
                     builder = builder.position(position.x.into(), position.y.into());
+                    target_size = Some((size.width, size.height));
                     break;
                 }
             }
         }
 
+        // Define o tamanho da janela para cobrir o monitor inteiro
+        if let Some((w, h)) = target_size {
+            builder = builder.inner_size(w as f64, h as f64);
+        }
+
         let window = builder.build().map_err(|e| e.to_string())?;
         
-        // We still keep the slight delay just in case, but now the window can also actively check the state via get_current_slide when it mounts.
+        // Ativa fullscreen após a janela ser criada na posição correta
+        let _ = window.set_fullscreen(true);
+        
         std::thread::spawn(move || {
             std::thread::sleep(std::time::Duration::from_millis(500));
             let _ = window.emit("update_projection", payload);
