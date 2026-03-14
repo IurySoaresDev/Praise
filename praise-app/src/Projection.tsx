@@ -122,7 +122,7 @@ function Projection() {
       {data.title && data.item_type !== 'empty' && !isSubtitle && (
         <div className={`absolute left-0 right-0 z-20 w-full flex items-center justify-center ${
           data.item_type === 'bible' 
-            ? 'top-[5.5%]' 
+            ? 'top-[18.5%]' 
             : 'top-[5.5%]'
         }`}>
           <h1 
