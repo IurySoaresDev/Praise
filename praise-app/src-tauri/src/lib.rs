@@ -170,7 +170,7 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .setup(|app| {
             // No Linux, definir o ícone programaticamente resolve o problema do ícone de 'engrenagem'
-            let icon_bytes = include_bytes!("../../src/assets/logo.png");
+            let icon_bytes = include_bytes!("../icons/icon.png");
             if let Ok(icon) = image::load_from_memory(icon_bytes) {
                 let (width, height) = icon.dimensions();
                 let rgba = icon.to_rgba8().into_raw();
