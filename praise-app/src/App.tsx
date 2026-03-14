@@ -7,6 +7,7 @@ import { check } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
 import { useStore, ALLOWED_COLLECTIONS } from "./store";
 import { Play, Square, Settings, X, Plus, Trash2, CheckCircle2, FilePenLine, GripVertical, AlertTriangle, ListMusic, BookOpen, Monitor, Send, Search, ArrowLeft, Loader2, MonitorDot, Snowflake, RotateCw, Minus, Music, Upload, ChevronLeft, ChevronRight, Palette, Type, Maximize2, Bold, Image as ImageIcon } from 'lucide-react';
+import praiseLogo from "./assets/praise-logo.svg";
 import "./App.css";
 
 function App() {
@@ -475,7 +476,7 @@ function App() {
   const appWindow = useMemo(() => getCurrentWindow(), []);
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden font-['Inter',system-ui,sans-serif]" style={{ backgroundColor: '#0a0d14', color: 'rgba(255,255,255,0.9)' }}>
+    <div className="flex flex-col h-screen overflow-hidden font-['Inter',system-ui,sans-serif]" style={{ backgroundColor: '#050505', color: 'rgba(255,255,255,0.9)' }}>
 
       {/* ═══ CUSTOM TITLE BAR ═══ */}
       <div
@@ -487,11 +488,10 @@ function App() {
           }
         }}
         className="h-8 flex items-center justify-between px-4 select-none shrink-0 cursor-default"
-        style={{ backgroundColor: '#0f1219', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+        style={{ backgroundColor: '#0a0a0a', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
       >
         <div className="flex items-center gap-2 pointer-events-none">
-          <MonitorDot className="w-3.5 h-3.5 text-slate-400" />
-          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Praise</span>
+          <img src={praiseLogo} alt="Praise" className="h-4 opacity-70" />
         </div>
 
         <div className="flex items-center h-full">
@@ -520,7 +520,7 @@ function App() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* ═══ SYSTEM NAV (Thick Left Rail) ═══ */}
-        <div className="w-[72px] flex flex-col items-center py-4 border-r border-white/5 z-20 shrink-0" style={{ backgroundColor: '#0f1219' }}>
+        <div className="w-[72px] flex flex-col items-center py-4 border-r border-white/5 z-20 shrink-0" style={{ backgroundColor: '#0a0a0a' }}>
 
 
           <div className="flex flex-col gap-2 w-full px-2">
@@ -572,11 +572,11 @@ function App() {
 
         {/* ═══ EDITOR FULL-WIDTH ═══ */}
         {activeTab === 'editor' && (
-          <div className="flex-1 flex flex-col h-full overflow-hidden" style={{ backgroundColor: '#0f1219' }}>
-            <div className="flex-1 flex h-full overflow-hidden min-w-0" style={{ backgroundColor: '#0f1219' }}>
+          <div className="flex-1 flex flex-col h-full overflow-hidden" style={{ backgroundColor: '#0a0a0a' }}>
+            <div className="flex-1 flex h-full overflow-hidden min-w-0" style={{ backgroundColor: '#0a0a0a' }}>
               {/* Sidebar de Seleção para Edição */}
-              <div className="w-[300px] flex flex-col border-r border-white/5 bg-[#1c2333]/40 h-full min-h-0 overflow-hidden">
-                <div className="p-4 border-b border-white/5 bg-[#151a26]/20">
+              <div className="w-[300px] flex flex-col border-r border-white/5 bg-[#1a1a1a]/40 h-full min-h-0 overflow-hidden">
+                <div className="p-4 border-b border-white/5 bg-[#121212]/20">
                   <h2 className="text-[13px] font-bold text-white/70 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <Music className="w-4 h-4" />
                     Editar Louvor
@@ -651,7 +651,7 @@ function App() {
                 </div>
 
                 {editingSongTitle && (
-                  <div className="p-3 border-t border-white/5 bg-[#151a26]/40">
+                  <div className="p-3 border-t border-white/5 bg-[#121212]/40">
                     <button
                       onClick={() => {
                         setEditingSongTitle(null);
@@ -840,7 +840,7 @@ function App() {
                         }}
                         disabled={!editorTitle.trim() || !editorContent.trim()}
                         className="flex-[2] py-3.5 rounded-xl text-[14px] font-semibold text-white flex items-center justify-center gap-2 transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-90"
-                        style={{ background: editingSongTitle ? 'linear-gradient(135deg, #6366f1, #4f46e5)' : 'linear-gradient(135deg, #6366f1, #4f46e5)' }}
+                        style={{ background: editingSongTitle ? 'linear-gradient(135deg, #B93BEA, #9b30c9)' : 'linear-gradient(135deg, #B93BEA, #9b30c9)' }}
                       >
                         {editingSongTitle ? <FilePenLine className="w-4 h-4" /> : <Send className="w-4 h-4" />}
                         {editingSongTitle ? 'Salvar Alterações' : 'Adicionar Louvor'}
@@ -855,10 +855,10 @@ function App() {
 
         {/* ═══ SETTINGS DASHBOARD (Widescreen Redesign) ═══ */}
         {activeTab === 'settings' && (
-          <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#0f1219]/60 backdrop-blur-3xl">
+          <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#0a0a0a]/60 backdrop-blur-3xl">
             
             {/* ═══ HEADER DO DASHBOARD ═══ */}
-            <header className="px-8 py-6 border-b border-white/5 bg-[#151a26]/40 flex items-center justify-between">
+            <header className="px-8 py-6 border-b border-white/5 bg-[#121212]/40 flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-black text-white tracking-tighter flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center shadow-lg shadow-brand-500/20">
@@ -878,7 +878,7 @@ function App() {
             <div className="flex-1 flex overflow-hidden">
               
               {/* ═══ 1. SIDEBAR DE NAVEGAÇÃO INTERNA ═══ */}
-              <aside className="w-20 lg:w-64 border-r border-white/5 bg-[#151a26]/20 flex flex-col p-4 gap-2 overflow-y-auto">
+              <aside className="w-20 lg:w-64 border-r border-white/5 bg-[#121212]/20 flex flex-col p-4 gap-2 overflow-y-auto">
                 {[
                   { id: 'titles', label: 'Títulos', icon: ImageIcon, desc: 'Abertura de músicas' },
                   { id: 'lyrics', label: 'Louvores', icon: Music, desc: 'Letras e refrãos' },
@@ -917,7 +917,7 @@ function App() {
                   {/* --- SUBTAB: TÍTULOS --- */}
                   {settingsSubTab === 'titles' && (
                     <div className="animate-in fade-in slide-in-from-left-4 duration-500 space-y-8">
-                      <div className="bg-[#1c2333]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
+                      <div className="bg-[#1a1a1a]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
                         <div className="mb-8 flex items-start justify-between">
                           <div>
                             <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">Fundo de Título</h3>
@@ -964,7 +964,7 @@ function App() {
                                   <Type className="w-3 h-3" />
                                   Família da Fonte
                                 </span>
-                                <select value={songTitleFont} onChange={(e) => setSongTitleFont(e.target.value)} className="w-full bg-[#151a26] border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50 transition-all">
+                                <select value={songTitleFont} onChange={(e) => setSongTitleFont(e.target.value)} className="w-full bg-[#121212] border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50 transition-all">
                                   {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato', 'Serif', 'Sans-Serif'].map(f => (<option key={f} value={f}>{f}</option>))}
                                 </select>
                               </div>
@@ -974,14 +974,14 @@ function App() {
                                     <Maximize2 className="w-3 h-3" />
                                     Tamanho (PX)
                                   </span>
-                                  <input type="number" value={songTitleSize} onChange={(e) => setSongTitleSize(Number(e.target.value))} className="w-full bg-[#151a26] border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50 text-center" />
+                                  <input type="number" value={songTitleSize} onChange={(e) => setSongTitleSize(Number(e.target.value))} className="w-full bg-[#121212] border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50 text-center" />
                                 </div>
                                 <div className="space-y-2">
                                   <span className="text-[11px] font-bold text-white/30 ml-1 flex items-center gap-1.5">
                                     <Bold className="w-3 h-3" />
                                     Peso Visual
                                   </span>
-                                  <select value={songTitleWeight} onChange={(e) => setSongTitleWeight(e.target.value)} className="w-full bg-[#151a26] border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50">
+                                  <select value={songTitleWeight} onChange={(e) => setSongTitleWeight(e.target.value)} className="w-full bg-[#121212] border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50">
                                     {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
                                   </select>
                                 </div>
@@ -996,7 +996,7 @@ function App() {
                   {/* --- SUBTAB: LOUVORES --- */}
                   {settingsSubTab === 'lyrics' && (
                     <div className="animate-in fade-in slide-in-from-left-4 duration-500 space-y-8">
-                      <div className="bg-[#1c2333]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
+                      <div className="bg-[#1a1a1a]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
                         <div className="mb-8 flex items-start justify-between">
                           <div>
                             <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">Fundo de Louvor</h3>
@@ -1032,18 +1032,18 @@ function App() {
                             <div className="grid grid-cols-1 gap-5">
                               <div className="space-y-2">
                                 <span className="text-[11px] font-bold text-white/30 ml-1">Família da Fonte</span>
-                                <select value={songLyricsFont} onChange={(e) => setSongLyricsFont(e.target.value)} className="w-full bg-[#151a26] border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50">
+                                <select value={songLyricsFont} onChange={(e) => setSongLyricsFont(e.target.value)} className="w-full bg-[#121212] border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50">
                                   {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato', 'Serif', 'Sans-Serif'].map(f => (<option key={f} value={f}>{f}</option>))}
                                 </select>
                               </div>
                               <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                   <span className="text-[11px] font-bold text-white/30 ml-1">Tamanho (PX)</span>
-                                  <input type="number" value={songLyricsSize} onChange={(e) => setSongLyricsSize(Number(e.target.value))} className="w-full bg-[#151a26] border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50 text-center" />
+                                  <input type="number" value={songLyricsSize} onChange={(e) => setSongLyricsSize(Number(e.target.value))} className="w-full bg-[#121212] border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50 text-center" />
                                 </div>
                                 <div className="space-y-2">
                                   <span className="text-[11px] font-bold text-white/30 ml-1">Peso Visual</span>
-                                  <select value={songLyricsWeight} onChange={(e) => setSongLyricsWeight(e.target.value)} className="w-full bg-[#151a26] border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50">
+                                  <select value={songLyricsWeight} onChange={(e) => setSongLyricsWeight(e.target.value)} className="w-full bg-[#121212] border border-white/5 text-white text-sm rounded-xl p-3 outline-none focus:border-brand-500/50">
                                     {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
                                   </select>
                                 </div>
@@ -1058,7 +1058,7 @@ function App() {
                   {/* --- SUBTAB: BÍBLIA --- */}
                   {settingsSubTab === 'bible' && (
                     <div className="animate-in fade-in slide-in-from-left-4 duration-500 space-y-8">
-                      <div className="bg-[#1c2333]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
+                      <div className="bg-[#1a1a1a]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
                         <div className="mb-8 flex items-start justify-between">
                           <div>
                             <h3 className="text-xl font-black text-white mb-1.5 tracking-tight">Fundo da Bíblia</h3>
@@ -1088,13 +1088,13 @@ function App() {
                              <div className="flex items-center gap-4">
                                <input type="color" value={bibleTitleColor} onChange={(e) => setBibleTitleColor(e.target.value)} className="w-12 h-12 rounded-xl overflow-hidden cursor-pointer ring-2 ring-white/5" />
                                <div className="grid grid-cols-2 gap-3 flex-1">
-                                 <select value={bibleTitleFont} onChange={(e) => setBibleTitleFont(e.target.value)} className="bg-[#151a26] border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none">
+                                 <select value={bibleTitleFont} onChange={(e) => setBibleTitleFont(e.target.value)} className="bg-[#121212] border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none">
                                    {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato'].map(f => (<option key={f} value={f}>{f}</option>))}
                                  </select>
-                                 <input type="number" value={bibleTitleSize} onChange={(e) => setBibleTitleSize(Number(e.target.value))} className="bg-[#151a26] border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none text-center" />
+                                 <input type="number" value={bibleTitleSize} onChange={(e) => setBibleTitleSize(Number(e.target.value))} className="bg-[#121212] border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none text-center" />
                                </div>
                              </div>
-                             <select value={bibleTitleWeight} onChange={(e) => setBibleTitleWeight(e.target.value)} className="w-full bg-[#151a26] border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none">
+                             <select value={bibleTitleWeight} onChange={(e) => setBibleTitleWeight(e.target.value)} className="w-full bg-[#121212] border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none">
                                {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
                              </select>
                            </div>
@@ -1108,13 +1108,13 @@ function App() {
                              <div className="flex items-center gap-4">
                                <input type="color" value={bibleLyricsColor} onChange={(e) => setBibleLyricsColor(e.target.value)} className="w-12 h-12 rounded-xl overflow-hidden cursor-pointer ring-2 ring-white/5" />
                                <div className="grid grid-cols-2 gap-3 flex-1">
-                                 <select value={bibleLyricsFont} onChange={(e) => setBibleLyricsFont(e.target.value)} className="bg-[#151a26] border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none">
+                                 <select value={bibleLyricsFont} onChange={(e) => setBibleLyricsFont(e.target.value)} className="bg-[#121212] border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none">
                                    {['Inter', 'Montserrat', 'Roboto', 'Oswald', 'Open Sans', 'Lato'].map(f => (<option key={f} value={f}>{f}</option>))}
                                  </select>
-                                 <input type="number" value={bibleLyricsSize} onChange={(e) => setBibleLyricsSize(Number(e.target.value))} className="bg-[#151a26] border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none text-center" />
+                                 <input type="number" value={bibleLyricsSize} onChange={(e) => setBibleLyricsSize(Number(e.target.value))} className="bg-[#121212] border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none text-center" />
                                </div>
                              </div>
-                             <select value={bibleLyricsWeight} onChange={(e) => setBibleLyricsWeight(e.target.value)} className="w-full bg-[#151a26] border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none">
+                             <select value={bibleLyricsWeight} onChange={(e) => setBibleLyricsWeight(e.target.value)} className="w-full bg-[#121212] border border-white/5 text-white text-[11px] rounded-lg p-2.5 outline-none">
                                {['normal', 'medium', 'semibold', 'bold', 'black'].map(w => (<option key={w} value={w}>{w}</option>))}
                              </select>
                            </div>
@@ -1126,7 +1126,7 @@ function App() {
                   {/* --- SUBTAB: SISTEMA --- */}
                   {settingsSubTab === 'system' && (
                     <div className="animate-in fade-in slide-in-from-left-4 duration-500 space-y-8">
-                       <div className="bg-[#1c2333]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
+                       <div className="bg-[#1a1a1a]/40 border border-white/5 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
                           <div className="mb-6">
                             <h3 className="text-xl font-black text-white mb-1.5 tracking-tight flex items-center gap-2">
                               Atualizações do Praise
@@ -1340,7 +1340,7 @@ function App() {
 
         {/* ═══ SIDEBAR ═══ */}
         {activeTab !== 'editor' && activeTab !== 'settings' && (
-          <div className="w-[340px] flex flex-col border-r border-white/5" style={{ backgroundColor: '#151a26' }}>
+          <div className="w-[340px] flex flex-col border-r border-white/5" style={{ backgroundColor: '#121212' }}>
 
             {/* Header */}
             <div className="flex flex-col shrink-0 gradient-header border-b border-white/5">
@@ -1419,7 +1419,7 @@ function App() {
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col flex-1 min-h-0 bg-[#151a26]/30">
+              <div className="flex flex-col flex-1 min-h-0 bg-[#121212]/30">
                 {/* Nav Header Bible */}
                 <div className="p-3 flex items-center justify-between gap-2 border-b border-white/5 shrink-0 min-h-[53px]">
                   <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -1622,7 +1622,7 @@ function App() {
             )}
 
             {/* ─── PLAYLIST DO CULTO (Dinâmica por Aba) ─── */}
-            <div className="border-t border-white/5 flex flex-col min-h-0" style={{ height: '45%', backgroundColor: '#0f1219' }}>
+            <div className="border-t border-white/5 flex flex-col min-h-0" style={{ height: '45%', backgroundColor: '#0a0a0a' }}>
               <div className="px-4 py-3 flex items-center gap-2 shrink-0 border-b border-white/5">
                 {activeTab === 'songs' ? <ListMusic className="w-4 h-4 text-brand-400" /> : <BookOpen className="w-4 h-4 text-brand-400" />}
                 <span className="text-[13px] font-semibold text-white/70 flex-1">
@@ -1702,7 +1702,7 @@ function App() {
 
         {/* ═══ MAIN CONTENT ═══ */}
         {activeTab !== 'editor' && activeTab !== 'settings' && (
-          <div className="flex-1 flex flex-col h-screen" style={{ backgroundColor: '#0a0d14' }}>
+          <div className="flex-1 flex flex-col h-screen" style={{ backgroundColor: '#050505' }}>
 
             {/* Top Bar */}
             <div className="h-14 border-b border-white/5 flex items-center justify-between px-6 shrink-0 glass" style={{ backgroundColor: 'rgba(21,26,38,0.85)' }}>
@@ -1719,10 +1719,10 @@ function App() {
                     >
                       {monitors.length > 0 ? (
                         monitors.map((m, i) => (
-                          <option key={i} value={m} className="bg-[#151a26] text-white">{m}</option>
+                          <option key={i} value={m} className="bg-[#121212] text-white">{m}</option>
                         ))
                       ) : (
-                        <option value="" className="bg-[#151a26] text-white">Carregando...</option>
+                        <option value="" className="bg-[#121212] text-white">Carregando...</option>
                       )}
                     </select>
                   </div>
@@ -1797,7 +1797,7 @@ function App() {
               <div className="flex-1 flex overflow-hidden">
 
                 {/* Seção de Estrofes */}
-                <div className="flex-1 overflow-y-auto p-6 border-r border-white/5 bg-[#151a26]/50">
+                <div className="flex-1 overflow-y-auto p-6 border-r border-white/5 bg-[#121212]/50">
                   <div className="flex justify-between items-center mb-5">
                     <div>
                       <h2 className="text-lg font-bold text-white/90">{selectedSong.title}</h2>
@@ -1852,7 +1852,7 @@ function App() {
                 </div>
 
                 {/* Preview */}
-                <div className="w-[340px] flex flex-col p-4 shrink-0" style={{ backgroundColor: '#0f1219' }}>
+                <div className="w-[340px] flex flex-col p-4 shrink-0" style={{ backgroundColor: '#0a0a0a' }}>
                   <h3 className="text-[11px] font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
                     <Monitor className="w-3.5 h-3.5" />
                     {isProjecting ? (
@@ -1990,7 +1990,7 @@ function App() {
         {/* ═══ MODAL DE DUPLICATA ═══ */}
         {showDuplicateModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop" onClick={() => setShowDuplicateModal(false)}>
-            <div className="modal-content p-6 rounded-2xl border border-white/10 shadow-2xl max-w-sm w-full mx-4" style={{ backgroundColor: '#1c2333' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-content p-6 rounded-2xl border border-white/10 shadow-2xl max-w-sm w-full mx-4" style={{ backgroundColor: '#1a1a1a' }} onClick={e => e.stopPropagation()}>
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-500/10 border border-amber-500/20">
                   <AlertTriangle className="w-5 h-5 text-amber-400" />
