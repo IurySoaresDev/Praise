@@ -1202,7 +1202,7 @@ function App() {
                           onClick={() => setSettingsPreviewTab(tab.id as any)}
                           className={`px-6 py-2.5 rounded-xl text-[10px] font-black tracking-[0.2em] transition-all ${
                             settingsPreviewTab === tab.id 
-                              ? 'bg-brand-500 text-white shadow-xl shadow-brand-500/20' 
+                              ? 'bg-white/10 text-white shadow-xl border border-white/10' 
                               : 'text-white/30 hover:text-white/60'
                           }`}
                         >
