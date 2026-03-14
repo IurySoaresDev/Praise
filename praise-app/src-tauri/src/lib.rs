@@ -171,14 +171,28 @@ pub fn run() {
         .setup(|app| {
             // No Linux, definir o ícone programaticamente resolve o problema do ícone de 'engrenagem'
             let icon_bytes = include_bytes!("../../src/assets/logo.png");
-            if let Ok(icon) = image::load_from_memory(icon_bytes) {
-                let (width, height) = icon.dimensions();
-                let rgba = icon.to_rgba8().into_raw();
-                let tauri_icon = tauri::image::Image::new_owned(rgba, width, height);
-                // Define o ícone para a janela principal
-                if let Some(window) = app.get_webview_window("main") {
-                    let _ = window.set_icon(tauri_icon);
-                }
+            println!("Icon bytes length: {}", icon_bytes.len());
+            match image::load_from_memory(icon_bytes) {
+                Ok(icon) => {
+                    let (width, height) = icon.dimensions();
+                    println!("Icon loaded: {}x{}", width, height);
+                    let rgba = icon.to_rgba8().into_raw();
+                    let tauri_icon = tauri::image::Image::new_owned(rgba, width, height);
+                    // Define o ícone default do app
+                    if let Err(e) = app.default_window_icon().map(|_| ()).ok_or("no default icon") {
+                        println!("Default icon info: {}", e);
+                    }
+                    // Define o ícone para a janela principal
+                    if let Some(window) = app.get_webview_window("main") {
+                        match window.set_icon(tauri_icon) {
+                            Ok(_) => println!("Icon set successfully on main window"),
+                            Err(e) => println!("Failed to set icon: {}", e),
+                        }
+                    } else {
+                        println!("Main window not found!");
+                    }
+                },
+                Err(e) => println!("Failed to load icon from memory: {}", e),
             }
             Ok(())
         })
