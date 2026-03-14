@@ -71,10 +71,22 @@ function Projection() {
       setData(event.payload);
     });
 
-    // Tecla ESC fecha a janela de projeção (essencial para Windows fullscreen)
-    const handleKeyDown = (e: KeyboardEvent) => {
+    // Tecla ESC fecha a janela de projeção, outras teclas de navegação são enviadas para a principal
+    const handleKeyDown = async (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         getCurrentWindow().close();
+        return;
+      }
+      
+      // Teclas de navegação de slides
+      if (['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp', 'Enter', ' ', 'PageDown', 'PageUp'].includes(e.key)) {
+        e.preventDefault();
+        try {
+          const { emit } = await import('@tauri-apps/api/event');
+          await emit('projection-key-press', { key: e.key });
+        } catch (err) {
+          console.error("Erro ao emitir tecla da projeção:", err);
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);

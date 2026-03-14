@@ -448,8 +448,18 @@ function App() {
     };
 
     window.addEventListener("keydown", handleKeyDown);
+    
+    // Ouve teclas enviadas pela janela de projeção
+    import('@tauri-apps/api/event').then(({ listen }) => {
+      const unlisten = listen<{ key: string }>('projection-key-press', (event) => {
+        // Simula o evento de teclado para a função handleKeyDown
+        handleKeyDown(new KeyboardEvent('keydown', { key: event.payload.key }));
+      });
+      return () => unlisten.then(f => f());
+    }).catch(console.error);
+
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeSlideIndex, slides, selectedSong, isProjecting, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle, songTitleColor, songLyricsColor, bibleTitleColor, bibleLyricsColor, songTitleFont, songTitleSize, songTitleWeight, songLyricsFont, songLyricsSize, songLyricsWeight, bibleTitleFont, bibleTitleSize, bibleTitleWeight, bibleLyricsFont, bibleLyricsSize, bibleLyricsWeight]);
+  }, [activeSlideIndex, slides, selectedSong, isProjecting, setActiveSlideIndex, sendSlideToProjection, bibleBackground, songBackground, songBodyBackground, getSlideTitle, songTitleColor, songLyricsColor, bibleTitleColor, bibleLyricsColor, songTitleFont, songTitleSize, songTitleWeight, songLyricsFont, songLyricsSize, songLyricsWeight, bibleTitleFont, bibleTitleSize, bibleTitleWeight, bibleLyricsFont, bibleLyricsSize, bibleLyricsWeight, projectionMode]);
 
   // Sincroniza cores em tempo real se o usuário mudar enquanto projeta
   useEffect(() => {
