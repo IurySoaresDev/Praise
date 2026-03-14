@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-400: #d4a0ff; /* violeta claro - textos ativos */
-  --color-brand-500: #a855f7; /* cor principal - destaques */
-  --color-brand-600: #9333ea; /* hover / botões ativos */
-  --color-accent-400: #e9d5ff; /* destaques leves */
-  --color-accent-500: #c084fc; /* acentos */
-  --color-dark-800: #0c0a12; /* preto com matiz roxo */
-  --color-dark-900: #08060e; /* preto profundo com matiz roxo */
-  --color-surface: #110f1a; /* superfícies (sidebars, cards) */
-  --color-surface-hover: #1a1726; /* hover em superfícies */
+  --color-brand-400: #60a5fa; /* azul claro - textos ativos */
+  --color-brand-500: #3b82f6; /* azul principal */
+  --color-brand-600: #2563eb; /* hover / botões ativos */
+  --color-accent-400: #93c5fd; /* destaques leves */
+  --color-accent-500: #60a5fa; /* acentos */
+  --color-dark-800: #0a0c14; /* preto com matiz azul */
+  --color-dark-900: #060810; /* preto profundo com matiz azul */
+  --color-surface: #0f1219; /* superfícies */
+  --color-surface-hover: #161b26; /* hover */
 }
 
 @utility projection-shadow {
@@ -18,14 +18,14 @@
 }
 
 @utility glow-brand {
-  box-shadow: 0 0 20px rgba(168, 85, 247, 0.2),
-              0 0 40px rgba(168, 85, 247, 0.08),
-              inset 0 0 1px rgba(168, 85, 247, 0.15);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.2),
+              0 0 40px rgba(59, 130, 246, 0.08),
+              inset 0 0 1px rgba(59, 130, 246, 0.15);
 }
 
 @utility glow-accent {
-  box-shadow: 0 0 15px rgba(192, 132, 252, 0.15),
-              0 0 30px rgba(192, 132, 252, 0.06);
+  box-shadow: 0 0 15px rgba(96, 165, 250, 0.15),
+              0 0 30px rgba(96, 165, 250, 0.06);
 }
 
 :root {
@@ -45,7 +45,7 @@
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(168, 85, 247, 0.3) transparent;
+  scrollbar-color: rgba(59, 130, 246, 0.3) transparent;
 }
 
 *::-webkit-scrollbar {
@@ -55,11 +55,11 @@
   background: transparent;
 }
 *::-webkit-scrollbar-thumb {
-  background: rgba(168, 85, 247, 0.3);
+  background: rgba(59, 130, 246, 0.3);
   border-radius: 999px;
 }
 *::-webkit-scrollbar-thumb:hover {
-  background: rgba(168, 85, 247, 0.5);
+  background: rgba(59, 130, 246, 0.5);
 }
 
 body {
@@ -94,7 +94,7 @@ body {
 }
 
 .gradient-header {
-  background: linear-gradient(135deg, #08060e, #1a1230, #110f1a, #08060e);
+  background: linear-gradient(135deg, #060810, #0f1a2e, #0a1020, #060810);
   background-size: 300% 300%;
   animation: gradient-shift 15s ease infinite;
 }
@@ -103,8 +103,8 @@ body {
 .glass {
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(168, 85, 247, 0.08);
-  background: rgba(17, 15, 26, 0.88);
+  border: 1px solid rgba(59, 130, 246, 0.08);
+  background: rgba(15, 18, 25, 0.88);
 }
 
 /* Transição suave para todos os elementos interativos */
@@ -114,13 +114,13 @@ button, [draggable="true"] {
 
 /* Seleção customizada */
 ::selection {
-  background: rgba(168, 85, 247, 0.4);
+  background: rgba(59, 130, 246, 0.4);
   color: white;
 }
 
 /* Modal backdrop + content animations */
 .modal-backdrop {
-  background: rgba(8, 6, 14, 0.75);
+  background: rgba(6, 8, 16, 0.75);
   backdrop-filter: blur(8px);
   animation: fade-in 0.2s ease-out;
 }
