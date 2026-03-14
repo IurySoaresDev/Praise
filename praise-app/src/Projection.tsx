@@ -160,7 +160,7 @@ function Projection() {
               WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
-              WebkitTextStroke: '2px black'
+              textShadow: '2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0px 2px 0 #000, 2px 0px 0 #000, 0px -2px 0 #000, -2px 0px 0 #000, 2px 2px 5px rgba(0,0,0,0.5)'
             }}
             dangerouslySetInnerHTML={{ __html: data.content }} 
           />
