@@ -6,6 +6,8 @@ import { readTextFile } from "@tauri-apps/plugin-fs";
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { useStore, EDITABLE_COLLECTIONS } from "./store";
+import { formatContent, formatContentSubtitle } from "./utils/formatContent";
+import { getSlideTitle as getSlideTitleUtil } from "./utils/slideHelpers";
 import {
 	Play,
 	Square,
@@ -285,133 +287,7 @@ function App() {
 		return matchesSearch && matchesCategory;
 	});
 
-	const formatContent = (content: string, collection?: string) => {
-		const isBible = collection === "Bíblia";
-		// Array com as palavras-chave que devem ficar amarelas
-		const highlightWords = [
-			"CORO",
-			"REFRÃO",
-			"BIS",
-			"INSTRUMENTAL",
-			"INTRO",
-			"PONTE",
-			"FINAL",
-		];
-
-		return content.split("\n\n").map((slide) => {
-			// 1. Remove tags HTML (caso haja resquícios do banco), mas vamos manter a nossa própria formatação depois.
-			let cleanSlide = slide.replace(/<[^>]+>/g, "");
-
-			// 2. Transforma cada linha para maiúsculo (exceto Bíblia)
-			const formattedLines = cleanSlide.split("\n").map((line) => {
-				let trimmed = line.trim();
-				if (!trimmed) return "";
-
-				let formatted = isBible ? trimmed : trimmed.toUpperCase();
-
-				if (isBible) {
-					// Remove a referência original do versículo do corpo do texto (pois agora ela vai para o título da janela)
-					if (/^\[(.*?)\]$/.test(formatted)) {
-						return "";
-					}
-
-					// Remove o número inicial do versículo (ex: "1. ")
-					formatted = formatted.replace(/^(\d+\.)\s/, "");
-				}
-
-				// 3. Destaca as palavras-chave em amarelo
-				if (!isBible) {
-					highlightWords.forEach((word) => {
-						// Permite variações como "CORO", "(CORO)", "[CORO]", "CORO:"
-						const regex = new RegExp(`\\b${word}\\b`, "gi");
-						if (regex.test(formatted)) {
-							// Se encontrou a palavra, envolve em um span amarelo
-							formatted = formatted.replace(
-								regex,
-								(match) =>
-									`<span class="text-yellow-400 font-bold italic">${match}</span>`,
-							);
-						}
-					});
-				}
-
-				return formatted;
-			});
-
-			// 4. Junta as linhas com <br /> para o HTML
-			return formattedLines.join("<br />");
-		});
-	};
-
-	// Formata o conteúdo para o modo legenda: re-divide TODAS as linhas em grupos de 2
-	const formatContentSubtitle = (content: string, collection?: string) => {
-		const isBible = collection === "Bíblia";
-		const highlightWords = [
-			"CORO",
-			"REFRÃO",
-			"BIS",
-			"INSTRUMENTAL",
-			"INTRO",
-			"PONTE",
-			"FINAL",
-		];
-
-		// 1. Pega TODAS as linhas do louvor (ignorando a separação por estrofes)
-		const allLines = content
-			.split("\n")
-			.map((line) => line.trim())
-			.filter((line) => line.length > 0) // Remove linhas vazias
-			.map((line) => {
-				// Remove tags HTML
-				let clean = line.replace(/<[^>]+>/g, "");
-				let formatted = isBible ? clean : clean.toUpperCase();
-
-				if (isBible) {
-					if (/^\[(.*?)\]$/.test(formatted)) return "";
-					formatted = formatted.replace(/^(\d+\.)\s/, "");
-				}
-
-				// Destaque de palavras-chave
-				if (!isBible) {
-					highlightWords.forEach((word) => {
-						const regex = new RegExp(`\\b${word}\\b`, "gi");
-						if (regex.test(formatted)) {
-							formatted = formatted.replace(
-								regex,
-								(match) =>
-									`<span class="text-yellow-400 font-bold italic">${match}</span>`,
-							);
-						}
-					});
-				}
-
-				return formatted;
-			})
-			.filter((line) => line.length > 0);
-
-		// 2. Agrupa de 2 em 2 linhas e remove pontuação final (legendas)
-		const subtitleSlides: string[] = [];
-		for (let i = 0; i < allLines.length; i += 2) {
-			const pair = allLines.slice(i, i + 2);
-			// Remove pontuação final da última linha do par (vírgula, ponto, ponto-e-vírgula)
-			if (pair.length > 0) {
-				const lastIdx = pair.length - 1;
-				// Remove tags HTML temporariamente para checar o último caractere real
-				const stripped = pair[lastIdx].replace(/<[^>]+>/g, "");
-				const lastChar = stripped.trimEnd().slice(-1);
-				if ([",", ".", ";"].includes(lastChar)) {
-					// Remove a última ocorrência do caractere de pontuação (antes de possíveis tags de fechamento)
-					const lastPunctuationIdx = pair[lastIdx].lastIndexOf(lastChar);
-					pair[lastIdx] =
-						pair[lastIdx].substring(0, lastPunctuationIdx) +
-						pair[lastIdx].substring(lastPunctuationIdx + 1);
-				}
-			}
-			subtitleSlides.push(pair.join("<br />"));
-		}
-
-		return subtitleSlides;
-	};
+	// formatContent and formatContentSubtitle are now imported from utils/formatContent
 
 	const slides = selectedSong
 		? projectionMode === "subtitle"
@@ -461,18 +337,7 @@ function App() {
 	);
 
 	const getSlideTitle = useCallback(
-		(index: number) => {
-			if (!selectedSong) return "";
-			const isBible = selectedSong.collection === "Bíblia";
-			if (isBible) {
-				// Extrai a referência do versículo (ex: [Gênesis 1:1]) do texto original
-				const rawSlide = selectedSong.content.split("\n\n")[index] || "";
-				const match = rawSlide.match(/^\[(.*?)\]/);
-				return match ? match[1] : selectedSong.title;
-			}
-			// Para louvores, o título só aparece no primeiro slide
-			return index === 0 ? selectedSong.title : "";
-		},
+		(index: number) => getSlideTitleUtil(selectedSong, index),
 		[selectedSong],
 	);
 
