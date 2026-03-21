@@ -98,6 +98,7 @@ export interface AppState {
 }
 
 export const ALLOWED_COLLECTIONS = ["Coletânea 2018", "CIA 2018", "Avulsos 2018"];
+export const EDITABLE_COLLECTIONS = ALLOWED_COLLECTIONS.filter(c => c !== "Coletânea 2018");
 
 // Flatten songs from all collections and ensure uniqueness
 const initialCollections = (rawData as Collection[]).filter(c => ALLOWED_COLLECTIONS.includes(c.name));

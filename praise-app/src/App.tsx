@@ -5,7 +5,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
-import { useStore, ALLOWED_COLLECTIONS } from "./store";
+import { useStore, EDITABLE_COLLECTIONS } from "./store";
 import {
 	Play,
 	Square,
@@ -46,6 +46,9 @@ interface MonitorInfo {
 	name: string;
 	label: string;
 }
+
+const isColetanea = (name: string) =>
+	name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes("coletanea");
 
 function App() {
 	const {
@@ -199,7 +202,7 @@ function App() {
 	const [editorTitle, setEditorTitle] = useState("");
 	const [editorContent, setEditorContent] = useState("");
 	const [editorCollection, setEditorCollection] = useState(
-		ALLOWED_COLLECTIONS[0],
+		EDITABLE_COLLECTIONS[0],
 	);
 	const [showDuplicateModal, setShowDuplicateModal] = useState(false);
 	const [duplicateTitle, setDuplicateTitle] = useState("");
@@ -1160,7 +1163,7 @@ function App() {
 
 									{/* Formulário */}
 									<div className="flex flex-col gap-6">
-										<div className="grid grid-cols-2 gap-6">
+										<div className={`grid gap-6 ${editingSongTitle && isColetanea(editorCollection) ? "grid-cols-1" : "grid-cols-2"}`}>
 											<div>
 												<label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2 block">
 													Título
@@ -1174,36 +1177,38 @@ function App() {
 												/>
 											</div>
 
-											<div>
-												<label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2 block">
-													Coleção
-												</label>
-												<div className="flex gap-1.5 h-[46px]">
-													{ALLOWED_COLLECTIONS.map((col) => (
-														<button
-															key={col}
-															onClick={() => setEditorCollection(col)}
-															className={`flex-1 text-center px-1 py-1 rounded-xl text-[11px] font-medium border transition-all ${
-																editorCollection === col
-																	? "text-white border-brand-500/40 shadow-md"
-																	: "text-white/50 border-white/[0.07] hover:text-white/80 hover:border-white/10 hover:bg-white/[0.03]"
-															}`}
-															style={
-																editorCollection === col
-																	? {
-																			background:
-																				"linear-gradient(135deg, #3b82f6, #2563eb)",
-																		}
-																	: {
-																			backgroundColor: "rgba(255,255,255,0.02)",
-																		}
-															}
-														>
-															{col.replace(" 2018", "")}
-														</button>
-													))}
+											{!(editingSongTitle && isColetanea(editorCollection)) && (
+												<div>
+													<label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2 block">
+														Coleção
+													</label>
+													<div className="flex gap-1.5 h-[46px]">
+														{EDITABLE_COLLECTIONS.map((col) => (
+															<button
+																key={col}
+																onClick={() => setEditorCollection(col)}
+																className={`flex-1 text-center px-1 py-1 rounded-xl text-[11px] font-medium border transition-all ${
+																	editorCollection === col
+																		? "text-white border-brand-500/40 shadow-md"
+																		: "text-white/50 border-white/[0.07] hover:text-white/80 hover:border-white/10 hover:bg-white/[0.03]"
+																}`}
+																style={
+																	editorCollection === col
+																		? {
+																				background:
+																					"linear-gradient(135deg, #3b82f6, #2563eb)",
+																			}
+																		: {
+																				backgroundColor: "rgba(255,255,255,0.02)",
+																			}
+																}
+															>
+																{col.replace(" 2018", "")}
+															</button>
+														))}
+													</div>
 												</div>
-											</div>
+											)}
 										</div>
 
 										<div>
@@ -1231,6 +1236,7 @@ function App() {
 														setEditingSongTitle(null);
 														setEditorTitle("");
 														setEditorContent("");
+														setEditorCollection(EDITABLE_COLLECTIONS[0]);
 													}}
 													className="flex-1 py-3.5 rounded-xl text-[14px] font-semibold text-white/60 bg-white/5 hover:bg-white/10 transition-all"
 												>
