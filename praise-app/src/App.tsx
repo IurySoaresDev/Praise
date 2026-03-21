@@ -32,6 +32,7 @@ import {
 	Upload,
 	ChevronLeft,
 	ChevronRight,
+	ChevronDown,
 	Palette,
 	Type,
 	Maximize2,
@@ -130,8 +131,37 @@ function App() {
 	const [settingsSubTab, setSettingsSubTab] = useState<
 		"titles" | "lyrics" | "bible" | "system"
 	>("titles");
+	const [isSongsCollapsed, setIsSongsCollapsed] = useState(true);
+	const [isBibleCollapsed, setIsBibleCollapsed] = useState(true);
+
+	const isCollapsed = activeTab === 'songs' ? isSongsCollapsed : isBibleCollapsed;
+	const setIsCollapsed = activeTab === 'songs' ? setIsSongsCollapsed : setIsBibleCollapsed;
+	const prevPlaylistLenRef = useRef(playlist.length);
+	const prevBiblePlaylistLenRef = useRef(biblePlaylist.length);
 	const [previewWidth, setPreviewWidth] = useState(0);
 	const previewContainerRef = useRef<HTMLDivElement>(null);
+
+	// Auto-expand ao adicionar louvores, auto-collapse ao remover todos
+	useEffect(() => {
+		const prevLen = prevPlaylistLenRef.current;
+		if (playlist.length > prevLen && isSongsCollapsed) {
+			setIsSongsCollapsed(false);
+		} else if (playlist.length === 0 && prevLen > 0) {
+			setIsSongsCollapsed(true);
+		}
+		prevPlaylistLenRef.current = playlist.length;
+	}, [playlist.length, isSongsCollapsed]);
+
+	// Auto-expand ao adicionar textos bíblicos, auto-collapse ao remover todos
+	useEffect(() => {
+		const prevLen = prevBiblePlaylistLenRef.current;
+		if (biblePlaylist.length > prevLen && isBibleCollapsed) {
+			setIsBibleCollapsed(false);
+		} else if (biblePlaylist.length === 0 && prevLen > 0) {
+			setIsBibleCollapsed(true);
+		}
+		prevBiblePlaylistLenRef.current = biblePlaylist.length;
+	}, [biblePlaylist.length, isBibleCollapsed]);
 
 	// Auto-resetar modo de projeção ao entrar na aba Bíblia ou selecionar passagem bíblica
 	useEffect(() => {
@@ -2486,9 +2516,13 @@ function App() {
 						{/* ─── PLAYLIST DO CULTO (Dinâmica por Aba) ─── */}
 						<div
 							className="border-t border-white/[0.07] flex flex-col min-h-0"
-							style={{ height: "45%", backgroundColor: "#0a0c14" }}
+							style={{ height: isCollapsed ? "auto" : "45%", backgroundColor: "#0a0c14" }}
 						>
-							<div className="px-4 py-3 flex items-center gap-2 shrink-0 border-b border-white/[0.07]">
+							<div
+								className="px-4 py-3 flex items-center gap-2 shrink-0 border-b border-white/[0.07] cursor-pointer select-none hover:bg-white/[0.03] transition-colors"
+								onClick={() => setIsCollapsed(!isCollapsed)}
+								title={isCollapsed ? 'Expandir' : 'Recolher'}
+							>
 								{activeTab === "songs" ? (
 									<ListMusic className="w-4 h-4 text-brand-400" />
 								) : (
@@ -2507,94 +2541,99 @@ function App() {
 										? playlist.length
 										: biblePlaylist.length}
 								</span>
+								<span className="p-1 rounded-md text-white/40 transition-all">
+									{isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+								</span>
 							</div>
 
-							<div className="flex-1 overflow-y-auto p-2">
-								{(activeTab === "songs" ? playlist : biblePlaylist).length ===
-								0 ? (
-									<div className="p-6 text-center text-white/15 text-xs">
-										Duplo-clique ou clique no{" "}
-										<Plus className="inline w-3 h-3 text-brand-400" /> para
-										adicionar{" "}
-										{activeTab === "songs" ? "louvores" : "versículos"}.
-									</div>
-								) : (
-									(activeTab === "songs" ? playlist : biblePlaylist).map(
-										(item, idx) => (
-											<div
-												key={item.title + "-" + idx}
-												draggable
-												onDragStart={(e) => {
-													setDragIdx(idx);
-													e.dataTransfer.effectAllowed = "move";
-													e.dataTransfer.setData("text/plain", String(idx));
-												}}
-												onDragOver={(e) => {
-													e.preventDefault();
-													e.dataTransfer.dropEffect = "move";
-													setOverIdx(idx);
-												}}
-												onDragEnd={() => {
-													if (
-														dragIdx !== null &&
-														overIdx !== null &&
-														dragIdx !== overIdx
-													) {
-														if (activeTab === "songs") {
-															moveSongInPlaylist(dragIdx, overIdx);
-														} else {
-															moveSongInBiblePlaylist(dragIdx, overIdx);
+							{!isCollapsed && (
+								<div className="flex-1 overflow-y-auto p-2">
+									{(activeTab === "songs" ? playlist : biblePlaylist).length ===
+									0 ? (
+										<div className="p-6 text-center text-white/15 text-xs">
+											Duplo-clique ou clique no{" "}
+											<Plus className="inline w-3 h-3 text-brand-400" /> para
+											adicionar{" "}
+											{activeTab === "songs" ? "louvores" : "versículos"}.
+										</div>
+									) : (
+										(activeTab === "songs" ? playlist : biblePlaylist).map(
+											(item, idx) => (
+												<div
+													key={item.title + "-" + idx}
+													draggable
+													onDragStart={(e) => {
+														setDragIdx(idx);
+														e.dataTransfer.effectAllowed = "move";
+														e.dataTransfer.setData("text/plain", String(idx));
+													}}
+													onDragOver={(e) => {
+														e.preventDefault();
+														e.dataTransfer.dropEffect = "move";
+														setOverIdx(idx);
+													}}
+													onDragEnd={() => {
+														if (
+															dragIdx !== null &&
+															overIdx !== null &&
+															dragIdx !== overIdx
+														) {
+															if (activeTab === "songs") {
+																moveSongInPlaylist(dragIdx, overIdx);
+															} else {
+																moveSongInBiblePlaylist(dragIdx, overIdx);
+															}
 														}
-													}
-													setDragIdx(null);
-													setOverIdx(null);
-												}}
-												onClick={() => {
-													setSelectedSong(item);
-													setActiveSlideIndex(0);
-												}}
-												className={`w-full px-1 py-1.5 mb-0.5 rounded-lg transition-all duration-100 text-[13px] flex items-center group cursor-grab active:cursor-grabbing select-none border ${
-													dragIdx === idx
-														? "opacity-40 border-brand-500/50 bg-brand-500/10 scale-95"
-														: overIdx === idx &&
-																dragIdx !== null &&
-																dragIdx !== idx
-															? "border-brand-400/40 bg-brand-500/10 scale-[1.02]"
-															: selectedSong?.title === item.title
-																? "border-brand-500/40 bg-brand-500/20"
-																: "border-transparent hover:bg-white/5"
-												}`}
-											>
-												<div className="p-1 text-white/15 group-hover:text-white/30 flex-shrink-0">
-													<GripVertical className="w-3.5 h-3.5" />
-												</div>
-												<span className="text-white/25 text-[10px] font-mono w-6 text-right shrink-0">
-													{idx + 1}.
-												</span>
-												<span
-													className={`flex-1 truncate font-medium ml-2 ${
-														selectedSong?.title === item.title
-															? "text-brand-200"
-															: "text-white/60"
+														setDragIdx(null);
+														setOverIdx(null);
+													}}
+													onClick={() => {
+														setSelectedSong(item);
+														setActiveSlideIndex(0);
+													}}
+													className={`w-full px-1 py-1.5 mb-0.5 rounded-lg transition-all duration-100 text-[13px] flex items-center group cursor-grab active:cursor-grabbing select-none border ${
+														dragIdx === idx
+															? "opacity-40 border-brand-500/50 bg-brand-500/10 scale-95"
+															: overIdx === idx &&
+																	dragIdx !== null &&
+																	dragIdx !== idx
+																? "border-brand-400/40 bg-brand-500/10 scale-[1.02]"
+																: selectedSong?.title === item.title
+																	? "border-brand-500/40 bg-brand-500/20"
+																	: "border-transparent hover:bg-white/5"
 													}`}
 												>
-													{item.title}
-												</span>
-												<button
-													onClick={(e) => {
-														e.stopPropagation();
-														if (activeTab === "songs") removeFromPlaylist(idx);
-														else removeFromBiblePlaylist(idx);
-													}}
-													className="p-1 rounded-md text-white/15 hover:text-red-400 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-all"
-												>
-													<Trash2 className="w-3.5 h-3.5" />
-												</button>
-											</div>
-										),
-									)
-								)}
-							</div>
+													<div className="p-1 text-white/15 group-hover:text-white/30 flex-shrink-0">
+														<GripVertical className="w-3.5 h-3.5" />
+													</div>
+													<span className="text-white/25 text-[10px] font-mono w-6 text-right shrink-0">
+														{idx + 1}.
+													</span>
+													<span
+														className={`flex-1 truncate font-medium ml-2 ${
+															selectedSong?.title === item.title
+																? "text-brand-200"
+																: "text-white/60"
+														}`}
+													>
+														{item.title}
+													</span>
+													<button
+														onClick={(e) => {
+															e.stopPropagation();
+															if (activeTab === "songs") removeFromPlaylist(idx);
+															else removeFromBiblePlaylist(idx);
+														}}
+														className="p-1 rounded-md text-white/15 hover:text-red-400 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-all"
+													>
+														<Trash2 className="w-3.5 h-3.5" />
+													</button>
+												</div>
+											),
+										)
+									)}
+								</div>
+							)}
 						</div>
 					</div>
 				)}
