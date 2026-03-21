@@ -838,9 +838,10 @@ function App() {
                       <div>
                         <label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2 block">Coleção</label>
                         <div className="flex gap-1.5 h-[46px]">
-                          {(editingSongTitle ? ALLOWED_COLLECTIONS : EDITABLE_COLLECTIONS).map(col => {
+                          {(() => {
                             const isCollectionDisabled = editingSongTitle !== null && editorCollection === "Coletânea 2018";
-                            return (
+                            const collectionsToShow = editingSongTitle ? ALLOWED_COLLECTIONS : EDITABLE_COLLECTIONS;
+                            return collectionsToShow.map(col => (
                               <button
                                 key={col}
                                 onClick={() => !isCollectionDisabled && setEditorCollection(col)}
@@ -853,8 +854,8 @@ function App() {
                               >
                                 {col.replace(" 2018", "")}
                               </button>
-                            );
-                          })}
+                            ));
+                          })()}
                         </div>
                       </div>
                     </div>
