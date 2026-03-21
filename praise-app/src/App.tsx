@@ -85,6 +85,7 @@ function App() {
   const [selectedMonitor, setSelectedMonitor] = useState<string>("");
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [overIdx, setOverIdx] = useState<number | null>(null);
+
   const [isProjecting, setIsProjecting] = useState(false);
   const [isFrozen, setIsFrozen] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState<{ downloaded: number, total: number } | null>(null);
@@ -1471,8 +1472,9 @@ function App() {
                   {filteredSongs.map((song, idx) => (
                     <div
                       key={idx}
+                      onClick={() => { setSelectedSong(song); setActiveSlideIndex(0); }}
                       onDoubleClick={() => addToPlaylist(song)}
-                      className="w-full text-left px-2 py-1.5 mb-0.5 rounded-lg text-[13px] flex items-center group cursor-pointer transition-all hover:bg-white/5"
+                      className={`w-full text-left px-2 py-1.5 mb-0.5 rounded-lg text-[13px] flex items-center group cursor-pointer transition-all hover:bg-white/5 ${selectedSong?.title === song.title ? 'bg-white/10' : ''}`}
                     >
                       <span className="text-white/15 text-[10px] font-mono w-6 text-right shrink-0">{idx + 1}.</span>
                       <span className="flex-1 truncate text-white/60 group-hover:text-white/90 font-medium ml-2">
