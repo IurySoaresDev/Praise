@@ -10,47 +10,28 @@ import { TitleBar } from "./components/TitleBar";
 import { SystemNav } from "./components/SystemNav";
 import { EditorTab } from "./components/EditorTab";
 import { SettingsTab } from "./components/SettingsTab";
+import { SongsSidebar } from "./components/SongsSidebar";
+import { BibleSidebar } from "./components/BibleSidebar";
+import { Playlist } from "./components/Playlist";
 import { DuplicateModal } from "./components/DuplicateModal";
 import { SuccessToast } from "./components/SuccessToast";
 import {
 	Play,
 	Square,
-	Plus,
-	Trash2,
-	GripVertical,
-	ListMusic,
-	BookOpen,
 	Monitor,
-	Search,
-	ArrowLeft,
-	Loader2,
 	MonitorDot,
 	Snowflake,
 	ChevronLeft,
 	ChevronRight,
-	ChevronDown,
 } from "lucide-react";
 import "./App.css";
 
 function App() {
 	const {
-		songs,
-		searchQuery,
-		setSearchQuery,
-		selectedCategory,
-		setSelectedCategory,
 		selectedSong,
-		setSelectedSong,
 		activeSlideIndex,
-		setActiveSlideIndex,
 		playlist,
 		biblePlaylist,
-		addToPlaylist,
-		removeFromPlaylist,
-		moveSongInPlaylist,
-		addToBiblePlaylist,
-		removeFromBiblePlaylist,
-		moveSongInBiblePlaylist,
 		activeTab,
 		setActiveTab,
 		songBackground,
@@ -71,8 +52,6 @@ function App() {
 	const editor = useEditor();
 
 	// Local UI state
-	const [dragIdx, setDragIdx] = useState<number | null>(null);
-	const [overIdx, setOverIdx] = useState<number | null>(null);
 	const [isSongsCollapsed, setIsSongsCollapsed] = useState(true);
 	const [isBibleCollapsed, setIsBibleCollapsed] = useState(true);
 
@@ -81,8 +60,6 @@ function App() {
 	const prevPlaylistLenRef = useRef(playlist.length);
 	const prevBiblePlaylistLenRef = useRef(biblePlaylist.length);
 
-	// Destructure bible for template compatibility
-	const { selectedBook, setSelectedBook, selectedChapter, setSelectedChapter, searchBibleQuery, setSearchBibleQuery, searchChapterQuery, setSearchChapterQuery, bibleVersion, setBibleVersion, isLoadingBible, bibleBooks, bibleVerses } = bible;
 	const { showDuplicateModal, setShowDuplicateModal, duplicateTitle, showSuccessToast, successMessage } = editor;
 
 	// Auto-expand ao adicionar louvores, auto-collapse ao remover todos
@@ -114,17 +91,6 @@ function App() {
 		}
 	}, [activeTab, selectedSong, setProjectionMode]);
 
-	const categories = ["Todas", "Coletânea 2018", "Avulsos 2018", "CIA 2018"];
-
-	const filteredSongs = songs.filter((song) => {
-		const matchesSearch = song.title
-			.toLowerCase()
-			.includes(searchQuery.toLowerCase());
-		const matchesCategory =
-			selectedCategory === "Todas" || song.collection === selectedCategory;
-		return matchesSearch && matchesCategory;
-	});
-
 	return (
 		<div
 			className="flex flex-col h-screen overflow-hidden font-['Inter',system-ui,sans-serif]"
@@ -141,6 +107,7 @@ function App() {
 				{activeTab === "settings" && <SettingsTab showSuccess={editor.showSuccess} />}
 
 
+
 				{/* ═══ SIDEBAR ═══ */}
 				{activeTab !== "editor" && activeTab !== "settings" && (
 					<div
@@ -154,7 +121,7 @@ function App() {
 									<h1 className="text-base font-bold tracking-tight text-white leading-none">
 										{activeTab === "songs"
 											? "Louvores"
-											: `Bíblia Sagrada (${bibleVersion})`}
+											: `Bíblia Sagrada (${bible.bibleVersion})`}
 									</h1>
 									<p className="text-[10px] text-white/40 font-medium mt-0.5">
 										{activeTab === "songs"
@@ -165,471 +132,17 @@ function App() {
 							</div>
 						</div>
 
-						{/* Conteúdo Dinâmico */}
 						{activeTab === "songs" ? (
-							<div className="flex flex-col flex-1 min-h-0">
-								{/* Search + Categories */}
-								<div className="p-4 flex flex-col gap-3 shrink-0 border-b border-white/[0.07]">
-									<div className="relative">
-										<Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
-										<input
-											type="text"
-											placeholder="Buscar louvor..."
-											className="w-full pl-9 pr-4 py-2 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/20 placeholder:text-white/25"
-											style={{ backgroundColor: "rgba(255,255,255,0.05)" }}
-											value={searchQuery}
-											onChange={(e) => setSearchQuery(e.target.value)}
-										/>
-									</div>
-
-									<div className="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-										{categories.map((cat) => (
-											<button
-												key={cat}
-												onClick={() => setSelectedCategory(cat)}
-												className={`whitespace-nowrap px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-all flex-shrink-0 ${
-													selectedCategory === cat
-														? "text-white shadow-md"
-														: "text-white/40 hover:text-white/70 hover:bg-white/5"
-												}`}
-												style={
-													selectedCategory === cat
-														? {
-																background:
-																	"linear-gradient(135deg, #3b82f6, #2563eb)",
-															}
-														: {}
-												}
-											>
-												{cat.replace(" 2018", "")}
-											</button>
-										))}
-									</div>
-								</div>
-
-								{/* Biblioteca de Louvores */}
-								<div className="flex-1 overflow-y-auto p-2 min-h-0">
-									{filteredSongs.map((song, idx) => (
-										<div
-											key={idx}
-											onClick={() => {
-												setSelectedSong(song);
-												setActiveSlideIndex(0);
-											}}
-											onDoubleClick={() => addToPlaylist(song)}
-											className={`w-full text-left px-2 py-1.5 mb-0.5 rounded-lg text-[13px] flex items-center group cursor-pointer transition-all hover:bg-white/5 ${selectedSong?.title === song.title ? "bg-white/10" : ""}`}
-										>
-											<span className="text-white/15 text-[10px] font-mono w-6 text-right shrink-0">
-												{idx + 1}.
-											</span>
-											<span className="flex-1 truncate text-white/60 group-hover:text-white/90 font-medium ml-2">
-												{song.title}
-											</span>
-											<button
-												onClick={(e) => {
-													e.stopPropagation();
-													addToPlaylist(song);
-												}}
-												className="p-1 rounded-md text-white/20 hover:text-accent-300 hover:bg-accent-500/20 opacity-0 group-hover:opacity-100 transition-all flex-shrink-0"
-												title="Adicionar ao Culto"
-											>
-												<Plus className="w-3.5 h-3.5" />
-											</button>
-										</div>
-									))}
-									{filteredSongs.length === 0 && (
-										<div className="p-6 text-center text-white/20 text-xs mt-8">
-											Nenhum louvor encontrado.
-										</div>
-									)}
-								</div>
-							</div>
+							<SongsSidebar />
 						) : (
-							<div className="flex flex-col flex-1 min-h-0 bg-[#0f1219]/30">
-								{/* Nav Header Bible */}
-								<div className="p-3 flex items-center justify-between gap-2 border-b border-white/[0.07] shrink-0 min-h-[53px]">
-									<div className="flex items-center gap-2 flex-1 min-w-0">
-										{selectedBook && (
-											<button
-												onClick={() => {
-													if (selectedChapter) {
-														setSelectedChapter(null);
-													} else {
-														setSelectedBook(null);
-														setSearchChapterQuery("");
-													}
-												}}
-												className="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-all shrink-0"
-											>
-												<ArrowLeft className="w-4 h-4" />
-											</button>
-										)}
-										<div className="flex-1 truncate text-sm font-semibold text-white/80 pr-2 block">
-											{!selectedBook
-												? "Selecione o Livro"
-												: !selectedChapter
-													? selectedBook.name
-													: `${selectedBook.name} ${selectedChapter}`}
-										</div>
-									</div>
-
-									<div className="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar shrink-0">
-										{(["ACF", "ARA", "NVI"] as const).map((version) => (
-											<button
-												key={version}
-												onClick={() => setBibleVersion(version)}
-												className={`whitespace-nowrap px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-all flex-shrink-0 ${
-													bibleVersion === version
-														? "text-white shadow-md bg-brand-500"
-														: "text-white/40 hover:text-white/70 hover:bg-white/5"
-												}`}
-												style={
-													bibleVersion === version
-														? {
-																background:
-																	"linear-gradient(135deg, #64748b, #475569)",
-															}
-														: {}
-												}
-											>
-												{version}
-											</button>
-										))}
-									</div>
-								</div>
-
-								<div className="flex-1 overflow-y-auto p-2 min-h-0">
-									{isLoadingBible ? (
-										<div className="flex-1 flex flex-col items-center justify-center h-full gap-3 opacity-50">
-											<Loader2 className="w-8 h-8 text-white animate-spin" />
-											<span className="text-white/60 text-xs font-semibold">
-												Carregando Bíblia ({bibleVersion})...
-											</span>
-										</div>
-									) : (
-										<>
-											{/* Livros */}
-											{!selectedBook && (
-												<div className="flex flex-col gap-3">
-													<div className="relative shrink-0">
-														<Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
-														<input
-															type="text"
-															placeholder="Buscar livro..."
-															className="w-full pl-9 pr-4 py-2 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/20 placeholder:text-white/25"
-															style={{
-																backgroundColor: "rgba(255,255,255,0.05)",
-															}}
-															value={searchBibleQuery}
-															onChange={(e) =>
-																setSearchBibleQuery(e.target.value)
-															}
-														/>
-													</div>
-
-													<div className="grid grid-cols-1 gap-1">
-														{bibleBooks.length > 0 ? (
-															bibleBooks.map((book) => (
-																<button
-																	key={book.abbrev}
-																	onClick={() => {
-																		setSelectedBook(book);
-																		setSearchBibleQuery("");
-																	}}
-																	className="w-full text-left px-3 py-2 rounded-lg text-[13px] text-white/70 hover:text-white hover:bg-white/5 transition-all flex justify-between items-center group"
-																>
-																	<span className="font-medium">
-																		{book.name}
-																	</span>
-																	<span className="text-[10px] text-white/20 group-hover:text-white/40 bg-white/5 px-2 py-0.5 rounded-md">
-																		{book.chapters.length} cap.
-																	</span>
-																</button>
-															))
-														) : (
-															<div className="px-3 py-6 text-center text-white/20 text-xs">
-																Nenhum livro encontrado.
-															</div>
-														)}
-													</div>
-												</div>
-											)}
-
-											{/* Capítulos */}
-											{selectedBook && !selectedChapter && (
-												<div className="flex flex-col gap-3">
-													<div className="relative shrink-0">
-														<Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
-														<input
-															type="text"
-															placeholder={`Buscar no livro de ${selectedBook.name}...`}
-															className="w-full pl-9 pr-4 py-2 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/20 placeholder:text-white/25"
-															style={{
-																backgroundColor: "rgba(255,255,255,0.05)",
-															}}
-															value={searchChapterQuery}
-															onChange={(e) =>
-																setSearchChapterQuery(e.target.value)
-															}
-														/>
-													</div>
-
-													<div className="grid grid-cols-5 gap-1 p-1">
-														{Array.from({
-															length: selectedBook.chapters.length,
-														})
-															.map((_, i) => i + 1)
-															.filter(
-																(chapNumber) =>
-																	searchChapterQuery.trim() === "" ||
-																	chapNumber
-																		.toString()
-																		.includes(searchChapterQuery.trim()),
-															)
-															.map((chapNumber) => (
-																<button
-																	key={chapNumber}
-																	onClick={() => {
-																		setSelectedChapter(chapNumber);
-																		setSearchChapterQuery("");
-
-																		// Carrega o capítulo inteiro no Lobby
-																		const chapterVerses =
-																			selectedBook.chapters[chapNumber - 1];
-																		const chapterSongTitle = `${selectedBook.name} ${chapNumber}`;
-																		const chapterContent = chapterVerses
-																			.map(
-																				(text: string, vIdx: number) =>
-																					`[${selectedBook.name} ${chapNumber}:${vIdx + 1}]\n${vIdx + 1}. ${text}`,
-																			)
-																			.join("\n\n");
-
-																		setSelectedSong({
-																			title: chapterSongTitle,
-																			content: chapterContent,
-																			collection: "Bíblia",
-																		});
-																		setActiveSlideIndex(0);
-																	}}
-																	className={`aspect-square flex items-center justify-center rounded-lg text-[13px] font-medium text-white/70 hover:text-white hover:bg-brand-500/20 hover:border-brand-500/30 border border-transparent transition-all ${
-																		selectedChapter === chapNumber
-																			? "bg-brand-500/20 text-brand-400 border-brand-500/30 glow-brand shadow-inner"
-																			: ""
-																	}`}
-																>
-																	{chapNumber}
-																</button>
-															))}
-													</div>
-													{Array.from({
-														length: selectedBook.chapters.length,
-													}).filter((c: any) =>
-														(c + 1)
-															.toString()
-															.includes(searchChapterQuery.trim()),
-													).length === 0 && (
-														<div className="px-3 py-6 text-center text-white/20 text-xs">
-															Nenhum capítulo encontrado.
-														</div>
-													)}
-												</div>
-											)}
-
-											{/* Versículos */}
-											{selectedBook && selectedChapter && (
-												<div className="flex flex-col gap-1">
-													{bibleVerses.map((verse: any, index: number) => {
-														const chapterSongTitle = `${selectedBook.name} ${selectedChapter}`;
-														const isVerseActive =
-															selectedSong?.title === chapterSongTitle &&
-															activeSlideIndex === index;
-
-														const singleVerseSong = {
-															title: `${selectedBook.name} ${selectedChapter}:${verse.number}`,
-															content: `[${selectedBook.name} ${selectedChapter}:${verse.number}]\n${verse.number}. ${verse.text}`,
-															collection: "Bíblia",
-														};
-
-														return (
-															<div
-																key={verse.number}
-																onDoubleClick={() =>
-																	addToBiblePlaylist(singleVerseSong)
-																}
-																onClick={() => {
-																	// Se o capítulo inteiro não for mais a "música" atual, a recria
-																	if (
-																		selectedSong?.title !== chapterSongTitle
-																	) {
-																		const chapterContent = bibleVerses
-																			.map(
-																				(v: any) =>
-																					`[${selectedBook.name} ${selectedChapter}:${v.number}]\n${v.number}. ${v.text}`,
-																			)
-																			.join("\n\n");
-																		setSelectedSong({
-																			title: chapterSongTitle,
-																			content: chapterContent,
-																			collection: "Bíblia",
-																		});
-																	}
-																	setActiveSlideIndex(index);
-																}}
-																className={`w-full text-left p-2 rounded-lg flex gap-2 group cursor-pointer transition-all border ${
-																	isVerseActive
-																		? "border-brand-500/40 bg-brand-500/20"
-																		: "border-transparent hover:bg-white/5"
-																}`}
-															>
-																<span className="text-brand-400 font-bold text-[10px] pt-[3px] shrink-0 w-4 text-right">
-																	{verse.number}
-																</span>
-																<p className="flex-1 text-[13px] text-white/70 group-hover:text-white/90 leading-relaxed">
-																	{verse.text}
-																</p>
-																<button
-																	onClick={(e) => {
-																		e.stopPropagation();
-																		addToBiblePlaylist(singleVerseSong);
-																	}}
-																	className="p-1.5 h-7 w-7 flex items-center justify-center rounded-md text-white/20 hover:text-accent-300 hover:bg-accent-500/20 opacity-0 group-hover:opacity-100 transition-all shrink-0"
-																	title="Adicionar ao único versículo Culto"
-																>
-																	<Plus className="w-3.5 h-3.5" />
-																</button>
-															</div>
-														);
-													})}
-												</div>
-											)}
-										</>
-									)}
-								</div>
-							</div>
+							<BibleSidebar bible={bible} />
 						)}
 
-						{/* ─── PLAYLIST DO CULTO (Dinâmica por Aba) ─── */}
-						<div
-							className="border-t border-white/[0.07] flex flex-col min-h-0"
-							style={{ height: isCollapsed ? "auto" : "45%", backgroundColor: "#0a0c14" }}
-						>
-							<div
-								className="px-4 py-3 flex items-center gap-2 shrink-0 border-b border-white/[0.07] cursor-pointer select-none hover:bg-white/[0.03] transition-colors"
-								onClick={() => setIsCollapsed(!isCollapsed)}
-								title={isCollapsed ? 'Expandir' : 'Recolher'}
-							>
-								{activeTab === "songs" ? (
-									<ListMusic className="w-4 h-4 text-brand-400" />
-								) : (
-									<BookOpen className="w-4 h-4 text-brand-400" />
-								)}
-								<span className="text-[13px] font-semibold text-white/70 flex-1">
-									{activeTab === "songs"
-										? "Louvores do Culto"
-										: "Textos Bíblicos"}
-								</span>
-								<span
-									className="text-[11px] font-bold px-2 py-0.5 rounded-md text-brand-300"
-									style={{ backgroundColor: "rgba(99,102,241,0.15)" }}
-								>
-									{activeTab === "songs"
-										? playlist.length
-										: biblePlaylist.length}
-								</span>
-								<span className="p-1 rounded-md text-white/40 transition-all">
-									{isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-								</span>
-							</div>
-
-							{!isCollapsed && (
-								<div className="flex-1 overflow-y-auto p-2">
-									{(activeTab === "songs" ? playlist : biblePlaylist).length ===
-									0 ? (
-										<div className="p-6 text-center text-white/15 text-xs">
-											Duplo-clique ou clique no{" "}
-											<Plus className="inline w-3 h-3 text-brand-400" /> para
-											adicionar{" "}
-											{activeTab === "songs" ? "louvores" : "versículos"}.
-										</div>
-									) : (
-										(activeTab === "songs" ? playlist : biblePlaylist).map(
-											(item, idx) => (
-												<div
-													key={item.title + "-" + idx}
-													draggable
-													onDragStart={(e) => {
-														setDragIdx(idx);
-														e.dataTransfer.effectAllowed = "move";
-														e.dataTransfer.setData("text/plain", String(idx));
-													}}
-													onDragOver={(e) => {
-														e.preventDefault();
-														e.dataTransfer.dropEffect = "move";
-														setOverIdx(idx);
-													}}
-													onDragEnd={() => {
-														if (
-															dragIdx !== null &&
-															overIdx !== null &&
-															dragIdx !== overIdx
-														) {
-															if (activeTab === "songs") {
-																moveSongInPlaylist(dragIdx, overIdx);
-															} else {
-																moveSongInBiblePlaylist(dragIdx, overIdx);
-															}
-														}
-														setDragIdx(null);
-														setOverIdx(null);
-													}}
-													onClick={() => {
-														setSelectedSong(item);
-														setActiveSlideIndex(0);
-													}}
-													className={`w-full px-1 py-1.5 mb-0.5 rounded-lg transition-all duration-100 text-[13px] flex items-center group cursor-grab active:cursor-grabbing select-none border ${
-														dragIdx === idx
-															? "opacity-40 border-brand-500/50 bg-brand-500/10 scale-95"
-															: overIdx === idx &&
-																	dragIdx !== null &&
-																	dragIdx !== idx
-																? "border-brand-400/40 bg-brand-500/10 scale-[1.02]"
-																: selectedSong?.title === item.title
-																	? "border-brand-500/40 bg-brand-500/20"
-																	: "border-transparent hover:bg-white/5"
-													}`}
-												>
-													<div className="p-1 text-white/15 group-hover:text-white/30 flex-shrink-0">
-														<GripVertical className="w-3.5 h-3.5" />
-													</div>
-													<span className="text-white/25 text-[10px] font-mono w-6 text-right shrink-0">
-														{idx + 1}.
-													</span>
-													<span
-														className={`flex-1 truncate font-medium ml-2 ${
-															selectedSong?.title === item.title
-																? "text-brand-200"
-																: "text-white/60"
-														}`}
-													>
-														{item.title}
-													</span>
-													<button
-														onClick={(e) => {
-															e.stopPropagation();
-															if (activeTab === "songs") removeFromPlaylist(idx);
-															else removeFromBiblePlaylist(idx);
-														}}
-														className="p-1 rounded-md text-white/15 hover:text-red-400 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-all"
-													>
-														<Trash2 className="w-3.5 h-3.5" />
-													</button>
-												</div>
-											),
-										)
-									)}
-								</div>
-							)}
-						</div>
+						<Playlist
+							activeTab={activeTab as "songs" | "bible"}
+							isCollapsed={isCollapsed}
+							onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+						/>
 					</div>
 				)}
 
