@@ -5,7 +5,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
-import { useStore, ALLOWED_COLLECTIONS, EDITABLE_COLLECTIONS } from "./store";
+import { useStore, EDITABLE_COLLECTIONS } from "./store";
 import {
 	Play,
 	Square,
@@ -46,6 +46,9 @@ interface MonitorInfo {
 	name: string;
 	label: string;
 }
+
+const isColetanea = (name: string) =>
+	name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes("coletanea");
 
 function App() {
 	const {
@@ -1160,7 +1163,7 @@ function App() {
 
 									{/* Formulário */}
 									<div className="flex flex-col gap-6">
-										<div className="grid grid-cols-2 gap-6">
+										<div className={`grid gap-6 ${editingSongTitle && isColetanea(editorCollection) ? "grid-cols-1" : "grid-cols-2"}`}>
 											<div>
 												<label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2 block">
 													Título
@@ -1174,24 +1177,21 @@ function App() {
 												/>
 											</div>
 
-											<div>
-												<label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2 block">
-													Coleção
-												</label>
-												<div className="flex gap-1.5 h-[46px]">
-													{(() => {
-														const isCollectionDisabled = editingSongTitle !== null && editorCollection === "Coletânea 2018";
-														const collectionsToShow = editingSongTitle ? ALLOWED_COLLECTIONS : EDITABLE_COLLECTIONS;
-														return collectionsToShow.map((col) => (
+											{!(editingSongTitle && isColetanea(editorCollection)) && (
+												<div>
+													<label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2 block">
+														Coleção
+													</label>
+													<div className="flex gap-1.5 h-[46px]">
+														{EDITABLE_COLLECTIONS.map((col) => (
 															<button
 																key={col}
-																onClick={() => !isCollectionDisabled && setEditorCollection(col)}
-																disabled={isCollectionDisabled}
+																onClick={() => setEditorCollection(col)}
 																className={`flex-1 text-center px-1 py-1 rounded-xl text-[11px] font-medium border transition-all ${
 																	editorCollection === col
 																		? "text-white border-brand-500/40 shadow-md"
 																		: "text-white/50 border-white/[0.07] hover:text-white/80 hover:border-white/10 hover:bg-white/[0.03]"
-																} ${isCollectionDisabled ? "opacity-50 cursor-not-allowed pointer-events-none" : ""}`}
+																}`}
 																style={
 																	editorCollection === col
 																		? {
@@ -1205,10 +1205,10 @@ function App() {
 															>
 																{col.replace(" 2018", "")}
 															</button>
-														));
-													})()}
+														))}
+													</div>
 												</div>
-											</div>
+											)}
 										</div>
 
 										<div>
