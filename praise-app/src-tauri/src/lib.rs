@@ -35,9 +35,14 @@ fn get_monitors(app_handle: tauri::AppHandle) -> Result<Vec<MonitorInfo>, String
     let mut monitor_list = Vec::new();
 
     for (i, monitor) in monitors.iter().enumerate() {
-        let name = monitor.name().map(|n| n.to_string()).unwrap_or_else(|| format!("Monitor {}", i + 1));
+        let raw_name = monitor.name().map(|n| n.to_string());
         let size = monitor.size();
-        let label = format!("{} ({}x{})", name, size.width, size.height);
+        let friendly = match &raw_name {
+            Some(n) if !n.starts_with("0x") && !n.starts_with("\\\\.\\") => n.clone(),
+            _ => format!("Monitor {}", i + 1),
+        };
+        let name = raw_name.unwrap_or_else(|| format!("monitor-{}", i));
+        let label = format!("{} ({}x{})", friendly, size.width, size.height);
         monitor_list.push(MonitorInfo { name, label });
     }
 
