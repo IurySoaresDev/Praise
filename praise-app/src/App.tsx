@@ -2518,7 +2518,11 @@ function App() {
 							className="border-t border-white/[0.07] flex flex-col min-h-0"
 							style={{ height: isCollapsed ? "auto" : "45%", backgroundColor: "#0a0c14" }}
 						>
-							<div className="px-4 py-3 flex items-center gap-2 shrink-0 border-b border-white/[0.07]">
+							<div
+								className="px-4 py-3 flex items-center gap-2 shrink-0 border-b border-white/[0.07] cursor-pointer select-none hover:bg-white/[0.03] transition-colors"
+								onClick={() => setIsCollapsed(!isCollapsed)}
+								title={isCollapsed ? 'Expandir' : 'Recolher'}
+							>
 								{activeTab === "songs" ? (
 									<ListMusic className="w-4 h-4 text-brand-400" />
 								) : (
@@ -2537,13 +2541,9 @@ function App() {
 										? playlist.length
 										: biblePlaylist.length}
 								</span>
-								<button
-									onClick={() => setIsCollapsed(!isCollapsed)}
-									className="p-1 rounded-md text-white/40 hover:text-white/70 hover:bg-white/5 transition-all"
-									title={isCollapsed ? 'Expandir' : 'Recolher'}
-								>
+								<span className="p-1 rounded-md text-white/40 transition-all">
 									{isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-								</button>
+								</span>
 							</div>
 
 							{!isCollapsed && (
