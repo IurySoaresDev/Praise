@@ -136,8 +136,32 @@ function App() {
 
 	const isCollapsed = activeTab === 'songs' ? isSongsCollapsed : isBibleCollapsed;
 	const setIsCollapsed = activeTab === 'songs' ? setIsSongsCollapsed : setIsBibleCollapsed;
+	const prevPlaylistLenRef = useRef(playlist.length);
+	const prevBiblePlaylistLenRef = useRef(biblePlaylist.length);
 	const [previewWidth, setPreviewWidth] = useState(0);
 	const previewContainerRef = useRef<HTMLDivElement>(null);
+
+	// Auto-expand ao adicionar louvores, auto-collapse ao remover todos
+	useEffect(() => {
+		const prevLen = prevPlaylistLenRef.current;
+		if (playlist.length > prevLen && isSongsCollapsed) {
+			setIsSongsCollapsed(false);
+		} else if (playlist.length === 0 && prevLen > 0) {
+			setIsSongsCollapsed(true);
+		}
+		prevPlaylistLenRef.current = playlist.length;
+	}, [playlist.length]);
+
+	// Auto-expand ao adicionar textos bíblicos, auto-collapse ao remover todos
+	useEffect(() => {
+		const prevLen = prevBiblePlaylistLenRef.current;
+		if (biblePlaylist.length > prevLen && isBibleCollapsed) {
+			setIsBibleCollapsed(false);
+		} else if (biblePlaylist.length === 0 && prevLen > 0) {
+			setIsBibleCollapsed(true);
+		}
+		prevBiblePlaylistLenRef.current = biblePlaylist.length;
+	}, [biblePlaylist.length]);
 
 	// Auto-resetar modo de projeção ao entrar na aba Bíblia ou selecionar passagem bíblica
 	useEffect(() => {
