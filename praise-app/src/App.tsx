@@ -32,6 +32,7 @@ import {
 	Upload,
 	ChevronLeft,
 	ChevronRight,
+	ChevronDown,
 	Palette,
 	Type,
 	Maximize2,
@@ -2512,6 +2513,13 @@ function App() {
 										? playlist.length
 										: biblePlaylist.length}
 								</span>
+								<button
+									onClick={() => setIsCollapsed(!isCollapsed)}
+									className="p-1 rounded-md text-white/40 hover:text-white/70 hover:bg-white/5 transition-all"
+									title={isCollapsed ? 'Expandir' : 'Recolher'}
+								>
+									{isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+								</button>
 							</div>
 
 							<div className="flex-1 overflow-y-auto p-2">
