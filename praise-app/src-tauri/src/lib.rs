@@ -3,7 +3,7 @@ use std::sync::Mutex;
 use image::GenericImageView;
 use tauri::{Manager, Emitter, WebviewWindowBuilder, WebviewUrl, State};
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, Deserialize)]
 struct MonitorInfo {
     name: String,
     label: String,
