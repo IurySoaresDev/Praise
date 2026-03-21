@@ -129,7 +129,6 @@ fn project_slide(
         )
         .title("Praise Projection")
         .always_on_top(true)
-        .transparent(true)
         .decorations(false);
 
         // Tenta achar o monitor escolhido pelo nome
@@ -155,7 +154,7 @@ fn project_slide(
             println!("AVISO: Monitor '{}' não encontrado! Usando monitor padrão.", monitor);
         }
 
-        let window = builder.build().map_err(|e| e.to_string())?;
+        let window = builder.build().map_err(|e: tauri::Error| e.to_string())?;
         
         // Ativa fullscreen após a janela ser criada na posição correta
         let _ = window.set_fullscreen(true);
