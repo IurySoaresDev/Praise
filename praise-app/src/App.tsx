@@ -1,6 +1,5 @@
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/plugin-dialog";
 import { useStore, EDITABLE_COLLECTIONS } from "./store";
 import { getSlideTitle } from "./utils/slideHelpers";
@@ -9,6 +8,10 @@ import { useProjection } from "./hooks/useProjection";
 import { useBible } from "./hooks/useBible";
 import { useEditor } from "./hooks/useEditor";
 import { useUpdater } from "./hooks/useUpdater";
+import { TitleBar } from "./components/TitleBar";
+import { SystemNav } from "./components/SystemNav";
+import { DuplicateModal } from "./components/DuplicateModal";
+import { SuccessToast } from "./components/SuccessToast";
 import {
 	Play,
 	Square,
@@ -16,10 +19,8 @@ import {
 	X,
 	Plus,
 	Trash2,
-	CheckCircle2,
 	FilePenLine,
 	GripVertical,
-	AlertTriangle,
 	ListMusic,
 	BookOpen,
 	Monitor,
@@ -30,7 +31,6 @@ import {
 	MonitorDot,
 	Snowflake,
 	RotateCw,
-	Minus,
 	Music,
 	Upload,
 	ChevronLeft,
@@ -42,7 +42,6 @@ import {
 	Bold,
 	Image as ImageIcon,
 } from "lucide-react";
-import praiseLogo from "./assets/praise-logo.svg";
 import "./App.css";
 
 const isColetanea = (name: string) =>
@@ -190,120 +189,15 @@ function App() {
 		return matchesSearch && matchesCategory;
 	});
 
-	const appWindow = useMemo(() => getCurrentWindow(), []);
-
 	return (
 		<div
 			className="flex flex-col h-screen overflow-hidden font-['Inter',system-ui,sans-serif]"
 			style={{ backgroundColor: "#060810", color: "rgba(255,255,255,0.9)" }}
 		>
-			{/* ═══ CUSTOM TITLE BAR ═══ */}
-			<div
-				data-tauri-drag-region
-				onMouseDown={(e) => {
-					// Apenas se for o botão esquerdo e não estiver clicando nos botões de controle
-					if (e.buttons === 1) {
-						appWindow.startDragging();
-					}
-				}}
-				className="h-8 flex items-center justify-between px-4 select-none shrink-0 cursor-default"
-				style={{
-					backgroundColor: "#0a0c14",
-					borderBottom: "1px solid rgba(59,130,246,0.1)",
-				}}
-			>
-				<div className="flex items-center gap-2 pointer-events-none">
-					<img src={praiseLogo} alt="Praise" className="h-5" />
-				</div>
-
-				<div className="flex items-center h-full">
-					<button
-						onClick={() => {
-							console.log("Minimizing...");
-							appWindow.minimize();
-						}}
-						onMouseDown={(e) => e.stopPropagation()}
-						className="h-8 w-10 flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/5 transition-colors"
-					>
-						<Minus className="w-4 h-4" />
-					</button>
-					<button
-						onClick={() => {
-							console.log("Closing...");
-							appWindow.close();
-						}}
-						onMouseDown={(e) => e.stopPropagation()}
-						className="h-8 w-10 flex items-center justify-center text-slate-500 hover:text-white hover:bg-red-500/80 transition-colors"
-					>
-						<X className="w-4 h-4" />
-					</button>
-				</div>
-			</div>
+			<TitleBar />
 
 			<div className="flex flex-1 overflow-hidden">
-				{/* ═══ SYSTEM NAV (Thick Left Rail) ═══ */}
-				<div
-					className="w-[72px] flex flex-col items-center py-4 border-r border-white/[0.07] z-20 shrink-0"
-					style={{ backgroundColor: "#0a0c14" }}
-				>
-					<div className="flex flex-col gap-2 w-full px-2">
-						<button
-							onClick={() => setActiveTab("songs")}
-							className={`w-full aspect-square rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all ${
-								activeTab === "songs"
-									? "bg-brand-500/30 text-white shadow-inner scale-95 border-brand-500/20 glow-brand"
-									: "text-white/40 hover:text-white/70 hover:bg-white/5"
-							}`}
-						>
-							<Music className="w-5 h-5" />
-							<span className="text-[9px] font-bold uppercase tracking-widest">
-								Louvor
-							</span>
-						</button>
-
-						<button
-							onClick={() => setActiveTab("bible")}
-							className={`w-full aspect-square rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all ${
-								activeTab === "bible"
-									? "bg-brand-500/30 text-white shadow-inner scale-95 glow-brand"
-									: "text-white/40 hover:text-white/70 hover:bg-white/5"
-							}`}
-						>
-							<BookOpen className="w-5 h-5" />
-							<span className="text-[9px] font-bold uppercase tracking-widest">
-								Bíblia
-							</span>
-						</button>
-
-						<button
-							onClick={() => setActiveTab("editor")}
-							className={`w-full aspect-square rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all ${
-								activeTab === "editor"
-									? "bg-brand-500/30 text-white shadow-inner scale-95 glow-brand"
-									: "text-white/40 hover:text-white/70 hover:bg-white/5"
-							}`}
-						>
-							<FilePenLine className="w-5 h-5" />
-							<span className="text-[9px] font-bold uppercase tracking-widest">
-								Editar
-							</span>
-						</button>
-
-						<button
-							onClick={() => setActiveTab("settings")}
-							className={`w-full aspect-square rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all ${
-								activeTab === "settings"
-									? "bg-brand-500/30 text-white shadow-inner scale-95 glow-brand"
-									: "text-white/40 hover:text-white/70 hover:bg-white/5"
-							}`}
-						>
-							<Settings className="w-5 h-5" />
-							<span className="text-[9px] font-bold uppercase tracking-widest">
-								Opções
-							</span>
-						</button>
-					</div>
-				</div>
+				<SystemNav activeTab={activeTab} onTabChange={setActiveTab} />
 
 				{/* ═══ EDITOR FULL-WIDTH ═══ */}
 				{activeTab === "editor" && (
@@ -2263,68 +2157,12 @@ function App() {
 						)}
 					</div>
 				)}
-				{/* ═══ MODAL DE DUPLICATA ═══ */}
-				{showDuplicateModal && (
-					<div
-						className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop"
-						onClick={() => setShowDuplicateModal(false)}
-					>
-						<div
-							className="modal-content p-6 rounded-2xl border border-white/10 shadow-2xl max-w-sm w-full mx-4"
-							style={{ backgroundColor: "#161b26" }}
-							onClick={(e) => e.stopPropagation()}
-						>
-							<div className="flex items-center gap-3 mb-4">
-								<div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-500/10 border border-amber-500/20">
-									<AlertTriangle className="w-5 h-5 text-amber-400" />
-								</div>
-								<div>
-									<h3 className="text-[15px] font-bold text-white">
-										Louvor Duplicado
-									</h3>
-									<p className="text-[11px] text-white/40">
-										Este louvor já existe na lista
-									</p>
-								</div>
-							</div>
-							<p className="text-[13px] text-white/60 mb-5 leading-relaxed">
-								O louvor{" "}
-								<span className="font-semibold text-amber-300">
-									"{duplicateTitle}"
-								</span>{" "}
-								já está cadastrado na biblioteca.
-							</p>
-							<button
-								onClick={() => setShowDuplicateModal(false)}
-								className="w-full py-2 rounded-xl text-[13px] font-semibold text-white flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
-								style={{
-									background: "linear-gradient(135deg, #64748b, #475569)",
-								}}
-							>
-								<X className="w-4 h-4" />
-								Entendi
-							</button>
-						</div>
-					</div>
-				)}
-
-				{/* ═══ TOAST DE SUCESSO ═══ */}
-				{showSuccessToast && (
-					<div className="fixed bottom-6 right-6 z-50 toast-enter">
-						<div
-							className="flex items-center gap-3 px-4 py-3 rounded-xl border border-brand-500/20 shadow-xl"
-							style={{
-								backgroundColor: "rgba(5,11,24,0.95)",
-								backdropFilter: "blur(12px)",
-							}}
-						>
-							<CheckCircle2 className="w-5 h-5 text-brand-400 shrink-0" />
-							<span className="text-[13px] font-medium text-brand-100">
-								{successMessage}
-							</span>
-						</div>
-					</div>
-				)}
+				<DuplicateModal
+					isOpen={showDuplicateModal}
+					title={duplicateTitle}
+					onClose={() => setShowDuplicateModal(false)}
+				/>
+				<SuccessToast isVisible={showSuccessToast} message={successMessage} />
 			</div>
 		</div>
 	);
