@@ -838,19 +838,23 @@ function App() {
                       <div>
                         <label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2 block">Coleção</label>
                         <div className="flex gap-1.5 h-[46px]">
-                          {(editingSongTitle ? ALLOWED_COLLECTIONS : EDITABLE_COLLECTIONS).map(col => (
-                            <button
-                              key={col}
-                              onClick={() => setEditorCollection(col)}
-                              className={`flex-1 text-center px-1 py-1 rounded-xl text-[11px] font-medium border transition-all ${editorCollection === col
-                                  ? 'text-white border-brand-500/40 shadow-md'
-                                  : 'text-white/50 border-white/[0.07] hover:text-white/80 hover:border-white/10 hover:bg-white/[0.03]'
-                                }`}
-                              style={editorCollection === col ? { background: 'linear-gradient(135deg, #3b82f6, #2563eb)' } : { backgroundColor: 'rgba(255,255,255,0.02)' }}
-                            >
-                              {col.replace(" 2018", "")}
-                            </button>
-                          ))}
+                          {(editingSongTitle ? ALLOWED_COLLECTIONS : EDITABLE_COLLECTIONS).map(col => {
+                            const isCollectionDisabled = editingSongTitle !== null && editorCollection === "Coletânea 2018";
+                            return (
+                              <button
+                                key={col}
+                                onClick={() => !isCollectionDisabled && setEditorCollection(col)}
+                                disabled={isCollectionDisabled}
+                                className={`flex-1 text-center px-1 py-1 rounded-xl text-[11px] font-medium border transition-all ${editorCollection === col
+                                    ? 'text-white border-brand-500/40 shadow-md'
+                                    : 'text-white/50 border-white/[0.07] hover:text-white/80 hover:border-white/10 hover:bg-white/[0.03]'
+                                  } ${isCollectionDisabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+                                style={editorCollection === col ? { background: 'linear-gradient(135deg, #3b82f6, #2563eb)' } : { backgroundColor: 'rgba(255,255,255,0.02)' }}
+                              >
+                                {col.replace(" 2018", "")}
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
                     </div>
