@@ -120,7 +120,7 @@ function App() {
   // Editor State
   const [editorTitle, setEditorTitle] = useState('');
   const [editorContent, setEditorContent] = useState('');
-  const [editorCollection, setEditorCollection] = useState(ALLOWED_COLLECTIONS[0]);
+  const [editorCollection, setEditorCollection] = useState(EDITABLE_COLLECTIONS[0]);
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
   const [duplicateTitle, setDuplicateTitle] = useState('');
   const [showSuccessToast, setShowSuccessToast] = useState(false);
@@ -877,6 +877,7 @@ function App() {
                             setEditingSongTitle(null);
                             setEditorTitle('');
                             setEditorContent('');
+                            setEditorCollection(EDITABLE_COLLECTIONS[0]);
                           }}
                           className="flex-1 py-3.5 rounded-xl text-[14px] font-semibold text-white/60 bg-white/5 hover:bg-white/10 transition-all"
                         >
