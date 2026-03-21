@@ -1807,20 +1807,30 @@ function App() {
                 <div className="flex items-center bg-white/[0.03] border border-white/10 rounded-xl p-1 shadow-sm">
                   <button
                     onClick={() => setProjectionMode('default')}
+                    disabled={isProjecting}
                     className={`px-4 py-1.5 rounded-lg text-[10px] font-black tracking-widest transition-all ${
+                      isProjecting
+                        ? 'opacity-50 cursor-not-allowed'
+                        : ''
+                    } ${
                       projectionMode === 'default'
                         ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20'
-                        : 'text-white/30 hover:text-white/60'
+                        : `text-white/30 ${!isProjecting ? 'hover:text-white/60' : ''}`
                     }`}
                   >
                     PADRÃO
                   </button>
                   <button
                     onClick={() => setProjectionMode('subtitle')}
+                    disabled={isProjecting}
                     className={`px-4 py-1.5 rounded-lg text-[10px] font-black tracking-widest transition-all ${
+                      isProjecting
+                        ? 'opacity-50 cursor-not-allowed'
+                        : ''
+                    } ${
                       projectionMode === 'subtitle'
                         ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20'
-                        : 'text-white/30 hover:text-white/60'
+                        : `text-white/30 ${!isProjecting ? 'hover:text-white/60' : ''}`
                     }`}
                   >
                     LEGENDA
