@@ -3,6 +3,12 @@ use std::sync::Mutex;
 use image::GenericImageView;
 use tauri::{Manager, Emitter, WebviewWindowBuilder, WebviewUrl, State};
 
+#[derive(Clone, Serialize)]
+struct MonitorInfo {
+    name: String,
+    label: String,
+}
+
 #[derive(Clone, Serialize, Deserialize)]
 struct ProjectionPayload {
     title: String,
@@ -24,16 +30,18 @@ struct CurrentSlideState(Mutex<Option<ProjectionPayload>>);
 struct CurrentMonitorState(Mutex<String>);
 
 #[tauri::command]
-fn get_monitors(app_handle: tauri::AppHandle) -> Result<Vec<String>, String> {
+fn get_monitors(app_handle: tauri::AppHandle) -> Result<Vec<MonitorInfo>, String> {
     let monitors = app_handle.available_monitors().map_err(|e| e.to_string())?;
-    let mut monitor_names = Vec::new();
-    
+    let mut monitor_list = Vec::new();
+
     for (i, monitor) in monitors.iter().enumerate() {
         let name = monitor.name().map(|n| n.to_string()).unwrap_or_else(|| format!("Monitor {}", i + 1));
-        monitor_names.push(name);
+        let size = monitor.size();
+        let label = format!("{} ({}x{})", name, size.width, size.height);
+        monitor_list.push(MonitorInfo { name, label });
     }
-    
-    Ok(monitor_names)
+
+    Ok(monitor_list)
 }
 
 #[tauri::command]
