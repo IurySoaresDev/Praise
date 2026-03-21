@@ -94,12 +94,14 @@ function App() {
   const [previewWidth, setPreviewWidth] = useState(0);
   const previewContainerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-resetar modo de projeção ao entrar na aba Bíblia
+  // Auto-resetar modo de projeção ao entrar na aba Bíblia ou selecionar passagem bíblica
   useEffect(() => {
-    if (activeTab === 'bible') {
+    if (activeTab === 'bible' || selectedSong?.collection === 'Bíblia') {
       setProjectionMode('default');
     }
-  }, [activeTab, setProjectionMode]);
+  }, [activeTab, selectedSong, setProjectionMode]);
+
+  const isBibleProjecting = isProjecting && selectedSong?.collection === 'Bíblia';
 
   // Efeito para observar o redimensionamento do preview e calcular a escala real
   useEffect(() => {
@@ -1811,39 +1813,36 @@ function App() {
                   </div>
                 </div>
 
-                {activeTab !== 'bible' && (() => {
-                  const isBibleProjecting = isProjecting && selectedSong?.collection === 'Bíblia';
-                  return (
-                    <div className="flex items-center bg-white/[0.03] border border-white/10 rounded-xl p-1 shadow-sm">
-                      <button
-                        onClick={() => setProjectionMode('default')}
-                        disabled={isBibleProjecting}
-                        className={`px-4 py-1.5 rounded-lg text-[10px] font-black tracking-widest transition-all ${
-                          isBibleProjecting
-                            ? 'opacity-40 cursor-not-allowed'
-                            : projectionMode === 'default'
-                              ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20'
-                              : 'text-white/30 hover:text-white/60'
-                        }`}
-                      >
-                        PADRÃO
-                      </button>
-                      <button
-                        onClick={() => setProjectionMode('subtitle')}
-                        disabled={isBibleProjecting}
-                        className={`px-4 py-1.5 rounded-lg text-[10px] font-black tracking-widest transition-all ${
-                          isBibleProjecting
-                            ? 'opacity-40 cursor-not-allowed'
-                            : projectionMode === 'subtitle'
-                              ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20'
-                              : 'text-white/30 hover:text-white/60'
-                        }`}
-                      >
-                        LEGENDA
-                      </button>
-                    </div>
-                  );
-                })()}
+                {activeTab !== 'bible' && (
+                  <div className="flex items-center bg-white/[0.03] border border-white/10 rounded-xl p-1 shadow-sm">
+                    <button
+                      onClick={() => setProjectionMode('default')}
+                      disabled={isBibleProjecting}
+                      className={`px-4 py-1.5 rounded-lg text-[10px] font-black tracking-widest transition-all ${
+                        isBibleProjecting
+                          ? 'opacity-40 cursor-not-allowed'
+                          : projectionMode === 'default'
+                            ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20'
+                            : 'text-white/30 hover:text-white/60'
+                      }`}
+                    >
+                      PADRÃO
+                    </button>
+                    <button
+                      onClick={() => setProjectionMode('subtitle')}
+                      disabled={isBibleProjecting}
+                      className={`px-4 py-1.5 rounded-lg text-[10px] font-black tracking-widest transition-all ${
+                        isBibleProjecting
+                          ? 'opacity-40 cursor-not-allowed'
+                          : projectionMode === 'subtitle'
+                            ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20'
+                            : 'text-white/30 hover:text-white/60'
+                      }`}
+                    >
+                      LEGENDA
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center gap-3">
