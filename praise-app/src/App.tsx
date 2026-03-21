@@ -10,6 +10,11 @@ import { Play, Square, Settings, X, Plus, Trash2, CheckCircle2, FilePenLine, Gri
 import praiseLogo from "./assets/praise-logo.svg";
 import "./App.css";
 
+interface MonitorInfo {
+  name: string;
+  label: string;
+}
+
 function App() {
   const {
     songs,
@@ -76,7 +81,7 @@ function App() {
     setProjectionMode,
   } = useStore();
 
-  const [monitors, setMonitors] = useState<string[]>([]);
+  const [monitors, setMonitors] = useState<MonitorInfo[]>([]);
   const [selectedMonitor, setSelectedMonitor] = useState<string>("");
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [overIdx, setOverIdx] = useState<number | null>(null);
@@ -165,9 +170,9 @@ function App() {
   useEffect(() => {
     const getMonitors = async () => {
       try {
-        const result = await invoke<string[]>("get_monitors");
+        const result = await invoke<MonitorInfo[]>("get_monitors");
         setMonitors(result);
-        if (result.length > 0) setSelectedMonitor(result[0]);
+        if (result.length > 0) setSelectedMonitor(result[0].name);
       } catch (e) {
         console.error("Failed to get monitors:", e);
       }
@@ -1790,7 +1795,7 @@ function App() {
                     >
                       {monitors.length > 0 ? (
                         monitors.map((m, i) => (
-                          <option key={i} value={m} className="bg-[#0f1219] text-white">{m}</option>
+                          <option key={i} value={m.name} className="bg-[#0f1219] text-white">{m.label}</option>
                         ))
                       ) : (
                         <option value="" className="bg-[#0f1219] text-white">Carregando...</option>

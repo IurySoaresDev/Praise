@@ -4,6 +4,12 @@ use image::GenericImageView;
 use tauri::{Manager, Emitter, WebviewWindowBuilder, WebviewUrl, State};
 
 #[derive(Clone, Serialize, Deserialize)]
+struct MonitorInfo {
+    name: String,
+    label: String,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
 struct ProjectionPayload {
     title: String,
     content: String,
@@ -24,16 +30,23 @@ struct CurrentSlideState(Mutex<Option<ProjectionPayload>>);
 struct CurrentMonitorState(Mutex<String>);
 
 #[tauri::command]
-fn get_monitors(app_handle: tauri::AppHandle) -> Result<Vec<String>, String> {
+fn get_monitors(app_handle: tauri::AppHandle) -> Result<Vec<MonitorInfo>, String> {
     let monitors = app_handle.available_monitors().map_err(|e| e.to_string())?;
-    let mut monitor_names = Vec::new();
-    
+    let mut monitor_list = Vec::new();
+
     for (i, monitor) in monitors.iter().enumerate() {
-        let name = monitor.name().map(|n| n.to_string()).unwrap_or_else(|| format!("Monitor {}", i + 1));
-        monitor_names.push(name);
+        let raw_name = monitor.name().map(|n| n.to_string());
+        let size = monitor.size();
+        let friendly = match &raw_name {
+            Some(n) if !n.starts_with("0x") && !n.starts_with("\\\\.\\") => n.clone(),
+            _ => format!("Monitor {}", i + 1),
+        };
+        let name = raw_name.unwrap_or_else(|| format!("monitor-{}", i));
+        let label = format!("{} ({}x{})", friendly, size.width, size.height);
+        monitor_list.push(MonitorInfo { name, label });
     }
-    
-    Ok(monitor_names)
+
+    Ok(monitor_list)
 }
 
 #[tauri::command]
