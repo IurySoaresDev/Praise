@@ -130,6 +130,11 @@ function App() {
 	const [settingsSubTab, setSettingsSubTab] = useState<
 		"titles" | "lyrics" | "bible" | "system"
 	>("titles");
+	const [isSongsCollapsed, setIsSongsCollapsed] = useState(true);
+	const [isBibleCollapsed, setIsBibleCollapsed] = useState(true);
+
+	const isCollapsed = activeTab === 'songs' ? isSongsCollapsed : isBibleCollapsed;
+	const setIsCollapsed = activeTab === 'songs' ? setIsSongsCollapsed : setIsBibleCollapsed;
 	const [previewWidth, setPreviewWidth] = useState(0);
 	const previewContainerRef = useRef<HTMLDivElement>(null);
 
