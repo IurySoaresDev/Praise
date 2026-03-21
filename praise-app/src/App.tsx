@@ -1804,28 +1804,39 @@ function App() {
                   </div>
                 </div>
 
-                <div className="flex items-center bg-white/[0.03] border border-white/10 rounded-xl p-1 shadow-sm">
-                  <button
-                    onClick={() => setProjectionMode('default')}
-                    className={`px-4 py-1.5 rounded-lg text-[10px] font-black tracking-widest transition-all ${
-                      projectionMode === 'default'
-                        ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20'
-                        : 'text-white/30 hover:text-white/60'
-                    }`}
-                  >
-                    PADRÃO
-                  </button>
-                  <button
-                    onClick={() => setProjectionMode('subtitle')}
-                    className={`px-4 py-1.5 rounded-lg text-[10px] font-black tracking-widest transition-all ${
-                      projectionMode === 'subtitle'
-                        ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20'
-                        : 'text-white/30 hover:text-white/60'
-                    }`}
-                  >
-                    LEGENDA
-                  </button>
-                </div>
+                {activeTab !== 'bible' && (() => {
+                  const isBibleProjecting = isProjecting && selectedSong?.collection === 'Bíblia';
+                  return (
+                    <div className="flex items-center bg-white/[0.03] border border-white/10 rounded-xl p-1 shadow-sm">
+                      <button
+                        onClick={() => setProjectionMode('default')}
+                        disabled={isBibleProjecting}
+                        className={`px-4 py-1.5 rounded-lg text-[10px] font-black tracking-widest transition-all ${
+                          isBibleProjecting
+                            ? 'opacity-40 cursor-not-allowed'
+                            : projectionMode === 'default'
+                              ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20'
+                              : 'text-white/30 hover:text-white/60'
+                        }`}
+                      >
+                        PADRÃO
+                      </button>
+                      <button
+                        onClick={() => setProjectionMode('subtitle')}
+                        disabled={isBibleProjecting}
+                        className={`px-4 py-1.5 rounded-lg text-[10px] font-black tracking-widest transition-all ${
+                          isBibleProjecting
+                            ? 'opacity-40 cursor-not-allowed'
+                            : projectionMode === 'subtitle'
+                              ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20'
+                              : 'text-white/30 hover:text-white/60'
+                        }`}
+                      >
+                        LEGENDA
+                      </button>
+                    </div>
+                  );
+                })()}
               </div>
 
               <div className="flex items-center gap-3">
