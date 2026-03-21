@@ -5,7 +5,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { check } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
-import { useStore, ALLOWED_COLLECTIONS } from "./store";
+import { useStore, ALLOWED_COLLECTIONS, EDITABLE_COLLECTIONS } from "./store";
 import { Play, Square, Settings, X, Plus, Trash2, CheckCircle2, FilePenLine, GripVertical, AlertTriangle, ListMusic, BookOpen, Monitor, Send, Search, ArrowLeft, Loader2, MonitorDot, Snowflake, RotateCw, Minus, Music, Upload, ChevronLeft, ChevronRight, Palette, Type, Maximize2, Bold, Image as ImageIcon } from 'lucide-react';
 import praiseLogo from "./assets/praise-logo.svg";
 import "./App.css";
@@ -838,7 +838,7 @@ function App() {
                       <div>
                         <label className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2 block">Coleção</label>
                         <div className="flex gap-1.5 h-[46px]">
-                          {ALLOWED_COLLECTIONS.map(col => (
+                          {(editingSongTitle ? ALLOWED_COLLECTIONS : EDITABLE_COLLECTIONS).map(col => (
                             <button
                               key={col}
                               onClick={() => setEditorCollection(col)}
