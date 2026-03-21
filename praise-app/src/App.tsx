@@ -1,13 +1,14 @@
-import { useEffect, useState, useCallback, useMemo, useRef } from "react";
-import { invoke, convertFileSrc } from "@tauri-apps/api/core";
+import { useEffect, useState, useMemo, useRef } from "react";
+import { convertFileSrc } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/plugin-dialog";
-import { readTextFile } from "@tauri-apps/plugin-fs";
-import { check } from "@tauri-apps/plugin-updater";
-import { relaunch } from "@tauri-apps/plugin-process";
 import { useStore, EDITABLE_COLLECTIONS } from "./store";
-import { formatContent, formatContentSubtitle } from "./utils/formatContent";
-import { getSlideTitle as getSlideTitleUtil } from "./utils/slideHelpers";
+import { getSlideTitle } from "./utils/slideHelpers";
+import { useMonitors } from "./hooks/useMonitors";
+import { useProjection } from "./hooks/useProjection";
+import { useBible } from "./hooks/useBible";
+import { useEditor } from "./hooks/useEditor";
+import { useUpdater } from "./hooks/useUpdater";
 import {
 	Play,
 	Square,
@@ -44,11 +45,6 @@ import {
 import praiseLogo from "./assets/praise-logo.svg";
 import "./App.css";
 
-interface MonitorInfo {
-	name: string;
-	label: string;
-}
-
 const isColetanea = (name: string) =>
 	name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes("coletanea");
 
@@ -71,9 +67,6 @@ function App() {
 		addToBiblePlaylist,
 		removeFromBiblePlaylist,
 		moveSongInBiblePlaylist,
-		addSongToCollection,
-		importSongsFromJSON,
-		updateSong,
 		activeTab,
 		setActiveTab,
 		songBackground,
@@ -118,33 +111,32 @@ function App() {
 		setProjectionMode,
 	} = useStore();
 
-	const [monitors, setMonitors] = useState<MonitorInfo[]>([]);
-	const [selectedMonitor, setSelectedMonitor] = useState<string>("");
+	// Custom hooks
+	const { monitors, selectedMonitor, setSelectedMonitor } = useMonitors();
+	const { isProjecting, isFrozen, setIsFrozen, slides, handleSelectSlide, handleStartProjection, handleStopProjection } = useProjection(selectedMonitor);
+	const bible = useBible();
+	const editor = useEditor();
+	const updater = useUpdater({ showSuccess: editor.showSuccess });
+
+	// Local UI state
 	const [dragIdx, setDragIdx] = useState<number | null>(null);
 	const [overIdx, setOverIdx] = useState<number | null>(null);
-
-	const [isProjecting, setIsProjecting] = useState(false);
-	const [isFrozen, setIsFrozen] = useState(false);
-	const [downloadProgress, setDownloadProgress] = useState<{
-		downloaded: number;
-		total: number;
-	} | null>(null);
-	const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
-	const [settingsPreviewTab, setSettingsPreviewTab] = useState<
-		"title" | "lyrics" | "bible"
-	>("title");
-	const [settingsSubTab, setSettingsSubTab] = useState<
-		"titles" | "lyrics" | "bible" | "system"
-	>("titles");
+	const [settingsPreviewTab, setSettingsPreviewTab] = useState<"title" | "lyrics" | "bible">("title");
+	const [settingsSubTab, setSettingsSubTab] = useState<"titles" | "lyrics" | "bible" | "system">("titles");
 	const [isSongsCollapsed, setIsSongsCollapsed] = useState(true);
 	const [isBibleCollapsed, setIsBibleCollapsed] = useState(true);
+	const [previewWidth, setPreviewWidth] = useState(0);
+	const previewContainerRef = useRef<HTMLDivElement>(null);
 
 	const isCollapsed = activeTab === 'songs' ? isSongsCollapsed : isBibleCollapsed;
 	const setIsCollapsed = activeTab === 'songs' ? setIsSongsCollapsed : setIsBibleCollapsed;
 	const prevPlaylistLenRef = useRef(playlist.length);
 	const prevBiblePlaylistLenRef = useRef(biblePlaylist.length);
-	const [previewWidth, setPreviewWidth] = useState(0);
-	const previewContainerRef = useRef<HTMLDivElement>(null);
+
+	// Destructure bible and editor for template compatibility
+	const { selectedBook, setSelectedBook, selectedChapter, setSelectedChapter, searchBibleQuery, setSearchBibleQuery, searchChapterQuery, setSearchChapterQuery, bibleVersion, setBibleVersion, isLoadingBible, bibleBooks, bibleVerses } = bible;
+	const { editorTitle, setEditorTitle, editorContent, setEditorContent, editorCollection, setEditorCollection, editingSongTitle, searchEditQuery, setSearchEditQuery, selectedEditCategory, setSelectedEditCategory, showDuplicateModal, setShowDuplicateModal, duplicateTitle, showSuccessToast, successMessage, resetForm, handleSave, handleImportJSON, selectSongForEditing } = editor;
+	const { isCheckingUpdate, downloadProgress, checkForUpdate } = updater;
 
 	// Auto-expand ao adicionar louvores, auto-collapse ao remover todos
 	useEffect(() => {
@@ -179,102 +171,13 @@ function App() {
 	useEffect(() => {
 		if (!previewContainerRef.current) return;
 		const observer = new ResizeObserver((entries) => {
-			for (let entry of entries) {
+			for (const entry of entries) {
 				setPreviewWidth(entry.contentRect.width);
 			}
 		});
 		observer.observe(previewContainerRef.current);
 		return () => observer.disconnect();
 	}, [activeTab]);
-
-	// Bible State
-	// REMOVIDO: const [activeTab, setActiveTab] = useState<'songs' | 'bible' | 'editor'>('songs');
-	const [selectedBook, setSelectedBook] = useState<any>(null);
-	const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
-	const [searchBibleQuery, setSearchBibleQuery] = useState("");
-	const [searchChapterQuery, setSearchChapterQuery] = useState("");
-
-	const [bibleVersion, setBibleVersion] = useState<"NVI" | "ACF" | "ARA">(
-		"ARA",
-	);
-	const [bibleData, setBibleData] = useState<any[]>([]);
-	const [isLoadingBible, setIsLoadingBible] = useState(true);
-
-	// Editor State
-	const [editorTitle, setEditorTitle] = useState("");
-	const [editorContent, setEditorContent] = useState("");
-	const [editorCollection, setEditorCollection] = useState(
-		EDITABLE_COLLECTIONS[0],
-	);
-	const [showDuplicateModal, setShowDuplicateModal] = useState(false);
-	const [duplicateTitle, setDuplicateTitle] = useState("");
-	const [showSuccessToast, setShowSuccessToast] = useState(false);
-	const [successMessage, setSuccessMessage] = useState("");
-	const [editingSongTitle, setEditingSongTitle] = useState<string | null>(null);
-	const [searchEditQuery, setSearchEditQuery] = useState("");
-	const [selectedEditCategory, setSelectedEditCategory] = useState("Todas");
-
-	useEffect(() => {
-		setIsLoadingBible(true);
-		const loadBible = async () => {
-			let mod;
-			switch (bibleVersion) {
-				case "ACF":
-					mod = await import("./assets/pt_acf.json");
-					break;
-				case "ARA":
-					mod = await import("./assets/pt_ara.json");
-					break;
-				case "NVI":
-				default:
-					mod = await import("./assets/pt_nvi.json");
-					break;
-			}
-
-			const newData = (mod.default as any[]) || [];
-			setBibleData(newData);
-
-			// Se tivermos um livro Selecionado, atualizamos a referência dele pro novo JSON
-			setSelectedBook((prev: any) => {
-				if (!prev) return null;
-				return newData.find((b: any) => b.abbrev === prev.abbrev) || null;
-			});
-			setIsLoadingBible(false);
-		};
-		loadBible();
-	}, [bibleVersion]);
-
-	const bibleBooks =
-		searchBibleQuery.trim() === ""
-			? bibleData
-			: bibleData.filter(
-					(book) =>
-						book.name.toLowerCase().includes(searchBibleQuery.toLowerCase()) ||
-						book.abbrev.toLowerCase().includes(searchBibleQuery.toLowerCase()),
-				);
-
-	const bibleVerses =
-		selectedBook && selectedChapter
-			? selectedBook.chapters[selectedChapter - 1].map(
-					(text: string, i: number) => ({
-						number: i + 1,
-						text,
-					}),
-				)
-			: [];
-
-	useEffect(() => {
-		const getMonitors = async () => {
-			try {
-				const result = await invoke<MonitorInfo[]>("get_monitors");
-				setMonitors(result);
-				if (result.length > 0) setSelectedMonitor(result[0].name);
-			} catch (e) {
-				console.error("Failed to get monitors:", e);
-			}
-		};
-		getMonitors();
-	}, []);
 
 	const categories = ["Todas", "Coletânea 2018", "Avulsos 2018", "CIA 2018"];
 
@@ -286,411 +189,6 @@ function App() {
 			selectedCategory === "Todas" || song.collection === selectedCategory;
 		return matchesSearch && matchesCategory;
 	});
-
-	// formatContent and formatContentSubtitle are now imported from utils/formatContent
-
-	const slides = selectedSong
-		? projectionMode === "subtitle"
-			? formatContentSubtitle(selectedSong.content, selectedSong.collection)
-			: formatContent(selectedSong.content, selectedSong.collection)
-		: [];
-
-	const sendSlideToProjection = useCallback(
-		async (
-			content: string,
-			background?: string | null,
-			itemType: string = "song",
-			title: string = "",
-			titleColor?: string,
-			lyricsColor?: string,
-			titleFont?: string,
-			titleSize?: number,
-			titleWeight?: string,
-			lyricsFont?: string,
-			lyricsSize?: number,
-			lyricsWeight?: string,
-			projection_mode?: string,
-		) => {
-			if (isFrozen) return;
-			try {
-				await invoke("project_slide", {
-					monitor: selectedMonitor,
-					title: title,
-					content: content,
-					background: background || null,
-					itemType: itemType,
-					titleColor: titleColor,
-					lyricsColor: lyricsColor,
-					titleFont: titleFont,
-					titleSize: titleSize,
-					titleWeight: titleWeight,
-					lyricsFont: lyricsFont,
-					lyricsSize: lyricsSize,
-					lyricsWeight: lyricsWeight,
-					projectionMode: projection_mode || projectionMode,
-				});
-			} catch (e) {
-				console.error("Erro ao projetar:", e);
-			}
-		},
-		[selectedMonitor, isFrozen, projectionMode],
-	);
-
-	const getSlideTitle = useCallback(
-		(index: number) => getSlideTitleUtil(selectedSong, index),
-		[selectedSong],
-	);
-
-	const handleSelectSlide = useCallback(
-		(index: number) => {
-			setActiveSlideIndex(index);
-			if (isProjecting && slides[index] !== undefined) {
-				const isBible = selectedSong?.collection === "Bíblia";
-				sendSlideToProjection(
-					slides[index],
-					isBible
-						? bibleBackground
-						: index === 0
-							? songBackground
-							: songBodyBackground,
-					isBible ? "bible" : "song",
-					getSlideTitle(index),
-					isBible ? bibleTitleColor : songTitleColor,
-					isBible ? bibleLyricsColor : songLyricsColor,
-					isBible ? bibleTitleFont : songTitleFont,
-					isBible ? bibleTitleSize : songTitleSize,
-					isBible ? bibleTitleWeight : songTitleWeight,
-					isBible ? bibleLyricsFont : songLyricsFont,
-					isBible ? bibleLyricsSize : songLyricsSize,
-					isBible ? bibleLyricsWeight : songLyricsWeight,
-					projectionMode,
-				);
-			}
-		},
-		[
-			isProjecting,
-			slides,
-			setActiveSlideIndex,
-			sendSlideToProjection,
-			selectedSong,
-			bibleBackground,
-			songBackground,
-			songBodyBackground,
-			getSlideTitle,
-			songTitleColor,
-			songLyricsColor,
-			bibleTitleColor,
-			bibleLyricsColor,
-		],
-	);
-
-	const handleStartProjection = useCallback(async () => {
-		if (!selectedSong || slides.length === 0) return;
-		setIsProjecting(true);
-		const idx = activeSlideIndex >= 0 ? activeSlideIndex : 0;
-		setActiveSlideIndex(idx);
-		const isBible = selectedSong?.collection === "Bíblia";
-		if (slides[idx] !== undefined) {
-			await sendSlideToProjection(
-				slides[idx],
-				isBible
-					? bibleBackground
-					: idx === 0
-						? songBackground
-						: songBodyBackground,
-				isBible ? "bible" : "song",
-				getSlideTitle(idx),
-				isBible ? bibleTitleColor : songTitleColor,
-				isBible ? bibleLyricsColor : songLyricsColor,
-				isBible ? bibleTitleFont : songTitleFont,
-				isBible ? bibleTitleSize : songTitleSize,
-				isBible ? bibleTitleWeight : songTitleWeight,
-				isBible ? bibleLyricsFont : songLyricsFont,
-				isBible ? bibleLyricsSize : songLyricsSize,
-				isBible ? bibleLyricsWeight : songLyricsWeight,
-				projectionMode,
-			);
-		}
-	}, [
-		selectedSong,
-		slides,
-		activeSlideIndex,
-		setActiveSlideIndex,
-		sendSlideToProjection,
-		bibleBackground,
-		songBackground,
-		songBodyBackground,
-		getSlideTitle,
-		songTitleColor,
-		songLyricsColor,
-		bibleTitleColor,
-		bibleLyricsColor,
-	]);
-
-	const handleStopProjection = useCallback(async () => {
-		setIsProjecting(false);
-		try {
-			await invoke("close_projection");
-		} catch (e) {
-			console.error("Erro ao fechar projeção:", e);
-		}
-	}, []);
-
-	useEffect(() => {
-		const handleKeyDown = (e: KeyboardEvent) => {
-			if (!selectedSong || !isProjecting) return;
-			if (e.target instanceof HTMLInputElement) return;
-
-			if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-				if (activeSlideIndex < slides.length - 1) {
-					const newIdx = activeSlideIndex + 1;
-					setActiveSlideIndex(newIdx);
-					const isBible = selectedSong?.collection === "Bíblia";
-					sendSlideToProjection(
-						slides[newIdx],
-						isBible
-							? bibleBackground
-							: newIdx === 0
-								? songBackground
-								: songBodyBackground,
-						isBible ? "bible" : "song",
-						getSlideTitle(newIdx),
-						isBible ? bibleTitleColor : songTitleColor,
-						isBible ? bibleLyricsColor : songLyricsColor,
-						isBible ? bibleTitleFont : songTitleFont,
-						isBible ? bibleTitleSize : songTitleSize,
-						isBible ? bibleTitleWeight : songTitleWeight,
-						isBible ? bibleLyricsFont : songLyricsFont,
-						isBible ? bibleLyricsSize : songLyricsSize,
-						isBible ? bibleLyricsWeight : songLyricsWeight,
-						projectionMode,
-					);
-				} else {
-					// Já está no último slide. Se tentar avançar, fecha a projeção
-					handleStopProjection();
-				}
-			} else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-				if (activeSlideIndex > 0) {
-					const newIdx = activeSlideIndex - 1;
-					setActiveSlideIndex(newIdx);
-					const isBible = selectedSong?.collection === "Bíblia";
-					sendSlideToProjection(
-						slides[newIdx],
-						isBible
-							? bibleBackground
-							: newIdx === 0
-								? songBackground
-								: songBodyBackground,
-						isBible ? "bible" : "song",
-						getSlideTitle(newIdx),
-						isBible ? bibleTitleColor : songTitleColor,
-						isBible ? bibleLyricsColor : songLyricsColor,
-						isBible ? bibleTitleFont : songTitleFont,
-						isBible ? bibleTitleSize : songTitleSize,
-						isBible ? bibleTitleWeight : songTitleWeight,
-						isBible ? bibleLyricsFont : songLyricsFont,
-						isBible ? bibleLyricsSize : songLyricsSize,
-						isBible ? bibleLyricsWeight : songLyricsWeight,
-						projectionMode,
-					);
-				}
-			}
-		};
-
-		window.addEventListener("keydown", handleKeyDown);
-		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [
-		activeSlideIndex,
-		slides,
-		selectedSong,
-		isProjecting,
-		setActiveSlideIndex,
-		sendSlideToProjection,
-		bibleBackground,
-		songBackground,
-		songBodyBackground,
-		getSlideTitle,
-		songTitleColor,
-		songLyricsColor,
-		bibleTitleColor,
-		bibleLyricsColor,
-		songTitleFont,
-		songTitleSize,
-		songTitleWeight,
-		songLyricsFont,
-		songLyricsSize,
-		songLyricsWeight,
-		bibleTitleFont,
-		bibleTitleSize,
-		bibleTitleWeight,
-		bibleLyricsFont,
-		bibleLyricsSize,
-		bibleLyricsWeight,
-		projectionMode,
-	]);
-
-	// Hook Ref para segurar sempre a função handleKeyDown mais recente (evita vazar Tauri events)
-	const handleKeyDownRef = useRef<((e: KeyboardEvent) => void) | null>(null);
-	useEffect(() => {
-		handleKeyDownRef.current = (e: KeyboardEvent) => {
-			if (!selectedSong || !isProjecting) return;
-			if (e.target instanceof HTMLInputElement) return;
-
-			if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-				if (activeSlideIndex < slides.length - 1) {
-					const newIdx = activeSlideIndex + 1;
-					setActiveSlideIndex(newIdx);
-					const isBible = selectedSong?.collection === "Bíblia";
-					sendSlideToProjection(
-						slides[newIdx],
-						isBible
-							? bibleBackground
-							: newIdx === 0
-								? songBackground
-								: songBodyBackground,
-						isBible ? "bible" : "song",
-						getSlideTitle(newIdx),
-						isBible ? bibleTitleColor : songTitleColor,
-						isBible ? bibleLyricsColor : songLyricsColor,
-						isBible ? bibleTitleFont : songTitleFont,
-						isBible ? bibleTitleSize : songTitleSize,
-						isBible ? bibleTitleWeight : songTitleWeight,
-						isBible ? bibleLyricsFont : songLyricsFont,
-						isBible ? bibleLyricsSize : songLyricsSize,
-						isBible ? bibleLyricsWeight : songLyricsWeight,
-						projectionMode,
-					);
-				} else {
-					handleStopProjection();
-				}
-			} else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-				if (activeSlideIndex > 0) {
-					const newIdx = activeSlideIndex - 1;
-					setActiveSlideIndex(newIdx);
-					const isBible = selectedSong?.collection === "Bíblia";
-					sendSlideToProjection(
-						slides[newIdx],
-						isBible
-							? bibleBackground
-							: newIdx === 0
-								? songBackground
-								: songBodyBackground,
-						isBible ? "bible" : "song",
-						getSlideTitle(newIdx),
-						isBible ? bibleTitleColor : songTitleColor,
-						isBible ? bibleLyricsColor : songLyricsColor,
-						isBible ? bibleTitleFont : songTitleFont,
-						isBible ? bibleTitleSize : songTitleSize,
-						isBible ? bibleTitleWeight : songTitleWeight,
-						isBible ? bibleLyricsFont : songLyricsFont,
-						isBible ? bibleLyricsSize : songLyricsSize,
-						isBible ? bibleLyricsWeight : songLyricsWeight,
-						projectionMode,
-					);
-				}
-			}
-		};
-	}, [
-		activeSlideIndex,
-		slides,
-		selectedSong,
-		isProjecting,
-		setActiveSlideIndex,
-		sendSlideToProjection,
-		bibleBackground,
-		songBackground,
-		songBodyBackground,
-		getSlideTitle,
-		songTitleColor,
-		songLyricsColor,
-		bibleTitleColor,
-		bibleLyricsColor,
-		songTitleFont,
-		songTitleSize,
-		songTitleWeight,
-		songLyricsFont,
-		songLyricsSize,
-		songLyricsWeight,
-		bibleTitleFont,
-		bibleTitleSize,
-		bibleTitleWeight,
-		bibleLyricsFont,
-		bibleLyricsSize,
-		bibleLyricsWeight,
-		projectionMode,
-	]);
-
-	// Registra globalmente o evento da Projection window de forma segura (1x apenas)
-	useEffect(() => {
-		let unlistenFn: (() => void) | undefined;
-		import("@tauri-apps/api/event")
-			.then(({ listen }) => {
-				listen<{ key: string }>("projection-key-press", (event) => {
-					if (handleKeyDownRef.current) {
-						handleKeyDownRef.current(
-							new KeyboardEvent("keydown", { key: event.payload.key }),
-						);
-					}
-				}).then((f) => (unlistenFn = f));
-			})
-			.catch(console.error);
-		return () => {
-			if (unlistenFn) unlistenFn();
-		};
-	}, []);
-
-	// Sincroniza cores em tempo real se o usuário mudar enquanto projeta
-	useEffect(() => {
-		if (isProjecting && activeSlideIndex >= 0 && slides[activeSlideIndex]) {
-			const isBible = selectedSong?.collection === "Bíblia";
-			sendSlideToProjection(
-				slides[activeSlideIndex],
-				isBible
-					? bibleBackground
-					: activeSlideIndex === 0
-						? songBackground
-						: songBodyBackground,
-				isBible ? "bible" : "song",
-				getSlideTitle(activeSlideIndex),
-				isBible ? bibleTitleColor : songTitleColor,
-				isBible ? bibleLyricsColor : songLyricsColor,
-				isBible ? bibleTitleFont : songTitleFont,
-				isBible ? bibleTitleSize : songTitleSize,
-				isBible ? bibleTitleWeight : songTitleWeight,
-				isBible ? bibleLyricsFont : songLyricsFont,
-				isBible ? bibleLyricsSize : songLyricsSize,
-				isBible ? bibleLyricsWeight : songLyricsWeight,
-				projectionMode,
-			);
-		}
-	}, [
-		songTitleColor,
-		songLyricsColor,
-		bibleTitleColor,
-		bibleLyricsColor,
-		songTitleFont,
-		songTitleSize,
-		songTitleWeight,
-		songLyricsFont,
-		songLyricsSize,
-		songLyricsWeight,
-		bibleTitleFont,
-		bibleTitleSize,
-		bibleTitleWeight,
-		bibleLyricsFont,
-		bibleLyricsSize,
-		bibleLyricsWeight,
-		isProjecting,
-		activeSlideIndex,
-		slides,
-		selectedSong,
-		sendSlideToProjection,
-		bibleBackground,
-		songBackground,
-		songBodyBackground,
-		getSlideTitle,
-		projectionMode,
-	]);
 
 	const appWindow = useMemo(() => getCurrentWindow(), []);
 
@@ -884,12 +382,7 @@ function App() {
 										return filtered.map((song, idx) => (
 											<button
 												key={`${song.title}-${song.collection}-${idx}`}
-												onClick={() => {
-													setEditingSongTitle(song.title);
-													setEditorTitle(song.title);
-													setEditorContent(song.content);
-													setEditorCollection(song.collection);
-												}}
+												onClick={() => selectSongForEditing(song)}
 												className={`w-full text-left p-2.5 rounded-lg text-xs transition-all flex flex-col gap-0.5 border ${
 													editingSongTitle === song.title
 														? "bg-brand-500/20 border-brand-500/30 text-white shadow-sm"
@@ -910,11 +403,7 @@ function App() {
 								{editingSongTitle && (
 									<div className="p-3 border-t border-white/[0.07] bg-[#0f1219]/40">
 										<button
-											onClick={() => {
-												setEditingSongTitle(null);
-												setEditorTitle("");
-												setEditorContent("");
-											}}
+											onClick={resetForm}
 											className="w-full py-2 bg-white/5 hover:bg-white/10 text-white/50 text-[11px] font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
 										>
 											<Plus className="w-3 h-3" />
@@ -942,11 +431,7 @@ function App() {
 										</div>
 										{editingSongTitle && (
 											<button
-												onClick={() => {
-													setEditingSongTitle(null);
-													setEditorTitle("");
-													setEditorContent("");
-												}}
+												onClick={resetForm}
 												className="p-2 hover:bg-white/5 rounded-full text-white/20 hover:text-white/50 transition-colors"
 											>
 												<X className="w-5 h-5" />
@@ -966,45 +451,7 @@ function App() {
 													para a biblioteca.
 												</p>
 												<button
-													onClick={async () => {
-														try {
-															const filePath = await open({
-																multiple: false,
-																filters: [
-																	{ name: "JSON", extensions: ["json"] },
-																],
-															});
-															if (filePath) {
-																const content = await readTextFile(
-																	filePath as string,
-																);
-																const data = JSON.parse(content);
-																const result = importSongsFromJSON(
-																	Array.isArray(data) ? data : [data],
-																);
-																if (result.added > 0) {
-																	setSuccessMessage(
-																		`${result.added} louvor(es) importado(s)!${result.duplicates > 0 ? ` (${result.duplicates} duplicata(s) ignorada(s))` : ""}`,
-																	);
-																} else {
-																	setSuccessMessage(
-																		`Nenhum louvor novo encontrado. ${result.duplicates} já existiam.`,
-																	);
-																}
-																setShowSuccessToast(true);
-																setTimeout(
-																	() => setShowSuccessToast(false),
-																	4000,
-																);
-															}
-														} catch (e) {
-															console.error("Erro ao importar:", e);
-															alert(
-																"Erro ao abrir seletor de arquivos: " +
-																	JSON.stringify(e),
-															);
-														}
-													}}
+													onClick={handleImportJSON}
 													className="w-full py-2.5 rounded-xl text-[13px] font-semibold text-white flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-md"
 													style={{
 														background:
@@ -1097,69 +544,14 @@ function App() {
 										<div className="flex gap-3">
 											{editingSongTitle && (
 												<button
-													onClick={() => {
-														setEditingSongTitle(null);
-														setEditorTitle("");
-														setEditorContent("");
-														setEditorCollection(EDITABLE_COLLECTIONS[0]);
-													}}
+													onClick={resetForm}
 													className="flex-1 py-3.5 rounded-xl text-[14px] font-semibold text-white/60 bg-white/5 hover:bg-white/10 transition-all"
 												>
 													Cancelar
 												</button>
 											)}
 											<button
-												onClick={() => {
-													if (!editorTitle.trim() || !editorContent.trim())
-														return;
-
-													if (editingSongTitle) {
-														const result = updateSong(editingSongTitle, {
-															title: editorTitle,
-															content: editorContent,
-															collection: editorCollection,
-														});
-														if (result.duplicate) {
-															setDuplicateTitle(editorTitle);
-															setShowDuplicateModal(true);
-														} else {
-															setEditingSongTitle(null);
-															setEditorTitle("");
-															setEditorContent("");
-															setSuccessMessage(
-																`"${editorTitle.trim()}" atualizado com sucesso!`,
-															);
-															setShowSuccessToast(true);
-															setTimeout(
-																() => setShowSuccessToast(false),
-																3000,
-															);
-														}
-													} else {
-														const result = addSongToCollection(
-															editorTitle,
-															editorContent,
-															editorCollection,
-														);
-														if (result.duplicate) {
-															setDuplicateTitle(
-																result.existingTitle || editorTitle,
-															);
-															setShowDuplicateModal(true);
-														} else {
-															setEditorTitle("");
-															setEditorContent("");
-															setSuccessMessage(
-																`"${editorTitle.trim()}" adicionado com sucesso!`,
-															);
-															setShowSuccessToast(true);
-															setTimeout(
-																() => setShowSuccessToast(false),
-																3000,
-															);
-														}
-													}
-												}}
+												onClick={handleSave}
 												disabled={!editorTitle.trim() || !editorContent.trim()}
 												className="flex-[2] py-3.5 rounded-xl text-[14px] font-semibold text-white flex items-center justify-center gap-2 transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-90"
 												style={{
@@ -1765,63 +1157,7 @@ function App() {
 													)}
 
 													<button
-														onClick={async () => {
-															try {
-																setIsCheckingUpdate(true);
-																const update = await check();
-																if (update) {
-																	let downloaded = 0;
-																	let contentLength = 0;
-																	await update.downloadAndInstall((event) => {
-																		switch (event.event) {
-																			case "Started":
-																				contentLength =
-																					event.data.contentLength || 0;
-																				setDownloadProgress({
-																					downloaded: 0,
-																					total: contentLength,
-																				});
-																				break;
-																			case "Progress":
-																				downloaded += event.data.chunkLength;
-																				setDownloadProgress({
-																					downloaded,
-																					total: contentLength,
-																				});
-																				break;
-																			case "Finished":
-																				setDownloadProgress(null);
-																				break;
-																		}
-																	});
-																	setSuccessMessage(
-																		"Atualização instalada. Reiniciando...",
-																	);
-																	setShowSuccessToast(true);
-																	setTimeout(async () => {
-																		await relaunch();
-																	}, 2000);
-																} else {
-																	setSuccessMessage("Versão atualizada!");
-																	setShowSuccessToast(true);
-																	setTimeout(
-																		() => setShowSuccessToast(false),
-																		3000,
-																	);
-																}
-															} catch (e) {
-																setSuccessMessage(
-																	"Erro ao buscar atualizações.",
-																);
-																setShowSuccessToast(true);
-																setTimeout(
-																	() => setShowSuccessToast(false),
-																	3000,
-																);
-															} finally {
-																setIsCheckingUpdate(false);
-															}
-														}}
+														onClick={checkForUpdate}
 														disabled={
 															isCheckingUpdate || downloadProgress !== null
 														}
@@ -2627,10 +1963,7 @@ function App() {
 										style={{
 											background: "linear-gradient(135deg, #ef4444, #dc2626)",
 										}}
-										onClick={() => {
-											handleStopProjection();
-											setIsFrozen(false);
-										}}
+										onClick={handleStopProjection}
 									>
 										<Square className="w-3.5 h-3.5" /> Parar
 									</button>
@@ -2811,7 +2144,7 @@ function App() {
 																				: songTitleColor,
 																	}}
 																>
-																	{getSlideTitle(activeSlideIndex)}
+																	{getSlideTitle(selectedSong, activeSlideIndex)}
 																</h4>
 															</div>
 														)}
