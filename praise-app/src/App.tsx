@@ -94,6 +94,13 @@ function App() {
   const [previewWidth, setPreviewWidth] = useState(0);
   const previewContainerRef = useRef<HTMLDivElement>(null);
 
+  // Auto-resetar modo de projeção ao entrar na aba Bíblia
+  useEffect(() => {
+    if (activeTab === 'bible') {
+      setProjectionMode('default');
+    }
+  }, [activeTab, setProjectionMode]);
+
   // Efeito para observar o redimensionamento do preview e calcular a escala real
   useEffect(() => {
     if (!previewContainerRef.current) return;
