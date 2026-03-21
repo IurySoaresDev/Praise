@@ -150,7 +150,7 @@ function App() {
 			setIsSongsCollapsed(true);
 		}
 		prevPlaylistLenRef.current = playlist.length;
-	}, [playlist.length]);
+	}, [playlist.length, isSongsCollapsed]);
 
 	// Auto-expand ao adicionar textos bíblicos, auto-collapse ao remover todos
 	useEffect(() => {
@@ -161,7 +161,7 @@ function App() {
 			setIsBibleCollapsed(true);
 		}
 		prevBiblePlaylistLenRef.current = biblePlaylist.length;
-	}, [biblePlaylist.length]);
+	}, [biblePlaylist.length, isBibleCollapsed]);
 
 	// Auto-resetar modo de projeção ao entrar na aba Bíblia ou selecionar passagem bíblica
 	useEffect(() => {
