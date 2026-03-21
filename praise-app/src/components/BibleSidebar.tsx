@@ -1,9 +1,9 @@
 import { useStore } from '../store';
-import { useBible } from '../hooks/useBible';
+import type { UseBibleReturn, BibleVerse } from '../hooks/useBible';
 import { Search, ArrowLeft, Loader2, Plus } from 'lucide-react';
 
 interface BibleSidebarProps {
-  bible: ReturnType<typeof useBible>;
+  bible: UseBibleReturn;
 }
 
 export function BibleSidebar({ bible }: BibleSidebarProps) {
@@ -185,7 +185,7 @@ export function BibleSidebar({ bible }: BibleSidebarProps) {
                     ))}
                 </div>
                 {Array.from({ length: selectedBook.chapters.length }).filter(
-                  (_c: any, i: number) =>
+                  (_c: unknown, i: number) =>
                     (i + 1).toString().includes(searchChapterQuery.trim()),
                 ).length === 0 && (
                   <div className="px-3 py-6 text-center text-white/20 text-xs">
@@ -198,7 +198,7 @@ export function BibleSidebar({ bible }: BibleSidebarProps) {
             {/* Versículos */}
             {selectedBook && selectedChapter && (
               <div className="flex flex-col gap-1">
-                {bibleVerses.map((verse: any, index: number) => {
+                {bibleVerses.map((verse: BibleVerse, index: number) => {
                   const chapterSongTitle = `${selectedBook.name} ${selectedChapter}`;
                   const isVerseActive =
                     selectedSong?.title === chapterSongTitle &&
@@ -216,7 +216,7 @@ export function BibleSidebar({ bible }: BibleSidebarProps) {
                         if (selectedSong?.title !== chapterSongTitle) {
                           const chapterContent = bibleVerses
                             .map(
-                              (v: any) =>
+                              (v: BibleVerse) =>
                                 `[${selectedBook.name} ${selectedChapter}:${v.number}]\n${v.number}. ${v.text}`,
                             )
                             .join('\n\n');

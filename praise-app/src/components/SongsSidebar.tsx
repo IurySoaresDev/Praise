@@ -1,7 +1,6 @@
 import { useStore } from '../store';
+import { SONG_CATEGORIES } from '../constants';
 import { Search, Plus } from 'lucide-react';
-
-const categories = ['Todas', 'Coletânea 2018', 'Avulsos 2018', 'CIA 2018'];
 
 export function SongsSidebar() {
   const {
@@ -38,7 +37,7 @@ export function SongsSidebar() {
         </div>
 
         <div className="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-          {categories.map((cat) => (
+          {SONG_CATEGORIES.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}

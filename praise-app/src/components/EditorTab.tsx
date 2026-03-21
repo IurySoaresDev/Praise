@@ -1,5 +1,6 @@
 import { useStore, EDITABLE_COLLECTIONS } from '../store';
-import { useEditor } from '../hooks/useEditor';
+import { SONG_CATEGORIES } from '../constants';
+import type { UseEditorReturn } from '../hooks/useEditor';
 import {
   X,
   Plus,
@@ -13,10 +14,8 @@ import {
 const isColetanea = (name: string) =>
   name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes('coletanea');
 
-const categories = ['Todas', 'Coletânea 2018', 'Avulsos 2018', 'CIA 2018'];
-
 interface EditorTabProps {
-  editor: ReturnType<typeof useEditor>;
+  editor: UseEditorReturn;
 }
 
 export function EditorTab({ editor }: EditorTabProps) {
@@ -74,7 +73,7 @@ export function EditorTab({ editor }: EditorTabProps) {
             </div>
 
             <div className="flex gap-1 overflow-x-auto mt-3 pb-1 no-scrollbar">
-              {categories.map((cat) => (
+              {SONG_CATEGORIES.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedEditCategory(cat)}

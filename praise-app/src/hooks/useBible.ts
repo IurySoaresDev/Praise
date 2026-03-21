@@ -1,14 +1,42 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
 
 export type BibleVersion = 'NVI' | 'ACF' | 'ARA';
 
-export function useBible() {
-  const [selectedBook, setSelectedBook] = useState<any>(null);
+export interface BibleBook {
+  name: string;
+  abbrev: string;
+  chapters: string[][];
+}
+
+export interface BibleVerse {
+  number: number;
+  text: string;
+}
+
+export interface UseBibleReturn {
+  selectedBook: BibleBook | null;
+  setSelectedBook: Dispatch<SetStateAction<BibleBook | null>>;
+  selectedChapter: number | null;
+  setSelectedChapter: Dispatch<SetStateAction<number | null>>;
+  searchBibleQuery: string;
+  setSearchBibleQuery: Dispatch<SetStateAction<string>>;
+  searchChapterQuery: string;
+  setSearchChapterQuery: Dispatch<SetStateAction<string>>;
+  bibleVersion: BibleVersion;
+  setBibleVersion: Dispatch<SetStateAction<BibleVersion>>;
+  bibleData: BibleBook[];
+  isLoadingBible: boolean;
+  bibleBooks: BibleBook[];
+  bibleVerses: BibleVerse[];
+}
+
+export function useBible(): UseBibleReturn {
+  const [selectedBook, setSelectedBook] = useState<BibleBook | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
   const [searchBibleQuery, setSearchBibleQuery] = useState('');
   const [searchChapterQuery, setSearchChapterQuery] = useState('');
   const [bibleVersion, setBibleVersion] = useState<BibleVersion>('ARA');
-  const [bibleData, setBibleData] = useState<any[]>([]);
+  const [bibleData, setBibleData] = useState<BibleBook[]>([]);
   const [isLoadingBible, setIsLoadingBible] = useState(true);
 
   useEffect(() => {
@@ -28,12 +56,12 @@ export function useBible() {
           break;
       }
 
-      const newData = (mod.default as any[]) || [];
+      const newData = (mod.default as BibleBook[]) || [];
       setBibleData(newData);
 
-      setSelectedBook((prev: any) => {
+      setSelectedBook((prev: BibleBook | null) => {
         if (!prev) return null;
-        return newData.find((b: any) => b.abbrev === prev.abbrev) || null;
+        return newData.find((b) => b.abbrev === prev.abbrev) || null;
       });
       setIsLoadingBible(false);
     };
@@ -49,7 +77,7 @@ export function useBible() {
             book.abbrev.toLowerCase().includes(searchBibleQuery.toLowerCase()),
         );
 
-  const bibleVerses =
+  const bibleVerses: BibleVerse[] =
     selectedBook && selectedChapter
       ? selectedBook.chapters[selectedChapter - 1].map(
           (text: string, i: number) => ({

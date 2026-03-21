@@ -1,9 +1,34 @@
-import { useState } from 'react';
+import { useState, type Dispatch, type SetStateAction } from 'react';
 import { open } from '@tauri-apps/plugin-dialog';
 import { readTextFile } from '@tauri-apps/plugin-fs';
-import { useStore, EDITABLE_COLLECTIONS } from '../store';
+import { useStore, EDITABLE_COLLECTIONS, type Song } from '../store';
 
-export function useEditor() {
+export interface UseEditorReturn {
+  editorTitle: string;
+  setEditorTitle: Dispatch<SetStateAction<string>>;
+  editorContent: string;
+  setEditorContent: Dispatch<SetStateAction<string>>;
+  editorCollection: string;
+  setEditorCollection: Dispatch<SetStateAction<string>>;
+  editingSongTitle: string | null;
+  setEditingSongTitle: Dispatch<SetStateAction<string | null>>;
+  searchEditQuery: string;
+  setSearchEditQuery: Dispatch<SetStateAction<string>>;
+  selectedEditCategory: string;
+  setSelectedEditCategory: Dispatch<SetStateAction<string>>;
+  showDuplicateModal: boolean;
+  setShowDuplicateModal: Dispatch<SetStateAction<boolean>>;
+  duplicateTitle: string;
+  showSuccessToast: boolean;
+  successMessage: string;
+  resetForm: () => void;
+  handleSave: () => void;
+  handleImportJSON: () => Promise<void>;
+  selectSongForEditing: (song: Song) => void;
+  showSuccess: (message: string, duration?: number) => void;
+}
+
+export function useEditor(): UseEditorReturn {
   const { addSongToCollection, importSongsFromJSON, updateSong } = useStore();
 
   const [editorTitle, setEditorTitle] = useState('');
