@@ -26,7 +26,7 @@ Antes de começar, você precisa instalar as seguintes ferramentas:
 1.  **Clone o Repositório:**
     ```bash
     git clone https://github.com/IurySoaresDev/Praise.git
-    cd Praise/praise-app
+    cd Praise
     ```
 
 2.  **Instale as Dependências do Frontend:**
@@ -49,8 +49,9 @@ npm run tauri build
 
 ## 🏗️ Estrutura do Projeto
 
-*   `/praise-app`: Código fonte da aplicação (React + Vite).
-*   `/praise-app/src-tauri`: Backend e configurações do Tauri (Rust).
+*   `/src`: Código fonte da aplicação (React + Vite).
+*   `/src-tauri`: Backend e configurações do Tauri (Rust).
+*   `/docs`: Imagens de referência e assets brutos.
 *   `.github/workflows`: Automação de compilação e release no GitHub.
 
 ## 🤖 Release Automática
