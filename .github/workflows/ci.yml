@@ -31,4 +31,4 @@ jobs:
         run: pnpm lint
 
       - name: Tests
-        run: pnpm test -- --run
+        run: pnpm test:ci
