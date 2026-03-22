@@ -47,7 +47,7 @@ console.log(`Atualizado: src-tauri/tauri.conf.json`);
 const cargoPath = resolve(root, 'src-tauri', 'Cargo.toml');
 let cargo = readFileSync(cargoPath, 'utf-8');
 cargo = cargo.replace(
-  /^(version\s*=\s*")([^"]+)(")/m,
+  /(\[package\][\s\S]*?version\s*=\s*")([^"]+)(")/,
   `$1${newVersion}$3`
 );
 writeFileSync(cargoPath, cargo, 'utf-8');
@@ -63,7 +63,7 @@ const run = (cmd) => {
   execSync(cmd, { cwd: root, stdio: 'inherit' });
 };
 
-run('git add -A');
+run('git add package.json src-tauri/tauri.conf.json src-tauri/Cargo.toml');
 run(`git commit -m "release: ${tag}"`);
 run(`git tag ${tag}`);
 run('git push');

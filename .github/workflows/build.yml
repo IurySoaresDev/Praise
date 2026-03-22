@@ -83,5 +83,5 @@ jobs:
           projectPath: .
           tagName: ${{ github.ref_name }}
           releaseName: 'Praise ${{ github.ref_name }}'
-          releaseBody: 'Nova atualizacao do Praise disponivel. Faca o download e instale a versao mais recente.'
+          releaseBody: 'Nova atualização do Praise disponível. Faça o download e instale a versão mais recente.'
           prerelease: false
