@@ -2,11 +2,35 @@ name: Build and Release Praise
 
 on:
   push:
-    branches: [main]
+    tags: ['v*']
   workflow_dispatch:
 
 jobs:
+  validate-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate version sync
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          TAURI_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').version")
+          CARGO_VERSION=$(grep -m1 '^version' src-tauri/Cargo.toml | sed 's/version = "\(.*\)"/\1/')
+
+          echo "package.json:      $PKG_VERSION"
+          echo "tauri.conf.json:   $TAURI_VERSION"
+          echo "Cargo.toml:        $CARGO_VERSION"
+
+          if [ "$PKG_VERSION" != "$TAURI_VERSION" ] || [ "$PKG_VERSION" != "$CARGO_VERSION" ]; then
+            echo "::error::Versoes divergentes entre os arquivos de configuracao!"
+            exit 1
+          fi
+
+          echo "Todas as versoes sincronizadas: $PKG_VERSION"
+
   release:
+    needs: validate-versions
     permissions:
       contents: write
     strategy:
@@ -17,6 +41,8 @@ jobs:
             os: "windows"
           - platform: "ubuntu-22.04"
             os: "linux"
+          - platform: "macos-latest"
+            os: "macos"
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -55,8 +81,7 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           projectPath: .
-          tagName: v__VERSION__
-          releaseName: 'Praise v__VERSION__'
-          releaseBody: 'Nova atualização do Praise disponível. Faça o download e instale a versão mais recente.'
-          releaseDraft: true
+          tagName: ${{ github.ref_name }}
+          releaseName: 'Praise ${{ github.ref_name }}'
+          releaseBody: 'Nova atualizacao do Praise disponivel. Faca o download e instale a versao mais recente.'
           prerelease: false
