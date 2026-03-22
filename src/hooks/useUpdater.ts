@@ -42,7 +42,7 @@ export function useUpdater({ showSuccess }: UpdaterCallbacks) {
       } else {
         showSuccess('Versão atualizada!');
       }
-    } catch (_e) {
+    } catch {
       showSuccess('Erro ao buscar atualizações.');
     } finally {
       setIsCheckingUpdate(false);
