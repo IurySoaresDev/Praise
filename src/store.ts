@@ -1,137 +1,155 @@
-import { create } from 'zustand';
-import { invoke } from '@tauri-apps/api/core';
-import rawData from './assets/data.json';
+import { invoke } from "@tauri-apps/api/core"
+import { create } from "zustand"
 
+import rawData from "./assets/data.json"
 
 export interface Song {
-  title: string;
-  content: string;
-  collection: string;
+  title: string
+  content: string
+  collection: string
 }
 
 export interface Collection {
-  name: string;
-  type: string;
-  lang: string;
-  songs: Omit<Song, 'collection'>[];
+  name: string
+  type: string
+  lang: string
+  songs: Omit<Song, "collection">[]
 }
 
 export interface AppState {
-  collections: Collection[];
-  songs: Song[];
-  searchQuery: string;
-  selectedCategory: string;
-  selectedSong: Song | null;
-  activeSlideIndex: number;
-  availableMonitors: string[];
-  selectedMonitor: string | null;
-  playlist: Song[];
-  biblePlaylist: Song[];
-  projectionMode: 'default' | 'subtitle';
-  
+  collections: Collection[]
+  songs: Song[]
+  searchQuery: string
+  selectedCategory: string
+  selectedSong: Song | null
+  activeSlideIndex: number
+  availableMonitors: string[]
+  selectedMonitor: string | null
+  playlist: Song[]
+  biblePlaylist: Song[]
+  projectionMode: "default" | "subtitle"
+
   // Settings & Backgrounds
-  activeTab: 'songs' | 'bible' | 'editor' | 'settings';
-  songBackground: string;
-  songBodyBackground: string;
-  bibleBackground: string;
-  
+  activeTab: "songs" | "bible" | "editor" | "settings"
+  songBackground: string
+  songBodyBackground: string
+  bibleBackground: string
+
   // Custom Colors
-  songTitleColor: string;
-  songLyricsColor: string;
-  bibleTitleColor: string;
-  bibleLyricsColor: string;
-  
+  songTitleColor: string
+  songLyricsColor: string
+  bibleTitleColor: string
+  bibleLyricsColor: string
+
   // Font Customization
-  songTitleFont: string;
-  songTitleSize: number;
-  songTitleWeight: string;
-  songLyricsFont: string;
-  songLyricsSize: number;
-  songLyricsWeight: string;
-  bibleTitleFont: string;
-  bibleTitleSize: number;
-  bibleTitleWeight: string;
-  bibleLyricsFont: string;
-  bibleLyricsSize: number;
-  bibleLyricsWeight: string;
+  songTitleFont: string
+  songTitleSize: number
+  songTitleWeight: string
+  songLyricsFont: string
+  songLyricsSize: number
+  songLyricsWeight: string
+  bibleTitleFont: string
+  bibleTitleSize: number
+  bibleTitleWeight: string
+  bibleLyricsFont: string
+  bibleLyricsSize: number
+  bibleLyricsWeight: string
 
-  setSearchQuery: (query: string) => void;
-  setSelectedCategory: (category: string) => void;
-  setSelectedSong: (song: Song | null) => void;
-  setActiveSlideIndex: (index: number) => void;
-  setAvailableMonitors: (monitors: string[]) => void;
-  setSelectedMonitor: (monitor: string | null) => void;
-  addToPlaylist: (song: Song) => void;
-  removeFromPlaylist: (index: number) => void;
-  moveSongInPlaylist: (oldIndex: number, newIndex: number) => void;
-  addToBiblePlaylist: (song: Song) => void;
-  removeFromBiblePlaylist: (index: number) => void;
-  moveSongInBiblePlaylist: (oldIndex: number, newIndex: number) => void;
-  addSongToCollection: (title: string, content: string, collectionName: string) => { duplicate: boolean; existingTitle?: string };
-  getExportData: () => Collection[];
-  importSongsFromJSON: (data: Collection[]) => { added: number; duplicates: number };
-  updateSong: (oldTitle: string, updatedSong: Song) => { success: boolean; duplicate?: boolean };
-  
-  setActiveTab: (tab: 'songs' | 'bible' | 'editor' | 'settings') => void;
-  setSongBackground: (path: string) => void;
-  setSongBodyBackground: (path: string) => void;
-  setBibleBackground: (path: string) => void;
-  
-  setSongTitleColor: (color: string) => void;
-  setSongLyricsColor: (color: string) => void;
-  setBibleTitleColor: (color: string) => void;
-  setBibleLyricsColor: (color: string) => void;
+  setSearchQuery: (query: string) => void
+  setSelectedCategory: (category: string) => void
+  setSelectedSong: (song: Song | null) => void
+  setActiveSlideIndex: (index: number) => void
+  setAvailableMonitors: (monitors: string[]) => void
+  setSelectedMonitor: (monitor: string | null) => void
+  addToPlaylist: (song: Song) => void
+  removeFromPlaylist: (index: number) => void
+  moveSongInPlaylist: (oldIndex: number, newIndex: number) => void
+  addToBiblePlaylist: (song: Song) => void
+  removeFromBiblePlaylist: (index: number) => void
+  moveSongInBiblePlaylist: (oldIndex: number, newIndex: number) => void
+  addSongToCollection: (
+    title: string,
+    content: string,
+    collectionName: string,
+  ) => { duplicate: boolean; existingTitle?: string }
+  getExportData: () => Collection[]
+  importSongsFromJSON: (data: Collection[]) => {
+    added: number
+    duplicates: number
+  }
+  updateSong: (
+    oldTitle: string,
+    updatedSong: Song,
+  ) => { success: boolean; duplicate?: boolean }
 
-  setSongTitleFont: (font: string) => void;
-  setSongTitleSize: (size: number) => void;
-  setSongTitleWeight: (weight: string) => void;
-  setSongLyricsFont: (font: string) => void;
-  setSongLyricsSize: (size: number) => void;
-  setSongLyricsWeight: (weight: string) => void;
-  setBibleTitleFont: (font: string) => void;
-  setBibleTitleSize: (size: number) => void;
-  setBibleTitleWeight: (weight: string) => void;
-  setBibleLyricsFont: (font: string) => void;
-  setBibleLyricsSize: (size: number) => void;
-  setBibleLyricsWeight: (weight: string) => void;
-  setProjectionMode: (mode: 'default' | 'subtitle') => void;
+  setActiveTab: (tab: "songs" | "bible" | "editor" | "settings") => void
+  setSongBackground: (path: string) => void
+  setSongBodyBackground: (path: string) => void
+  setBibleBackground: (path: string) => void
+
+  setSongTitleColor: (color: string) => void
+  setSongLyricsColor: (color: string) => void
+  setBibleTitleColor: (color: string) => void
+  setBibleLyricsColor: (color: string) => void
+
+  setSongTitleFont: (font: string) => void
+  setSongTitleSize: (size: number) => void
+  setSongTitleWeight: (weight: string) => void
+  setSongLyricsFont: (font: string) => void
+  setSongLyricsSize: (size: number) => void
+  setSongLyricsWeight: (weight: string) => void
+  setBibleTitleFont: (font: string) => void
+  setBibleTitleSize: (size: number) => void
+  setBibleTitleWeight: (weight: string) => void
+  setBibleLyricsFont: (font: string) => void
+  setBibleLyricsSize: (size: number) => void
+  setBibleLyricsWeight: (weight: string) => void
+  setProjectionMode: (mode: "default" | "subtitle") => void
 }
 
-export const ALLOWED_COLLECTIONS = ["Coletânea 2018", "CIA 2018", "Avulsos 2018"];
-export const EDITABLE_COLLECTIONS = ALLOWED_COLLECTIONS.filter(c => c !== "Coletânea 2018");
+export const ALLOWED_COLLECTIONS = [
+  "Coletânea 2018",
+  "CIA 2018",
+  "Avulsos 2018",
+]
+export const EDITABLE_COLLECTIONS = ALLOWED_COLLECTIONS.filter(
+  (c) => c !== "Coletânea 2018",
+)
 
 // Flatten songs from all collections and ensure uniqueness
-const initialCollections = (rawData as Collection[]).filter(c => ALLOWED_COLLECTIONS.includes(c.name));
-const collections: Collection[] = [];
-const allSongs: Song[] = [];
-const seenTitles = new Set<string>();
+const initialCollections = (rawData as Collection[]).filter((c) =>
+  ALLOWED_COLLECTIONS.includes(c.name),
+)
+const collections: Collection[] = []
+const allSongs: Song[] = []
+const seenTitles = new Set<string>()
 
-initialCollections.forEach(c => {
-  const uniqueSongs: Omit<Song, 'collection'>[] = [];
-  c.songs.forEach(s => {
-    const normalizedTitle = (s.title || "").trim().toUpperCase();
+initialCollections.forEach((c) => {
+  const uniqueSongs: Omit<Song, "collection">[] = []
+  c.songs.forEach((s) => {
+    const normalizedTitle = (s.title || "").trim().toUpperCase()
     if (normalizedTitle && !seenTitles.has(normalizedTitle)) {
-      seenTitles.add(normalizedTitle);
-      uniqueSongs.push(s);
-      allSongs.push({ ...s, collection: c.name });
+      seenTitles.add(normalizedTitle)
+      uniqueSongs.push(s)
+      allSongs.push({ ...s, collection: c.name })
     }
-  });
-  collections.push({ ...c, songs: uniqueSongs });
-});
+  })
+  collections.push({ ...c, songs: uniqueSongs })
+})
 
 const saveCollectionsToDisk = async (collectionsToSave: Collection[]) => {
   try {
-    await invoke('save_songs', { data: collectionsToSave });
+    await invoke("save_songs", { data: collectionsToSave })
   } catch (error) {
-    console.error('Failed to save songs to disk:', error);
+    console.error("Failed to save songs to disk:", error)
   }
-};
+}
 
 export const useStore = create<AppState>((set, get) => ({
   collections,
   songs: allSongs,
-  searchQuery: '',
-  selectedCategory: 'Todas',
+  searchQuery: "",
+  selectedCategory: "Todas",
   selectedSong: null,
   activeSlideIndex: -1,
   availableMonitors: [],
@@ -140,58 +158,65 @@ export const useStore = create<AppState>((set, get) => ({
   biblePlaylist: [],
 
   // Initial Backgrounds (using relative paths for Vite/Tauri)
-  activeTab: 'songs',
-  songBackground: '/backgrounds/bg-song.jpg',
-  songBodyBackground: '/backgrounds/bg-song-body.jpg',
-  bibleBackground: '/backgrounds/bg-bible.jpg',
-  projectionMode: 'default',
-  
-  bibleLyricsColor: '#ffffff', // White
-  songTitleColor: '#ffffff', // White (Premium)
-  songLyricsColor: '#ffffff', // White
-  bibleTitleColor: '#ffffff', // White
-  
-  songTitleFont: 'Inter',
+  activeTab: "songs",
+  songBackground: "/backgrounds/bg-song.jpg",
+  songBodyBackground: "/backgrounds/bg-song-body.jpg",
+  bibleBackground: "/backgrounds/bg-bible.jpg",
+  projectionMode: "default",
+
+  bibleLyricsColor: "#ffffff", // White
+  songTitleColor: "#ffffff", // White (Premium)
+  songLyricsColor: "#ffffff", // White
+  bibleTitleColor: "#ffffff", // White
+
+  songTitleFont: "Inter",
   songTitleSize: 32,
-  songTitleWeight: 'bold',
-  songLyricsFont: 'Inter',
+  songTitleWeight: "bold",
+  songLyricsFont: "Inter",
   songLyricsSize: 72,
-  songLyricsWeight: 'bold',
-  bibleTitleFont: 'Inter',
+  songLyricsWeight: "bold",
+  bibleTitleFont: "Inter",
   bibleTitleSize: 40,
-  bibleTitleWeight: 'bold',
-  bibleLyricsFont: 'Inter',
+  bibleTitleWeight: "bold",
+  bibleLyricsFont: "Inter",
   bibleLyricsSize: 64,
-  bibleLyricsWeight: 'medium',
+  bibleLyricsWeight: "medium",
 
   setSearchQuery: (query) => set({ searchQuery: query }),
-  setSelectedCategory: (category) => set({ selectedCategory: category, selectedSong: null }),
+  setSelectedCategory: (category) =>
+    set({ selectedCategory: category, selectedSong: null }),
   setSelectedSong: (song) => set({ selectedSong: song, activeSlideIndex: 0 }),
   setActiveSlideIndex: (index) => set({ activeSlideIndex: index }),
   setAvailableMonitors: (monitors) => set({ availableMonitors: monitors }),
   setSelectedMonitor: (monitor) => set({ selectedMonitor: monitor }),
-  addToPlaylist: (song) => set((state) => ({ playlist: [...state.playlist, song] })),
-  removeFromPlaylist: (index) => set((state) => ({ 
-    playlist: state.playlist.filter((_, i) => i !== index) 
-  })),
-  moveSongInPlaylist: (oldIndex, newIndex) => set((state) => {
-    if (newIndex < 0 || newIndex >= state.playlist.length) return state;
-    const newPlaylist = [...state.playlist];
-    const [moved] = newPlaylist.splice(oldIndex, 1);
-    newPlaylist.splice(newIndex, 0, moved);
-    return { playlist: newPlaylist };
-  }),
-  addToBiblePlaylist: (song) => set((state) => ({ biblePlaylist: [...state.biblePlaylist, song] })),
-  removeFromBiblePlaylist: (index) => set((state) => ({ 
-    biblePlaylist: state.biblePlaylist.filter((_, i) => i !== index) 
-  })),
-  moveSongInBiblePlaylist: (oldIndex, newIndex) => set((state) => {
-    if (newIndex < 0 || newIndex >= state.biblePlaylist.length) return state;
-    const newPlaylist = [...state.biblePlaylist];
-    const [moved] = newPlaylist.splice(oldIndex, 1);
-    newPlaylist.splice(newIndex, 0, moved);
-    return { biblePlaylist: newPlaylist };
-  }),
+  addToPlaylist: (song) =>
+    set((state) => ({ playlist: [...state.playlist, song] })),
+  removeFromPlaylist: (index) =>
+    set((state) => ({
+      playlist: state.playlist.filter((_, i) => i !== index),
+    })),
+  moveSongInPlaylist: (oldIndex, newIndex) =>
+    set((state) => {
+      if (newIndex < 0 || newIndex >= state.playlist.length) return state
+      const newPlaylist = [...state.playlist]
+      const [moved] = newPlaylist.splice(oldIndex, 1)
+      newPlaylist.splice(newIndex, 0, moved)
+      return { playlist: newPlaylist }
+    }),
+  addToBiblePlaylist: (song) =>
+    set((state) => ({ biblePlaylist: [...state.biblePlaylist, song] })),
+  removeFromBiblePlaylist: (index) =>
+    set((state) => ({
+      biblePlaylist: state.biblePlaylist.filter((_, i) => i !== index),
+    })),
+  moveSongInBiblePlaylist: (oldIndex, newIndex) =>
+    set((state) => {
+      if (newIndex < 0 || newIndex >= state.biblePlaylist.length) return state
+      const newPlaylist = [...state.biblePlaylist]
+      const [moved] = newPlaylist.splice(oldIndex, 1)
+      newPlaylist.splice(newIndex, 0, moved)
+      return { biblePlaylist: newPlaylist }
+    }),
 
   setActiveTab: (tab) => set({ activeTab: tab }),
   setSongBackground: (path) => set({ songBackground: path }),
@@ -218,162 +243,187 @@ export const useStore = create<AppState>((set, get) => ({
   setProjectionMode: (mode) => set({ projectionMode: mode }),
 
   addSongToCollection: (title, content, collectionName) => {
-    const state = get();
+    const state = get()
     // Verificar duplicata (case-insensitive)
-    const normalizedTitle = title.trim().toUpperCase();
+    const normalizedTitle = title.trim().toUpperCase()
     const existing = state.songs.find(
-      s => s.title.trim().toUpperCase() === normalizedTitle
-    );
+      (s) => s.title.trim().toUpperCase() === normalizedTitle,
+    )
     if (existing) {
-      return { duplicate: true, existingTitle: existing.title };
+      return { duplicate: true, existingTitle: existing.title }
     }
 
-    const newSong: Song = { title: title.trim(), content, collection: collectionName };
+    const newSong: Song = {
+      title: title.trim(),
+      content,
+      collection: collectionName,
+    }
 
     set((s) => {
       // Adiciona à lista de collections
-      const updatedCollections = s.collections.map(c => {
+      const updatedCollections = s.collections.map((c) => {
         if (c.name === collectionName) {
-          return { ...c, songs: [...c.songs, { title: newSong.title, content: newSong.content }] };
+          return {
+            ...c,
+            songs: [
+              ...c.songs,
+              { title: newSong.title, content: newSong.content },
+            ],
+          }
         }
-        return c;
-      });
+        return c
+      })
 
       return {
         collections: updatedCollections,
         songs: [...s.songs, newSong],
-      };
-    });
+      }
+    })
 
-    saveCollectionsToDisk(get().collections);
+    saveCollectionsToDisk(get().collections)
 
-    return { duplicate: false };
+    return { duplicate: false }
   },
 
   getExportData: () => {
-    return get().collections;
+    return get().collections
   },
 
   importSongsFromJSON: (data: Collection[]) => {
-    const state = get();
-    let added = 0;
-    let duplicates = 0;
+    const state = get()
+    let added = 0
+    let duplicates = 0
     const existingTitles = new Set(
-      state.songs.map(s => s.title.trim().toUpperCase())
-    );
-    const newSongs: Song[] = [];
-    const updatedCollections = state.collections.map(c => ({ ...c, songs: [...c.songs] }));
+      state.songs.map((s) => s.title.trim().toUpperCase()),
+    )
+    const newSongs: Song[] = []
+    const updatedCollections = state.collections.map((c) => ({
+      ...c,
+      songs: [...c.songs],
+    }))
 
     // Se o dado não for array, tenta tratar como objeto único
-    const items = Array.isArray(data) ? data : [data];
-    
+    const items = Array.isArray(data) ? data : [data]
+
     // Lista para processar
-    const songsToProcess: Song[] = [];
+    const songsToProcess: Song[] = []
 
     for (const item of items) {
-      if (!item) continue;
-      
+      if (!item) continue
+
       // Caso 1: Array de Collections (formato exportado pelo app)
       if (item.songs && Array.isArray(item.songs)) {
         for (const s of item.songs) {
-          songsToProcess.push({ 
-            title: s.title, 
-            content: s.content, 
-            collection: item.name || ALLOWED_COLLECTIONS[0] 
-          });
+          songsToProcess.push({
+            title: s.title,
+            content: s.content,
+            collection: item.name || ALLOWED_COLLECTIONS[0],
+          })
         }
-      } 
+      }
       // Caso 2: Objeto Song direto ou Array de Songs
       else if (item.title && item.content) {
-        songsToProcess.push({ 
-          title: item.title, 
-          content: item.content, 
-          collection: item.collection || ALLOWED_COLLECTIONS[0] 
-        });
+        songsToProcess.push({
+          title: item.title,
+          content: item.content,
+          collection: item.collection || ALLOWED_COLLECTIONS[0],
+        })
       }
     }
 
     for (const song of songsToProcess) {
-      const normalizedTitle = song.title.trim().toUpperCase();
+      const normalizedTitle = song.title.trim().toUpperCase()
       if (existingTitles.has(normalizedTitle)) {
-        duplicates++;
-        continue;
+        duplicates++
+        continue
       }
-      existingTitles.add(normalizedTitle);
-      added++;
-      
-      const targetCol = ALLOWED_COLLECTIONS.includes(song.collection) 
-        ? song.collection 
-        : ALLOWED_COLLECTIONS[0];
-        
-      newSongs.push({ ...song, title: song.title.trim(), collection: targetCol });
+      existingTitles.add(normalizedTitle)
+      added++
 
-      const col = updatedCollections.find(c => c.name === targetCol);
+      const targetCol = ALLOWED_COLLECTIONS.includes(song.collection)
+        ? song.collection
+        : ALLOWED_COLLECTIONS[0]
+
+      newSongs.push({
+        ...song,
+        title: song.title.trim(),
+        collection: targetCol,
+      })
+
+      const col = updatedCollections.find((c) => c.name === targetCol)
       if (col) {
-        col.songs.push({ title: song.title.trim(), content: song.content });
+        col.songs.push({ title: song.title.trim(), content: song.content })
       }
     }
 
     if (added > 0) {
-      set({ collections: updatedCollections, songs: [...state.songs, ...newSongs] });
-      saveCollectionsToDisk(updatedCollections);
+      set({
+        collections: updatedCollections,
+        songs: [...state.songs, ...newSongs],
+      })
+      saveCollectionsToDisk(updatedCollections)
     }
 
-    return { added, duplicates };
+    return { added, duplicates }
   },
 
   updateSong: (oldTitle, updatedSong) => {
-    const state = get();
-    const normalizedOldTitle = oldTitle.trim().toUpperCase();
-    const normalizedNewTitle = updatedSong.title.trim().toUpperCase();
+    const state = get()
+    const normalizedOldTitle = oldTitle.trim().toUpperCase()
+    const normalizedNewTitle = updatedSong.title.trim().toUpperCase()
 
     // Se o título mudou, verificar se o novo título já existe em OUTRO louvor
     if (normalizedOldTitle !== normalizedNewTitle) {
       const isDuplicate = state.songs.some(
-        s => s.title.trim().toUpperCase() === normalizedNewTitle && s.title.trim().toUpperCase() !== normalizedOldTitle
-      );
-      if (isDuplicate) return { success: false, duplicate: true };
+        (s) =>
+          s.title.trim().toUpperCase() === normalizedNewTitle &&
+          s.title.trim().toUpperCase() !== normalizedOldTitle,
+      )
+      if (isDuplicate) return { success: false, duplicate: true }
     }
 
     set((s) => {
       // 1. Atualizar lista global de songs
-      const updatedSongs = s.songs.map(song => 
-        song.title.trim().toUpperCase() === normalizedOldTitle 
-          ? { ...updatedSong, title: updatedSong.title.trim() } 
-          : song
-      );
+      const updatedSongs = s.songs.map((song) =>
+        song.title.trim().toUpperCase() === normalizedOldTitle
+          ? { ...updatedSong, title: updatedSong.title.trim() }
+          : song,
+      )
 
       // 2. Atualizar coleções
-      const updatedCollections = s.collections.map(col => {
-        // Encontra a música na coleção (mesmo que ela esteja mudando de coleção, 
-        // removemos da antiga e adicionamos na nova se necessário, 
+      const updatedCollections = s.collections.map((col) => {
+        // Encontra a música na coleção (mesmo que ela esteja mudando de coleção,
+        // removemos da antiga e adicionamos na nova se necessário,
         // mas aqui vamos apenas atualizar onde ela estiver ou recomeçar)
-        
+
         // Remove a música da coleção onde ela estava (pelo título antigo)
         const songsWithoutOld = col.songs.filter(
-          s => s.title.trim().toUpperCase() !== normalizedOldTitle
-        );
+          (s) => s.title.trim().toUpperCase() !== normalizedOldTitle,
+        )
 
         // Se esta for a coleção de destino, adicionamos a música atualizada
         if (col.name === updatedSong.collection) {
           return {
             ...col,
-            songs: [...songsWithoutOld, { title: updatedSong.title.trim(), content: updatedSong.content }]
-          };
+            songs: [
+              ...songsWithoutOld,
+              { title: updatedSong.title.trim(), content: updatedSong.content },
+            ],
+          }
         }
-        
+
         // Se não for a coleção de destino, apenas retornamos a lista sem a música antiga
-        return { ...col, songs: songsWithoutOld };
-      });
+        return { ...col, songs: songsWithoutOld }
+      })
 
       return {
         songs: updatedSongs,
         collections: updatedCollections,
-      };
-    });
+      }
+    })
 
-    saveCollectionsToDisk(get().collections);
+    saveCollectionsToDisk(get().collections)
 
-    return { success: true };
+    return { success: true }
   },
-}));
+}))

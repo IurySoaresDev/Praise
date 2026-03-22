@@ -1,10 +1,10 @@
-import type { Song } from '../store';
+import type { Song } from "../store"
 
 /**
  * Returns whether a song is a Bible passage.
  */
 export function isBible(song: Song | null): boolean {
-  return song?.collection === "Bíblia";
+  return song?.collection === "Bíblia"
 }
 
 /**
@@ -13,13 +13,13 @@ export function isBible(song: Song | null): boolean {
  * - For songs: title on slide 0, empty on the rest
  */
 export function getSlideTitle(song: Song | null, index: number): string {
-  if (!song) return "";
+  if (!song) return ""
   if (isBible(song)) {
-    const rawSlide = song.content.split("\n\n")[index] || "";
-    const match = rawSlide.match(/^\[(.*?)\]/);
-    return match ? match[1] : song.title;
+    const rawSlide = song.content.split("\n\n")[index] || ""
+    const match = rawSlide.match(/^\[(.*?)\]/)
+    return match ? match[1] : song.title
   }
-  return index === 0 ? song.title : "";
+  return index === 0 ? song.title : ""
 }
 
 /**
@@ -32,6 +32,6 @@ export function getSlideBackground(
   songBodyBackground: string,
   bibleBackground: string,
 ): string {
-  if (isBible(song)) return bibleBackground;
-  return slideIndex === 0 ? songBackground : songBodyBackground;
+  if (isBible(song)) return bibleBackground
+  return slideIndex === 0 ? songBackground : songBodyBackground
 }

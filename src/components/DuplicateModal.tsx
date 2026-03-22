@@ -1,22 +1,30 @@
-import { AlertTriangle, X } from 'lucide-react';
+import { AlertTriangle, X } from "lucide-react"
 
 interface DuplicateModalProps {
-  isOpen: boolean;
-  title: string;
-  onClose: () => void;
+  isOpen: boolean
+  title: string
+  onClose: () => void
 }
 
-export function DuplicateModal({ isOpen, title, onClose }: DuplicateModalProps) {
-  if (!isOpen) return null;
+export function DuplicateModal({
+  isOpen,
+  title,
+  onClose,
+}: DuplicateModalProps) {
+  if (!isOpen) return null
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: modal backdrop overlay
     <div
+      role="presentation"
       className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop"
       onClick={onClose}
     >
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: stops click propagation on modal content */}
       <div
+        role="presentation"
         className="modal-content p-6 rounded-2xl border border-white/10 shadow-2xl max-w-sm w-full mx-4"
-        style={{ backgroundColor: '#161b26' }}
+        style={{ backgroundColor: "#161b26" }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-3 mb-4">
@@ -33,17 +41,18 @@ export function DuplicateModal({ isOpen, title, onClose }: DuplicateModalProps) 
           </div>
         </div>
         <p className="text-[13px] text-white/60 mb-5 leading-relaxed">
-          O louvor{' '}
+          O louvor{" "}
           <span className="font-semibold text-amber-300">
             &quot;{title}&quot;
-          </span>{' '}
+          </span>{" "}
           já está cadastrado na biblioteca.
         </p>
         <button
+          type="button"
           onClick={onClose}
           className="w-full py-2 rounded-xl text-[13px] font-semibold text-white flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
           style={{
-            background: 'linear-gradient(135deg, #64748b, #475569)',
+            background: "linear-gradient(135deg, #64748b, #475569)",
           }}
         >
           <X className="w-4 h-4" />
@@ -51,5 +60,5 @@ export function DuplicateModal({ isOpen, title, onClose }: DuplicateModalProps) 
         </button>
       </div>
     </div>
-  );
+  )
 }

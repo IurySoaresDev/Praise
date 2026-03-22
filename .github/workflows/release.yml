@@ -27,8 +27,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm lint
+      - name: Lint (Biome)
+        run: pnpm biome lint --diagnostic-level=error --no-errors-on-unmatched
+
+      - name: Format check
+        run: pnpm biome check --formatter-enabled=true --linter-enabled=false
+
+      - name: Type check
+        run: pnpm run type-check
 
       - name: Tests
         run: pnpm test:ci

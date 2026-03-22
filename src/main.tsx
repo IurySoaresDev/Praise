@@ -1,9 +1,10 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { HashRouter, Routes, Route } from "react-router-dom";
-import App from "./App";
-import Projection from "./Projection";
-import "./App.css";
+import React from "react"
+import ReactDOM from "react-dom/client"
+import { HashRouter, Route, Routes } from "react-router-dom"
+
+import App from "./App"
+import Projection from "./Projection"
+import "./App.css"
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
@@ -13,5 +14,5 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
         <Route path="/projection" element={<Projection />} />
       </Routes>
     </HashRouter>
-  </React.StrictMode>
-);
+  </React.StrictMode>,
+)

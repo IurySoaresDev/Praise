@@ -1,9 +1,10 @@
-import { useStore } from '../store';
-import type { UseBibleReturn, BibleVerse } from '../hooks/useBible';
-import { Search, ArrowLeft, Loader2, Plus } from 'lucide-react';
+import { ArrowLeft, Loader2, Plus, Search } from "lucide-react"
+
+import type { BibleVerse, UseBibleReturn } from "../hooks/useBible"
+import { useStore } from "../store"
 
 interface BibleSidebarProps {
-  bible: UseBibleReturn;
+  bible: UseBibleReturn
 }
 
 export function BibleSidebar({ bible }: BibleSidebarProps) {
@@ -13,7 +14,7 @@ export function BibleSidebar({ bible }: BibleSidebarProps) {
     activeSlideIndex,
     setActiveSlideIndex,
     addToBiblePlaylist,
-  } = useStore();
+  } = useStore()
 
   const {
     selectedBook,
@@ -29,7 +30,7 @@ export function BibleSidebar({ bible }: BibleSidebarProps) {
     isLoadingBible,
     bibleBooks,
     bibleVerses,
-  } = bible;
+  } = bible
 
   return (
     <div className="flex flex-col flex-1 min-h-0 bg-[#0f1219]/30">
@@ -37,12 +38,13 @@ export function BibleSidebar({ bible }: BibleSidebarProps) {
         <div className="flex items-center gap-2 flex-1 min-w-0">
           {selectedBook && (
             <button
+              type="button"
               onClick={() => {
                 if (selectedChapter) {
-                  setSelectedChapter(null);
+                  setSelectedChapter(null)
                 } else {
-                  setSelectedBook(null);
-                  setSearchChapterQuery('');
+                  setSelectedBook(null)
+                  setSearchChapterQuery("")
                 }
               }}
               className="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-all shrink-0"
@@ -52,7 +54,7 @@ export function BibleSidebar({ bible }: BibleSidebarProps) {
           )}
           <div className="flex-1 truncate text-sm font-semibold text-white/80 pr-2 block">
             {!selectedBook
-              ? 'Selecione o Livro'
+              ? "Selecione o Livro"
               : !selectedChapter
                 ? selectedBook.name
                 : `${selectedBook.name} ${selectedChapter}`}
@@ -60,18 +62,19 @@ export function BibleSidebar({ bible }: BibleSidebarProps) {
         </div>
 
         <div className="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar shrink-0">
-          {(['ACF', 'ARA', 'NVI'] as const).map((version) => (
+          {(["ACF", "ARA", "NVI"] as const).map((version) => (
             <button
+              type="button"
               key={version}
               onClick={() => setBibleVersion(version)}
               className={`whitespace-nowrap px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-all flex-shrink-0 ${
                 bibleVersion === version
-                  ? 'text-white shadow-md bg-brand-500'
-                  : 'text-white/40 hover:text-white/70 hover:bg-white/5'
+                  ? "text-white shadow-md bg-brand-500"
+                  : "text-white/40 hover:text-white/70 hover:bg-white/5"
               }`}
               style={
                 bibleVersion === version
-                  ? { background: 'linear-gradient(135deg, #64748b, #475569)' }
+                  ? { background: "linear-gradient(135deg, #64748b, #475569)" }
                   : {}
               }
             >
@@ -100,7 +103,7 @@ export function BibleSidebar({ bible }: BibleSidebarProps) {
                     type="text"
                     placeholder="Buscar livro..."
                     className="w-full pl-9 pr-4 py-2 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/20 placeholder:text-white/25"
-                    style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+                    style={{ backgroundColor: "rgba(255,255,255,0.05)" }}
                     value={searchBibleQuery}
                     onChange={(e) => setSearchBibleQuery(e.target.value)}
                   />
@@ -109,10 +112,11 @@ export function BibleSidebar({ bible }: BibleSidebarProps) {
                   {bibleBooks.length > 0 ? (
                     bibleBooks.map((book) => (
                       <button
+                        type="button"
                         key={book.abbrev}
                         onClick={() => {
-                          setSelectedBook(book);
-                          setSearchBibleQuery('');
+                          setSelectedBook(book)
+                          setSearchBibleQuery("")
                         }}
                         className="w-full text-left px-3 py-2 rounded-lg text-[13px] text-white/70 hover:text-white hover:bg-white/5 transition-all flex justify-between items-center group"
                       >
@@ -140,7 +144,7 @@ export function BibleSidebar({ bible }: BibleSidebarProps) {
                     type="text"
                     placeholder={`Buscar no livro de ${selectedBook.name}...`}
                     className="w-full pl-9 pr-4 py-2 rounded-xl text-sm outline-none border border-white/10 transition-all focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/20 placeholder:text-white/25"
-                    style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+                    style={{ backgroundColor: "rgba(255,255,255,0.05)" }}
                     value={searchChapterQuery}
                     onChange={(e) => setSearchChapterQuery(e.target.value)}
                   />
@@ -150,34 +154,38 @@ export function BibleSidebar({ bible }: BibleSidebarProps) {
                     .map((_, i) => i + 1)
                     .filter(
                       (chapNumber) =>
-                        searchChapterQuery.trim() === '' ||
-                        chapNumber.toString().includes(searchChapterQuery.trim()),
+                        searchChapterQuery.trim() === "" ||
+                        chapNumber
+                          .toString()
+                          .includes(searchChapterQuery.trim()),
                     )
                     .map((chapNumber) => (
                       <button
+                        type="button"
                         key={chapNumber}
                         onClick={() => {
-                          setSelectedChapter(chapNumber);
-                          setSearchChapterQuery('');
-                          const chapterVerses = selectedBook.chapters[chapNumber - 1];
-                          const chapterSongTitle = `${selectedBook.name} ${chapNumber}`;
+                          setSelectedChapter(chapNumber)
+                          setSearchChapterQuery("")
+                          const chapterVerses =
+                            selectedBook.chapters[chapNumber - 1]
+                          const chapterSongTitle = `${selectedBook.name} ${chapNumber}`
                           const chapterContent = chapterVerses
                             .map(
                               (text: string, vIdx: number) =>
                                 `[${selectedBook.name} ${chapNumber}:${vIdx + 1}]\n${vIdx + 1}. ${text}`,
                             )
-                            .join('\n\n');
+                            .join("\n\n")
                           setSelectedSong({
                             title: chapterSongTitle,
                             content: chapterContent,
-                            collection: 'Bíblia',
-                          });
-                          setActiveSlideIndex(0);
+                            collection: "Bíblia",
+                          })
+                          setActiveSlideIndex(0)
                         }}
                         className={`aspect-square flex items-center justify-center rounded-lg text-[13px] font-medium text-white/70 hover:text-white hover:bg-brand-500/20 hover:border-brand-500/30 border border-transparent transition-all ${
                           selectedChapter === chapNumber
-                            ? 'bg-brand-500/20 text-brand-400 border-brand-500/30 glow-brand shadow-inner'
-                            : ''
+                            ? "bg-brand-500/20 text-brand-400 border-brand-500/30 glow-brand shadow-inner"
+                            : ""
                         }`}
                       >
                         {chapNumber}
@@ -199,18 +207,21 @@ export function BibleSidebar({ bible }: BibleSidebarProps) {
             {selectedBook && selectedChapter && (
               <div className="flex flex-col gap-1">
                 {bibleVerses.map((verse: BibleVerse, index: number) => {
-                  const chapterSongTitle = `${selectedBook.name} ${selectedChapter}`;
+                  const chapterSongTitle = `${selectedBook.name} ${selectedChapter}`
                   const isVerseActive =
                     selectedSong?.title === chapterSongTitle &&
-                    activeSlideIndex === index;
+                    activeSlideIndex === index
                   const singleVerseSong = {
                     title: `${selectedBook.name} ${selectedChapter}:${verse.number}`,
                     content: `[${selectedBook.name} ${selectedChapter}:${verse.number}]\n${verse.number}. ${verse.text}`,
-                    collection: 'Bíblia',
-                  };
+                    collection: "Bíblia",
+                  }
                   return (
+                    // biome-ignore lint/a11y/useSemanticElements: complex interactive div with double-click and verse navigation
                     <div
                       key={verse.number}
+                      role="button"
+                      tabIndex={0}
                       onDoubleClick={() => addToBiblePlaylist(singleVerseSong)}
                       onClick={() => {
                         if (selectedSong?.title !== chapterSongTitle) {
@@ -219,19 +230,38 @@ export function BibleSidebar({ bible }: BibleSidebarProps) {
                               (v: BibleVerse) =>
                                 `[${selectedBook.name} ${selectedChapter}:${v.number}]\n${v.number}. ${v.text}`,
                             )
-                            .join('\n\n');
+                            .join("\n\n")
                           setSelectedSong({
                             title: chapterSongTitle,
                             content: chapterContent,
-                            collection: 'Bíblia',
-                          });
+                            collection: "Bíblia",
+                          })
                         }
-                        setActiveSlideIndex(index);
+                        setActiveSlideIndex(index)
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault()
+                          if (selectedSong?.title !== chapterSongTitle) {
+                            const chapterContent = bibleVerses
+                              .map(
+                                (v: BibleVerse) =>
+                                  `[${selectedBook.name} ${selectedChapter}:${v.number}]\n${v.number}. ${v.text}`,
+                              )
+                              .join("\n\n")
+                            setSelectedSong({
+                              title: chapterSongTitle,
+                              content: chapterContent,
+                              collection: "Bíblia",
+                            })
+                          }
+                          setActiveSlideIndex(index)
+                        }
                       }}
                       className={`w-full text-left p-2 rounded-lg flex gap-2 group cursor-pointer transition-all border ${
                         isVerseActive
-                          ? 'border-brand-500/40 bg-brand-500/20'
-                          : 'border-transparent hover:bg-white/5'
+                          ? "border-brand-500/40 bg-brand-500/20"
+                          : "border-transparent hover:bg-white/5"
                       }`}
                     >
                       <span className="text-brand-400 font-bold text-[10px] pt-[3px] shrink-0 w-4 text-right">
@@ -241,9 +271,10 @@ export function BibleSidebar({ bible }: BibleSidebarProps) {
                         {verse.text}
                       </p>
                       <button
+                        type="button"
                         onClick={(e) => {
-                          e.stopPropagation();
-                          addToBiblePlaylist(singleVerseSong);
+                          e.stopPropagation()
+                          addToBiblePlaylist(singleVerseSong)
                         }}
                         className="p-1.5 h-7 w-7 flex items-center justify-center rounded-md text-white/20 hover:text-accent-300 hover:bg-accent-500/20 opacity-0 group-hover:opacity-100 transition-all shrink-0"
                         title="Adicionar ao único versículo Culto"
@@ -251,7 +282,7 @@ export function BibleSidebar({ bible }: BibleSidebarProps) {
                         <Plus className="w-3.5 h-3.5" />
                       </button>
                     </div>
-                  );
+                  )
                 })}
               </div>
             )}
@@ -259,5 +290,5 @@ export function BibleSidebar({ bible }: BibleSidebarProps) {
         )}
       </div>
     </div>
-  );
+  )
 }
