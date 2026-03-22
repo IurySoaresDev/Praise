@@ -24,11 +24,11 @@ function highlightKeywords(text: string): string {
 }
 
 function processLine(line: string, isBible: boolean): string {
-  let trimmed = line.trim();
+  const trimmed = line.trim();
   if (!trimmed) return "";
 
   // Remove HTML tags
-  let clean = trimmed.replace(/<[^>]+>/g, "");
+  const clean = trimmed.replace(/<[^>]+>/g, "");
   let formatted = isBible ? clean : clean.toUpperCase();
 
   if (isBible) {

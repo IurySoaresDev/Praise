@@ -69,7 +69,7 @@ export interface AppState {
   moveSongInBiblePlaylist: (oldIndex: number, newIndex: number) => void;
   addSongToCollection: (title: string, content: string, collectionName: string) => { duplicate: boolean; existingTitle?: string };
   getExportData: () => Collection[];
-  importSongsFromJSON: (data: any) => { added: number; duplicates: number };
+  importSongsFromJSON: (data: Collection[]) => { added: number; duplicates: number };
   updateSong: (oldTitle: string, updatedSong: Song) => { success: boolean; duplicate?: boolean };
   
   setActiveTab: (tab: 'songs' | 'bible' | 'editor' | 'settings') => void;
@@ -254,7 +254,7 @@ export const useStore = create<AppState>((set, get) => ({
     return get().collections;
   },
 
-  importSongsFromJSON: (data: any) => {
+  importSongsFromJSON: (data: Collection[]) => {
     const state = get();
     let added = 0;
     let duplicates = 0;

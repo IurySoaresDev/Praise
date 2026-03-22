@@ -334,7 +334,7 @@ export function SettingsTab({ showSuccess }: SettingsTabProps) {
                 ].map((tab) => (
                   <button
                     key={tab.id}
-                    onClick={() => setSettingsPreviewTab(tab.id as any)}
+                    onClick={() => setSettingsPreviewTab(tab.id as 'title' | 'lyrics' | 'bible')}
                     className={`px-6 py-2.5 rounded-xl text-[10px] font-black tracking-[0.2em] transition-all ${
                       settingsPreviewTab === tab.id
                         ? 'bg-white/10 text-white shadow-xl border border-white/10'

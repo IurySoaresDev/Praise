@@ -13,7 +13,7 @@ vi.mock('@tauri-apps/api/event', () => ({
 
 // Mock store
 const mockStore = {
-  selectedSong: null as any,
+  selectedSong: null as ReturnType<typeof import('../../store').useAppStore.getState>['selectedSong'],
   activeSlideIndex: 0,
   setActiveSlideIndex: vi.fn(),
   songBackground: '/backgrounds/bg-song.jpg',

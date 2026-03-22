@@ -41,6 +41,7 @@ function App() {
 	useEffect(() => {
 		const prevLen = prevPlaylistLenRef.current;
 		if (playlist.length > prevLen && isSongsCollapsed) {
+			// eslint-disable-next-line react-hooks/set-state-in-effect
 			setIsSongsCollapsed(false);
 		} else if (playlist.length === 0 && prevLen > 0) {
 			setIsSongsCollapsed(true);
@@ -51,6 +52,7 @@ function App() {
 	useEffect(() => {
 		const prevLen = prevBiblePlaylistLenRef.current;
 		if (biblePlaylist.length > prevLen && isBibleCollapsed) {
+			// eslint-disable-next-line react-hooks/set-state-in-effect
 			setIsBibleCollapsed(false);
 		} else if (biblePlaylist.length === 0 && prevLen > 0) {
 			setIsBibleCollapsed(true);
