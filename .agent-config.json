@@ -1,0 +1,18 @@
+{
+  "project_name": "praise-app",
+  "frontend_path": "src",
+  "backend_path": "src-tauri/src",
+  "package_manager": "pnpm",
+  "framework": {
+    "frontend": "react",
+    "backend": "tauri"
+  },
+  "testing": {
+    "unit_runner": "vitest",
+    "e2e_runner": "playwright"
+  },
+  "conventions": {
+    "branch_prefix": true,
+    "test_required": false
+  }
+}
