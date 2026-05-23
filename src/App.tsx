@@ -12,6 +12,8 @@ import { SystemNav } from "./components/SystemNav"
 import { TitleBar } from "./components/TitleBar"
 import { useBible } from "./hooks/useBible"
 import { useEditor } from "./hooks/useEditor"
+import { useSettingsPersistence } from "./hooks/useSettingsPersistence"
+import { useAutoUpdater } from "./hooks/useUpdater"
 import { useStore } from "./store"
 import "./App.css"
 
@@ -28,6 +30,8 @@ function App() {
   // Domain hooks
   const bible = useBible()
   const editor = useEditor()
+  useSettingsPersistence()
+  useAutoUpdater({ showSuccess: editor.showSuccess })
 
   // Collapse state for playlists
   const [isSongsCollapsed, setIsSongsCollapsed] = useState(true)

@@ -1,7 +1,9 @@
-import { convertFileSrc, invoke } from "@tauri-apps/api/core"
+import { invoke } from "@tauri-apps/api/core"
 import { listen } from "@tauri-apps/api/event"
 import { getCurrentWindow } from "@tauri-apps/api/window"
 import { useEffect, useState } from "react"
+
+import { resolveBackgroundSrc } from "./utils/backgroundImage"
 
 function Projection() {
   const [data, setData] = useState<{
@@ -124,9 +126,7 @@ function Projection() {
   }
 
   const backgroundUrl = data.background
-    ? data.background.startsWith("/backgrounds/")
-      ? data.background
-      : convertFileSrc(data.background)
+    ? resolveBackgroundSrc(data.background)
     : null
 
   return (

@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
+use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use image::GenericImageView;
-use tauri::{Manager, Emitter, WebviewWindowBuilder, WebviewUrl, State};
+use tauri::{Emitter, Manager, State, WebviewUrl, WebviewWindowBuilder};
 
 #[derive(Clone, Serialize, Deserialize)]
 struct MonitorInfo {
@@ -191,6 +192,202 @@ fn close_projection(app_handle: tauri::AppHandle) -> Result<(), String> {
     Ok(())
 }
 
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct AppSettings {
+    song_background: String,
+    song_body_background: String,
+    bible_background: String,
+    song_title_color: String,
+    song_lyrics_color: String,
+    bible_title_color: String,
+    bible_lyrics_color: String,
+    song_title_font: String,
+    song_title_size: f64,
+    song_title_weight: String,
+    song_lyrics_font: String,
+    song_lyrics_size: f64,
+    song_lyrics_weight: String,
+    bible_title_font: String,
+    bible_title_size: f64,
+    bible_title_weight: String,
+    bible_lyrics_font: String,
+    bible_lyrics_size: f64,
+    bible_lyrics_weight: String,
+    projection_mode: String,
+}
+
+fn default_settings() -> AppSettings {
+    AppSettings {
+        song_background: "/backgrounds/bg-song.jpg".into(),
+        song_body_background: "/backgrounds/bg-song-body.jpg".into(),
+        bible_background: "/backgrounds/bg-bible.jpg".into(),
+        song_title_color: "#ffffff".into(),
+        song_lyrics_color: "#ffffff".into(),
+        bible_title_color: "#ffffff".into(),
+        bible_lyrics_color: "#ffffff".into(),
+        song_title_font: "Inter".into(),
+        song_title_size: 32.0,
+        song_title_weight: "bold".into(),
+        song_lyrics_font: "Inter".into(),
+        song_lyrics_size: 72.0,
+        song_lyrics_weight: "bold".into(),
+        bible_title_font: "Inter".into(),
+        bible_title_size: 40.0,
+        bible_title_weight: "bold".into(),
+        bible_lyrics_font: "Inter".into(),
+        bible_lyrics_size: 64.0,
+        bible_lyrics_weight: "medium".into(),
+        projection_mode: "default".into(),
+    }
+}
+
+fn settings_file_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
+    app.path()
+        .app_data_dir()
+        .map(|dir| dir.join("settings.json"))
+        .map_err(|e| e.to_string())
+}
+
+fn backgrounds_dir(app: &tauri::AppHandle) -> Result<PathBuf, String> {
+    app.path()
+        .app_data_dir()
+        .map(|dir| dir.join("backgrounds"))
+        .map_err(|e| e.to_string())
+}
+
+fn background_file_prefix(kind: &str) -> Result<&'static str, String> {
+    match kind {
+        "song" => Ok("song."),
+        "songBody" => Ok("song-body."),
+        "bible" => Ok("bible."),
+        _ => Err(format!("Tipo de fundo inválido: {}", kind)),
+    }
+}
+
+fn resolve_background_path(path: &str, default: &str) -> String {
+    if path.starts_with("/backgrounds/") {
+        return path.to_string();
+    }
+    if Path::new(path).exists() {
+        return path.to_string();
+    }
+    default.to_string()
+}
+
+fn normalize_source_path(source_path: &str) -> String {
+    let path = source_path.trim();
+    if let Some(stripped) = path.strip_prefix("file://") {
+        return stripped.to_string();
+    }
+    path.to_string()
+}
+
+fn sanitize_background_extension(source: &Path) -> &'static str {
+    match source
+        .extension()
+        .and_then(|e| e.to_str())
+        .map(|e| e.to_ascii_lowercase())
+        .as_deref()
+    {
+        Some("jpg") | Some("jpeg") => "jpg",
+        Some("png") => "png",
+        Some("webp") => "webp",
+        _ => "jpg",
+    }
+}
+
+#[tauri::command]
+fn load_settings(app_handle: tauri::AppHandle) -> Result<AppSettings, String> {
+    let path = settings_file_path(&app_handle)?;
+    if !path.exists() {
+        return Ok(default_settings());
+    }
+
+    let contents = std::fs::read_to_string(&path).map_err(|e| e.to_string())?;
+    let mut settings: AppSettings =
+        serde_json::from_str(&contents).map_err(|e| e.to_string())?;
+
+    settings.song_background =
+        resolve_background_path(&settings.song_background, "/backgrounds/bg-song.jpg");
+    settings.song_body_background = resolve_background_path(
+        &settings.song_body_background,
+        "/backgrounds/bg-song-body.jpg",
+    );
+    settings.bible_background =
+        resolve_background_path(&settings.bible_background, "/backgrounds/bg-bible.jpg");
+
+    Ok(settings)
+}
+
+#[tauri::command]
+fn save_settings(app_handle: tauri::AppHandle, settings: AppSettings) -> Result<(), String> {
+    let path = settings_file_path(&app_handle)?;
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    }
+    let json = serde_json::to_string_pretty(&settings).map_err(|e| e.to_string())?;
+    std::fs::write(path, json).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[tauri::command]
+fn save_background_image(
+    app_handle: tauri::AppHandle,
+    kind: String,
+    source_path: String,
+) -> Result<String, String> {
+    let prefix = background_file_prefix(&kind)?;
+    let source = normalize_source_path(&source_path);
+    let source_path = Path::new(&source);
+    if !source_path.exists() {
+        return Err(format!("Arquivo de origem não encontrado: {}", source));
+    }
+
+    let bg_dir = backgrounds_dir(&app_handle)?;
+    std::fs::create_dir_all(&bg_dir).map_err(|e| e.to_string())?;
+
+    let stem = prefix.trim_end_matches('.');
+    let ext = sanitize_background_extension(source_path);
+    let dest = bg_dir.join(format!("{}.{}", stem, ext));
+
+    // Remove versões anteriores (outra extensão)
+    if bg_dir.exists() {
+        if let Ok(entries) = std::fs::read_dir(&bg_dir) {
+            for entry in entries.flatten() {
+                let name = entry.file_name().to_string_lossy().to_string();
+                if name.starts_with(stem) {
+                    let _ = std::fs::remove_file(entry.path());
+                }
+            }
+        }
+    }
+
+    std::fs::copy(source_path, &dest)
+        .map_err(|e| format!("Falha ao copiar imagem de fundo: {}", e))?;
+
+    Ok(dest.to_string_lossy().to_string())
+}
+
+#[tauri::command]
+fn remove_background_image(app_handle: tauri::AppHandle, kind: String) -> Result<(), String> {
+    let prefix = background_file_prefix(&kind)?;
+    let bg_dir = backgrounds_dir(&app_handle)?;
+    if !bg_dir.exists() {
+        return Ok(());
+    }
+
+    let stem = prefix.trim_end_matches('.');
+    for entry in std::fs::read_dir(&bg_dir).map_err(|e| e.to_string())? {
+        let entry = entry.map_err(|e| e.to_string())?;
+        let name = entry.file_name().to_string_lossy().to_string();
+        if name.starts_with(stem) {
+            std::fs::remove_file(entry.path()).map_err(|e| e.to_string())?;
+        }
+    }
+    Ok(())
+}
+
 #[tauri::command]
 fn save_songs(_app_handle: tauri::AppHandle, data: serde_json::Value) -> Result<(), String> {
     let current_dir = std::env::current_dir().map_err(|e| e.to_string())?;
@@ -250,7 +447,17 @@ pub fn run() {
         })
         .manage(CurrentSlideState(Mutex::new(None)))
         .manage(CurrentMonitorState(Mutex::new(String::new())))
-        .invoke_handler(tauri::generate_handler![get_monitors, project_slide, save_songs, close_projection, get_current_slide])
+        .invoke_handler(tauri::generate_handler![
+            get_monitors,
+            project_slide,
+            save_songs,
+            close_projection,
+            get_current_slide,
+            load_settings,
+            save_settings,
+            save_background_image,
+            remove_background_image
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

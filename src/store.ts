@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core"
 import { create } from "zustand"
 
 import rawData from "./assets/data.json"
+import { DEFAULT_BACKGROUNDS } from "./utils/backgroundImage"
 
 export interface Song {
   title: string
@@ -73,7 +74,7 @@ export interface AppState {
     collectionName: string,
   ) => { duplicate: boolean; existingTitle?: string }
   getExportData: () => Collection[]
-  importSongsFromJSON: (data: Collection[]) => {
+  importSongsFromJSON: (data: Array<Collection | Song>) => {
     added: number
     duplicates: number
   }
@@ -159,9 +160,9 @@ export const useStore = create<AppState>((set, get) => ({
 
   // Initial Backgrounds (using relative paths for Vite/Tauri)
   activeTab: "songs",
-  songBackground: "/backgrounds/bg-song.jpg",
-  songBodyBackground: "/backgrounds/bg-song-body.jpg",
-  bibleBackground: "/backgrounds/bg-bible.jpg",
+  songBackground: DEFAULT_BACKGROUNDS.song,
+  songBodyBackground: DEFAULT_BACKGROUNDS.songBody,
+  bibleBackground: DEFAULT_BACKGROUNDS.bible,
   projectionMode: "default",
 
   bibleLyricsColor: "#ffffff", // White
@@ -289,7 +290,7 @@ export const useStore = create<AppState>((set, get) => ({
     return get().collections
   },
 
-  importSongsFromJSON: (data: Collection[]) => {
+  importSongsFromJSON: (data: Array<Collection | Song>) => {
     const state = get()
     let added = 0
     let duplicates = 0
@@ -303,7 +304,7 @@ export const useStore = create<AppState>((set, get) => ({
     }))
 
     // Se o dado não for array, tenta tratar como objeto único
-    const items = Array.isArray(data) ? data : [data]
+    const items: Array<Collection | Song> = Array.isArray(data) ? data : [data]
 
     // Lista para processar
     const songsToProcess: Song[] = []
@@ -312,7 +313,7 @@ export const useStore = create<AppState>((set, get) => ({
       if (!item) continue
 
       // Caso 1: Array de Collections (formato exportado pelo app)
-      if (item.songs && Array.isArray(item.songs)) {
+      if ("songs" in item && Array.isArray(item.songs)) {
         for (const s of item.songs) {
           songsToProcess.push({
             title: s.title,
@@ -322,7 +323,7 @@ export const useStore = create<AppState>((set, get) => ({
         }
       }
       // Caso 2: Objeto Song direto ou Array de Songs
-      else if (item.title && item.content) {
+      else if ("title" in item && "content" in item) {
         songsToProcess.push({
           title: item.title,
           content: item.content,

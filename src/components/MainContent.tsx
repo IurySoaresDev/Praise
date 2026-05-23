@@ -1,4 +1,3 @@
-import { convertFileSrc } from "@tauri-apps/api/core"
 import {
   ChevronLeft,
   ChevronRight,
@@ -12,7 +11,8 @@ import {
 import { useMonitors } from "../hooks/useMonitors"
 import { useProjection } from "../hooks/useProjection"
 import { useStore } from "../store"
-import { getSlideTitle } from "../utils/slideHelpers"
+import { resolveBackgroundSrc } from "../utils/backgroundImage"
+import { getSlideBackground, getSlideTitle } from "../utils/slideHelpers"
 
 // Note: dangerouslySetInnerHTML is used intentionally here for rendering
 // formatted slide content (HTML from formatContent). The content originates
@@ -287,19 +287,15 @@ export function MainContent() {
                   <div
                     className="absolute inset-0 z-0"
                     style={{
-                      backgroundImage: `url(${
-                        selectedSong?.collection === "Bíblia"
-                          ? bibleBackground.startsWith("/backgrounds/")
-                            ? bibleBackground
-                            : convertFileSrc(bibleBackground)
-                          : activeSlideIndex === 0
-                            ? songBackground.startsWith("/backgrounds/")
-                              ? songBackground
-                              : convertFileSrc(songBackground)
-                            : songBodyBackground.startsWith("/backgrounds/")
-                              ? songBodyBackground
-                              : convertFileSrc(songBodyBackground)
-                      })`,
+                      backgroundImage: `url(${resolveBackgroundSrc(
+                        getSlideBackground(
+                          selectedSong,
+                          activeSlideIndex,
+                          songBackground,
+                          songBodyBackground,
+                          bibleBackground,
+                        ),
+                      )})`,
                       backgroundSize: "100% 100%",
                       backgroundPosition: "center center",
                       backgroundRepeat: "no-repeat",

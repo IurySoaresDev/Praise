@@ -1,4 +1,4 @@
-import { convertFileSrc } from "@tauri-apps/api/core"
+import { invoke } from "@tauri-apps/api/core"
 import { open } from "@tauri-apps/plugin-dialog"
 import {
   Bold,
@@ -10,6 +10,7 @@ import {
   Palette,
   RotateCw,
   Settings,
+  Trash2,
   Type,
   Upload,
 } from "lucide-react"
@@ -17,6 +18,12 @@ import { useEffect, useRef, useState } from "react"
 
 import { useUpdater } from "../hooks/useUpdater"
 import { useStore } from "../store"
+import type { BackgroundKind } from "../utils/backgroundImage"
+import {
+  DEFAULT_BACKGROUNDS,
+  isBundledBackground,
+  resolveBackgroundSrc,
+} from "../utils/backgroundImage"
 
 interface SettingsTabProps {
   showSuccess: (message: string, duration?: number) => void
@@ -82,7 +89,6 @@ export function SettingsTab({ showSuccess }: SettingsTabProps) {
     setBibleLyricsFont,
     setBibleLyricsSize,
     setBibleLyricsWeight,
-    activeTab,
   } = useStore()
 
   const updater = useUpdater({ showSuccess })
@@ -108,15 +114,50 @@ export function SettingsTab({ showSuccess }: SettingsTabProps) {
     return () => observer.disconnect()
   }, [])
 
-  const openImageDialog = async (setter: (path: string) => void) => {
+  const uploadBackground = async (
+    kind: BackgroundKind,
+    setter: (path: string) => void,
+  ) => {
     const path = await open({
       multiple: false,
       filters: [
         { name: "Imagens", extensions: ["jpg", "png", "jpeg", "webp"] },
       ],
     })
-    if (path) setter(path as string)
+    if (!path) return
+
+    try {
+      const savedPath = await invoke<string>("save_background_image", {
+        kind,
+        sourcePath: path as string,
+      })
+      setter(savedPath)
+      showSuccess("Imagem de fundo atualizada!")
+    } catch (error) {
+      console.error("Erro ao salvar imagem de fundo:", error)
+      showSuccess("Não foi possível salvar a imagem de fundo.", 4000)
+    }
   }
+
+  const removeBackground = async (
+    kind: BackgroundKind,
+    setter: (path: string) => void,
+  ) => {
+    try {
+      await invoke("remove_background_image", { kind })
+      setter(DEFAULT_BACKGROUNDS[kind])
+      showSuccess("Fundo restaurado para o padrão.")
+    } catch (error) {
+      console.error("Erro ao remover imagem de fundo:", error)
+    }
+  }
+
+  const previewBackground =
+    settingsPreviewTab === "title"
+      ? songBackground
+      : settingsPreviewTab === "lyrics"
+        ? songBodyBackground
+        : bibleBackground
 
   const settingsNavItems = [
     {
@@ -217,14 +258,30 @@ export function SettingsTab({ showSuccess }: SettingsTabProps) {
                         Configuração do Slide Inicial
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => openImageDialog(setSongBackground)}
-                      className="p-3 rounded-xl bg-brand-600/10 border border-brand-500/20 text-brand-400 hover:bg-brand-600/20 transition-all group"
-                      title="Trocar imagem"
-                    >
-                      <Upload className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      {!isBundledBackground(songBackground) && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            removeBackground("song", setSongBackground)
+                          }
+                          className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all"
+                          title="Remover imagem personalizada"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          uploadBackground("song", setSongBackground)
+                        }
+                        className="p-3 rounded-xl bg-brand-600/10 border border-brand-500/20 text-brand-400 hover:bg-brand-600/20 transition-all group"
+                        title="Trocar imagem"
+                      >
+                        <Upload className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                      </button>
+                    </div>
                   </div>
                   <div className="space-y-6">
                     <div className="p-5 rounded-2xl bg-black/20 border border-white/[0.07]">
@@ -326,13 +383,29 @@ export function SettingsTab({ showSuccess }: SettingsTabProps) {
                         Letras e Refrãos das Músicas
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => openImageDialog(setSongBodyBackground)}
-                      className="p-3 rounded-xl bg-brand-500/10 border border-brand-500/20 text-brand-400 hover:bg-brand-500/20 transition-all group"
-                    >
-                      <Upload className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      {!isBundledBackground(songBodyBackground) && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            removeBackground("songBody", setSongBodyBackground)
+                          }
+                          className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all"
+                          title="Remover imagem personalizada"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          uploadBackground("songBody", setSongBodyBackground)
+                        }
+                        className="p-3 rounded-xl bg-brand-500/10 border border-brand-500/20 text-brand-400 hover:bg-brand-500/20 transition-all group"
+                      >
+                        <Upload className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                      </button>
+                    </div>
                   </div>
                   <div className="space-y-6">
                     <div className="p-5 rounded-2xl bg-black/20 border border-white/[0.07]">
@@ -432,13 +505,29 @@ export function SettingsTab({ showSuccess }: SettingsTabProps) {
                         Escrituras e Versículos
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => openImageDialog(setBibleBackground)}
-                      className="p-3 rounded-xl bg-brand-600/10 border border-brand-500/20 text-brand-400 hover:bg-brand-600/20 transition-all group"
-                    >
-                      <Upload className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      {!isBundledBackground(bibleBackground) && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            removeBackground("bible", setBibleBackground)
+                          }
+                          className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all"
+                          title="Remover imagem personalizada"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          uploadBackground("bible", setBibleBackground)
+                        }
+                        className="p-3 rounded-xl bg-brand-600/10 border border-brand-500/20 text-brand-400 hover:bg-brand-600/20 transition-all group"
+                      >
+                        <Upload className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                      </button>
+                    </div>
                   </div>
                   <div className="grid grid-cols-1 gap-6">
                     <div className="p-6 rounded-2xl bg-black/20 border border-white/[0.07] space-y-6">
@@ -644,22 +733,10 @@ export function SettingsTab({ showSuccess }: SettingsTabProps) {
               className="w-full max-w-5xl aspect-video bg-black rounded-3xl overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] border-4 border-slate-800/50 relative transform hover:scale-[1.01] transition-transform duration-700"
             >
               <img
-                src={
-                  settingsPreviewTab === "title"
-                    ? songBackground.startsWith("/backgrounds/")
-                      ? songBackground
-                      : convertFileSrc(songBackground)
-                    : settingsPreviewTab === "lyrics"
-                      ? songBodyBackground.startsWith("/backgrounds/")
-                        ? songBodyBackground
-                        : convertFileSrc(songBodyBackground)
-                      : bibleBackground.startsWith("/backgrounds/")
-                        ? bibleBackground
-                        : convertFileSrc(bibleBackground)
-                }
+                src={resolveBackgroundSrc(previewBackground)}
                 className="w-full h-full absolute inset-0 transition-all duration-1000 z-0"
                 style={{ backgroundSize: "100% 100%", objectFit: "fill" }}
-                alt="True Preview"
+                alt="Pré-visualização do fundo"
               />
               <div className="absolute inset-0 z-[1] bg-black/30" />
               <div className="absolute inset-0 z-10 pointer-events-none select-none">

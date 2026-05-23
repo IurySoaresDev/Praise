@@ -15,7 +15,7 @@ vi.mock("@tauri-apps/api/event", () => ({
 // Mock store
 const mockStore = {
   selectedSong: null as ReturnType<
-    typeof import("../../store").useAppStore.getState
+    typeof import("../../store").useStore.getState
   >["selectedSong"],
   activeSlideIndex: 0,
   setActiveSlideIndex: vi.fn(),

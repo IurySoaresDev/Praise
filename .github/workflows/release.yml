@@ -4,6 +4,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      republish:
+        description: "Republicar a mesma versão (apaga tag/release existente)"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -55,6 +61,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Verificar secrets de assinatura
+        shell: bash
+        run: |
+          if [ -z "${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}" ]; then
+            echo "::error::Configure TAURI_SIGNING_PRIVATE_KEY nos secrets do repositório."
+            exit 1
+          fi
+
+      - name: Republicar versão existente (opcional)
+        if: github.event_name == 'workflow_dispatch' && inputs.republish == true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          TAG="v${VERSION}"
+          gh release delete "$TAG" -y 2>/dev/null || true
+          git push origin ":refs/tags/${TAG}" 2>/dev/null || true
+
       - name: Install Linux dependencies
         if: matrix.os == 'linux'
         run: |
@@ -89,7 +113,17 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: v__VERSION__
-          releaseName: 'Praise v__VERSION__'
-          releaseBody: 'Nova atualização do Praise disponível. Faça o download e instale a versão mais recente.'
-          releaseDraft: true
+          releaseName: "Praise v__VERSION__"
+          releaseBody: |
+            ## Praise v__VERSION__
+
+            ### Correções
+            - Correção das imagens de fundo personalizadas (preview e projeção)
+            - Imagens copiadas para a pasta de dados do app
+            - Atualização automática ao abrir o aplicativo
+
+            ### Como atualizar
+            O app verifica atualizações automaticamente ao iniciar.
+            Também é possível ir em **Configurações → Sistema → Verificar Agora**.
+          releaseDraft: false
           prerelease: false
